@@ -15,8 +15,6 @@ class _CreateBillUiState extends State<CreateBillUi> {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 233, 233, 233),
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color: Colors.deepPurple),
         title: Text(
           "Create Bill/Invoice",
           style: TextStyle(color: Colors.black),

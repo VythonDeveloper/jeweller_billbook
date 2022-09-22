@@ -19,12 +19,10 @@ class _CreateItemUiState extends State<CreateItemUi> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.white,
           title: Text(
             "Create New Item",
             style: TextStyle(color: Colors.black),
           ),
-          iconTheme: IconThemeData(color: Colors.deepPurple),
         ),
         body: Column(
           children: <Widget>[

@@ -14,8 +14,6 @@ class _AddItemCartUiState extends State<AddItemCartUi> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color: Colors.deepPurple),
         title: Container(
           child: Row(
             children: [

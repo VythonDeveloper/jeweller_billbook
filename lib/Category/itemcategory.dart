@@ -13,8 +13,6 @@ class _ItemCategoryUiState extends State<ItemCategoryUi> {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 233, 233, 233),
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color: Colors.deepPurple),
         title: Text(
           "Item Categories",
           style: TextStyle(color: Colors.black),
