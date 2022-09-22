@@ -12,33 +12,34 @@ class DashboardUi extends StatefulWidget {
 class _DashboardUiState extends State<DashboardUi> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        dashboardTitleBar(),
-        statusBlocks(),
-        transactions(),
-        dashboardFloatingButtons(),
-      ],
-    );
-  }
-
-  Widget dashboardTitleBar() {
-    return Container(
-      color: Colors.white,
-      padding: EdgeInsets.symmetric(
-        vertical: 15,
-        horizontal: 10,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('StockBook'),
       ),
-      child: Row(
+      body: SafeArea(
+        child: ListView(
+          children: [
+            statusBlocks(),
+            transactions(),
+          ],
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          CircleAvatar(
-            radius: 22,
+          FloatingActionButton.extended(
+            onPressed: () {},
+            elevation: 2,
+            heroTag: 'btn1',
+            icon: Icon(Icons.receipt),
+            label: Text('Mortage Billing'),
           ),
-          SizedBox(width: 15),
-          Text(
-            "Epson Printer",
-            style: TextStyle(color: Colors.black, fontSize: 17),
+          FloatingActionButton.extended(
+            onPressed: () {},
+            elevation: 2,
+            icon: Icon(Icons.print),
+            label: Text('Invoice'),
           ),
         ],
       ),
@@ -48,112 +49,102 @@ class _DashboardUiState extends State<DashboardUi> {
   Widget statusBlocks() {
     return Container(
       padding: EdgeInsets.all(15),
-      color: Colors.white,
       child: Column(
         children: [
           Row(
             children: [
-              Card(
-                child: Row(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "₹ 0",
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          children: [
-                            Text("To Collect"),
-                            Icon(Icons.arrow_downward_sharp)
-                          ],
-                        )
-                      ],
-                    ),
-                    Icon(Icons.arrow_forward_ios_sharp),
-                  ],
-                ),
+              StatsCard(
+                onPress: () {},
+                icon: Icons.file_download_outlined,
+                cardColor: Color.fromARGB(255, 217, 241, 218),
+                label: 'To Collect',
+                amount: '₹ ' + '0',
               ),
-              Card(
-                child: Row(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "₹ 0",
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          children: [
-                            Text("To Pay"),
-                            Icon(Icons.arrow_upward_sharp)
-                          ],
-                        )
-                      ],
-                    ),
-                    Icon(Icons.arrow_forward_ios_sharp),
-                  ],
-                ),
+              SizedBox(
+                width: 10,
+              ),
+              StatsCard(
+                onPress: () {},
+                icon: Icons.file_upload_outlined,
+                cardColor: Color.fromARGB(255, 255, 223, 227),
+                label: 'To Pay',
+                amount: '₹ ' + '0',
               ),
             ],
           ),
+          SizedBox(
+            height: 10,
+          ),
           Row(
             children: [
-              Card(
-                child: Row(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Stock Value",
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Text("Value of Items"),
-                      ],
-                    ),
-                    Icon(Icons.arrow_forward_ios_sharp),
-                  ],
-                ),
+              StatsCard(
+                onPress: () {},
+                icon: null,
+                cardColor: Colors.grey.shade200,
+                label: 'Value of Items',
+                amount: 'Stock Value',
               ),
-              Card(
-                child: Row(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "₹ 0",
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Text("Weekly Sale (1 - 7)"),
-                      ],
-                    ),
-                    Icon(Icons.arrow_forward_ios_sharp),
-                  ],
-                ),
+              SizedBox(
+                width: 10,
+              ),
+              StatsCard(
+                onPress: () {},
+                icon: Icons.bar_chart,
+                cardColor: Colors.grey.shade300,
+                label: 'Weekly Sale',
+                amount: '₹ ' + '0',
               ),
             ],
-          )
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget StatsCard({final onPress, label, icon, amount, cardColor}) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onPress,
+        child: Container(
+          padding: EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Row(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    amount,
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    children: [
+                      Text(label),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Icon(
+                        icon,
+                        size: 18,
+                      ),
+                    ],
+                  )
+                ],
+              ),
+              Spacer(),
+              Icon(
+                Icons.arrow_forward_ios_sharp,
+                size: 15,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -229,55 +220,6 @@ class _DashboardUiState extends State<DashboardUi> {
               ],
             )
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget dashboardFloatingButtons() {
-    return Expanded(
-      child: Align(
-        alignment: FractionalOffset.bottomCenter,
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              MaterialButton(
-                color: Colors.black,
-                child: Text(
-                  'Mortgage Billing',
-                  style: TextStyle(fontSize: 16.0, color: Colors.white),
-                ),
-                height: 40,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(22),
-                ),
-                onPressed: () {},
-              ),
-              MaterialButton(
-                color: Colors.black,
-                child: Text(
-                  'Invoice/Billing',
-                  style: TextStyle(fontSize: 16.0, color: Colors.white),
-                ),
-                height: 40,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(22),
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    PageTransition(
-                        type: PageTransitionType.fade,
-                        child: CreateBillUi(),
-                        inheritTheme: true,
-                        ctx: context),
-                  );
-                },
-              )
-            ],
-          ),
         ),
       ),
     );
