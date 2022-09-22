@@ -35,7 +35,18 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   flutter_svg: ^1.1.5
-  page_transition: ^2.0.9
+  firebase_auth: ^3.3.7
+  firebase_core: ^1.12.0
+  cloud_firestore: ^3.1.8
+  page_route_transition: ^3.1.2
+  shared_preferences: ^2.0.13
+  intl: ^0.17.0
+  date_time_picker: ^2.1.0
+  onesignal_flutter: ^3.3.0
+  pdf: ^3.8.1
+  path_provider: ^2.0.11
+  open_file: ^3.2.1
+  number_to_words: ^1.0.0
   
 
 dev_dependencies:

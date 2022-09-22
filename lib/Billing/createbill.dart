@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jeweller_billbook/Billing/additemcart.dart';
-import 'package:page_transition/page_transition.dart';
+import 'package:page_route_transition/page_route_transition.dart';
 
 class CreateBillUi extends StatefulWidget {
   const CreateBillUi({Key? key}) : super(key: key);
@@ -102,14 +102,7 @@ class _CreateBillUiState extends State<CreateBillUi> {
           Text("ITEMS"),
           MaterialButton(
             onPressed: () {
-              Navigator.push(
-                context,
-                PageTransition(
-                    type: PageTransitionType.fade,
-                    child: AddItemCartUi(),
-                    inheritTheme: true,
-                    ctx: context),
-              );
+              PageRouteTransition.push(context, AddItemCartUi());
             },
             child: Container(
               padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),

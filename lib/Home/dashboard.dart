@@ -8,7 +8,7 @@ class DashboardUi extends StatefulWidget {
 }
 
 class _DashboardUiState extends State<DashboardUi> {
-  
+  String uname = "Not";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -154,6 +154,7 @@ class _DashboardUiState extends State<DashboardUi> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Text(uname),
           Text(
             "Transactions",
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jeweller_billbook/Items/createitem.dart';
 import 'package:jeweller_billbook/Category/itemcategory.dart';
-import 'package:page_transition/page_transition.dart';
+import 'package:page_route_transition/page_route_transition.dart';
 
 class ItemsUi extends StatefulWidget {
   const ItemsUi({Key? key}) : super(key: key);
@@ -13,6 +13,13 @@ class ItemsUi extends StatefulWidget {
 class _ItemsUiState extends State<ItemsUi> {
   List<String> categoryList = ['All Categories', 'Gold', 'Silver'];
   String _selectedCategory = "Gold";
+
+  @override
+  void initState() {
+    super.initState();
+    PageRouteTransition.effect = TransitionEffect.fade;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,14 +37,7 @@ class _ItemsUiState extends State<ItemsUi> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          Navigator.push(
-            context,
-            PageTransition(
-                type: PageTransitionType.fade,
-                child: CreateItemUi(),
-                inheritTheme: true,
-                ctx: context),
-          );
+          PageRouteTransition.push(context, CreateItemUi());
         },
         elevation: 2,
         heroTag: 'btn2',
@@ -174,14 +174,7 @@ class _ItemsUiState extends State<ItemsUi> {
           Divider(),
           OutlinedButton(
             onPressed: () {
-              Navigator.push(
-                context,
-                PageTransition(
-                    type: PageTransitionType.fade,
-                    child: ItemCategoryUi(),
-                    inheritTheme: true,
-                    ctx: context),
-              );
+              PageRouteTransition.push(context, ItemCategoryUi());
             },
             child: Text("Manage Categories"),
           ),

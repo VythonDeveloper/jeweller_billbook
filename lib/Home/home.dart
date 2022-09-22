@@ -12,7 +12,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // List _pageList = [DashboardUi(), ItemsUi()];
   int _selectedbottomNavIndex = 0;
   @override
   Widget build(BuildContext context) {
