@@ -14,39 +14,32 @@ class _ItemsUiState extends State<ItemsUi> {
   String _selectedCategory = "Gold";
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        itemsTitleBar(),
-        SizedBox(
-          height: 3,
+    return Scaffold(
+      appBar: ItemsAppbar(),
+      body: SafeArea(
+        child: Column(
+          children: [
+            SizedBox(
+              height: 3,
+            ),
+            itemsSortingBar(),
+            itemsList(),
+          ],
         ),
-        itemsSortingBar(),
-        itemsList(),
-        itemsFloatingButtons(),
-      ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {},
+        elevation: 2,
+        heroTag: 'btn1',
+        icon: Icon(Icons.add),
+        label: Text('Add Item'),
+      ),
     );
   }
 
-  Widget itemsTitleBar() {
-    return Container(
-      color: Colors.white,
-      padding: EdgeInsets.symmetric(
-        vertical: 15,
-        horizontal: 15,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            "Items",
-            style: TextStyle(color: Colors.black, fontSize: 17),
-          ),
-          Icon(
-            Icons.search,
-            size: 25,
-          ),
-        ],
-      ),
+  AppBar ItemsAppbar() {
+    return AppBar(
+      title: Text('Items'),
     );
   }
 
@@ -146,53 +139,53 @@ class _ItemsUiState extends State<ItemsUi> {
     );
   }
 
-  Widget itemsFloatingButtons() {
-    return Expanded(
-      child: Align(
-        alignment: FractionalOffset.bottomCenter,
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              MaterialButton(
-                color: Colors.black,
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.add,
-                      color: Colors.white,
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                      'Create New Item',
-                      style: TextStyle(fontSize: 16.0, color: Colors.white),
-                    ),
-                  ],
-                ),
-                height: 40,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(22),
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    PageTransition(
-                        type: PageTransitionType.fade,
-                        child: CreateItemUi(),
-                        inheritTheme: true,
-                        ctx: context),
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  // Widget itemsFloatingButtons() {
+  //   return Expanded(
+  //     child: Align(
+  //       alignment: FractionalOffset.bottomCenter,
+  //       child: Padding(
+  //         padding: EdgeInsets.symmetric(vertical: 10),
+  //         child: Row(
+  //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  //           children: [
+  //             MaterialButton(
+  //               color: Colors.black,
+  //               child: Row(
+  //                 children: [
+  //                   Icon(
+  //                     Icons.add,
+  //                     color: Colors.white,
+  //                   ),
+  //                   SizedBox(
+  //                     width: 10,
+  //                   ),
+  //                   Text(
+  //                     'Create New Item',
+  //                     style: TextStyle(fontSize: 16.0, color: Colors.white),
+  //                   ),
+  //                 ],
+  //               ),
+  //               height: 40,
+  //               shape: RoundedRectangleBorder(
+  //                 borderRadius: BorderRadius.circular(22),
+  //               ),
+  //               onPressed: () {
+  //                 Navigator.push(
+  //                   context,
+  //                   PageTransition(
+  //                       type: PageTransitionType.fade,
+  //                       child: CreateItemUi(),
+  //                       inheritTheme: true,
+  //                       ctx: context),
+  //                 );
+  //               },
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget selectCategoryModal(StateSetter setModalState) {
     return Container(

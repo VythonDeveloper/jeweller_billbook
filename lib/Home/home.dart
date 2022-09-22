@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jeweller_billbook/Home/dashboard.dart';
 import 'package:jeweller_billbook/Home/items.dart';
+import 'package:jeweller_billbook/Home/more.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -11,81 +12,70 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List _pageList = [DashboardUi(), ItemsUi()];
+  // List _pageList = [DashboardUi(), ItemsUi()];
   int _selectedbottomNavIndex = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Color.fromARGB(255, 233, 233, 233),
-        body: SafeArea(
-          child: _pageList[_selectedbottomNavIndex],
-        ),
-        bottomNavigationBar: bottomNavBar());
+      backgroundColor: Color.fromARGB(255, 233, 233, 233),
+      body: Body(),
+      bottomNavigationBar: BottomNavNew(),
+    );
   }
 
-  Widget bottomNavBar() {
+  Widget Body() {
+    return IndexedStack(
+      index: _selectedbottomNavIndex,
+      children: [
+        DashboardUi(),
+        ItemsUi(),
+        MoreUI(),
+      ],
+    );
+  }
+
+  Widget BottomNavNew() {
     return BottomNavigationBar(
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              './lib/assets/icons/dashboard.svg',
-              color: _selectedbottomNavIndex == 0
-                  ? Color.fromARGB(255, 0, 55, 100)
-                  : Colors.grey,
-              height: 25,
-            ),
-            label: 'Dashboard',
-          ),
-          BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              './lib/assets/icons/items.svg',
-              color: _selectedbottomNavIndex == 1
-                  ? Color.fromARGB(255, 0, 55, 100)
-                  : Colors.grey,
-              height: 25,
-            ),
-            label: 'Items',
-          ),
-          BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              './lib/assets/icons/more.svg',
-              color: _selectedbottomNavIndex == 2
-                  ? Color.fromARGB(255, 0, 55, 100)
-                  : Colors.grey,
-              height: 25,
-            ),
-            label: 'More',
-          ),
-        ],
-        currentIndex: _selectedbottomNavIndex,
-        selectedItemColor: Color.fromARGB(255, 0, 55, 100),
-        unselectedIconTheme: IconThemeData(color: Colors.grey),
-        onTap: (index) {
-          setState(() {
-            _selectedbottomNavIndex = index;
-          });
-        },
-        elevation: 5);
-  }
-
-  Widget floatingButtons() {
-    return Wrap(
-      direction: Axis.horizontal,
-      children: <Widget>[
-        Container(
-          margin: EdgeInsets.all(10),
-          child: FloatingActionButton.extended(
-            onPressed: () {},
-            backgroundColor: Color.fromARGB(255, 74, 60, 112),
-            label: Text("Mortgage Billing"),
+      backgroundColor: Color.fromARGB(255, 226, 242, 255),
+      type: BottomNavigationBarType.fixed,
+      currentIndex: _selectedbottomNavIndex,
+      selectedItemColor: Colors.black,
+      unselectedItemColor: Colors.grey,
+      selectedLabelStyle: TextStyle(
+        fontWeight: FontWeight.w700,
+        fontSize: 12,
+      ),
+      unselectedLabelStyle: TextStyle(
+        fontWeight: FontWeight.w700,
+        fontSize: 12,
+      ),
+      selectedIconTheme: IconThemeData(size: 28),
+      onTap: (value) {
+        setState(() => _selectedbottomNavIndex = value);
+      },
+      items: [
+        BottomNavigationBarItem(
+          label: 'Sales',
+          icon: Icon(Icons.bar_chart),
+        ),
+        BottomNavigationBarItem(
+          label: 'Items',
+          icon: SvgPicture.asset(
+            './lib/assets/icons/items.svg',
+            color: _selectedbottomNavIndex == 1
+                ? Color.fromARGB(255, 0, 55, 100)
+                : Colors.grey,
+            height: 20,
           ),
         ),
-        Container(
-          margin: EdgeInsets.all(10),
-          child: FloatingActionButton.extended(
-            onPressed: () {},
-            backgroundColor: Colors.deepPurpleAccent,
-            label: Text("Invoice/Billing"),
+        BottomNavigationBarItem(
+          label: 'Stock Entry',
+          icon: SvgPicture.asset(
+            './lib/assets/icons/more.svg',
+            color: _selectedbottomNavIndex == 2
+                ? Color.fromARGB(255, 0, 55, 100)
+                : Colors.grey,
+            height: 20,
           ),
         ),
       ],
