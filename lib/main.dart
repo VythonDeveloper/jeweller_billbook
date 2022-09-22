@@ -1,8 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jeweller_billbook/Home/home.dart';
+import 'package:jeweller_billbook/loginUI.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,19 +23,21 @@ class MyApp extends StatelessWidget {
       SystemUiOverlayStyle.light.copyWith(
         statusBarBrightness: Brightness.light,
         statusBarIconBrightness: Brightness.dark,
-        statusBarColor: Colors.white,
+        statusBarColor: Colors.transparent,
         systemNavigationBarColor: Colors.white,
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
     );
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Jeweller BillBook',
+      title: 'StockBook',
       theme: ThemeData(
         colorSchemeSeed: Colors.blue.shade900,
+        scaffoldBackgroundColor: Colors.white,
+        fontFamily: 'San',
         useMaterial3: true,
       ),
-      home: HomePage(),
+      home: LoginUI(),
     );
   }
 }
