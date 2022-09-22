@@ -69,7 +69,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         BottomNavigationBarItem(
-          label: 'Stock Entry',
+          label: 'More',
           icon: SvgPicture.asset(
             './lib/assets/icons/more.svg',
             color: _selectedbottomNavIndex == 2

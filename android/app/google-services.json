@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "544489735185",
+    "project_id": "jeweller-billbook",
+    "storage_bucket": "jeweller-billbook.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:544489735185:android:effe54275c82662690ddb0",
+        "android_client_info": {
+          "package_name": "com.futureguard.jeweller.billbook"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "544489735185-ks6fv98m0ktk25q0qenqq4q5ubtshrnb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSYGVmRthIIUxsNLwAMlehjzuqZwAvyoM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "544489735185-ks6fv98m0ktk25q0qenqq4q5ubtshrnb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

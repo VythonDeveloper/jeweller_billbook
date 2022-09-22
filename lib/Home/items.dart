@@ -11,6 +11,7 @@ class ItemsUi extends StatefulWidget {
 }
 
 class _ItemsUiState extends State<ItemsUi> {
+  List<String> categoryList = ['All Categories', 'Gold', 'Silver'];
   String _selectedCategory = "Gold";
   @override
   Widget build(BuildContext context) {
@@ -28,9 +29,18 @@ class _ItemsUiState extends State<ItemsUi> {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(
+            context,
+            PageTransition(
+                type: PageTransitionType.fade,
+                child: CreateItemUi(),
+                inheritTheme: true,
+                ctx: context),
+          );
+        },
         elevation: 2,
-        heroTag: 'btn1',
+        heroTag: 'btn2',
         icon: Icon(Icons.add),
         label: Text('Add Item'),
       ),
@@ -139,54 +149,6 @@ class _ItemsUiState extends State<ItemsUi> {
     );
   }
 
-  // Widget itemsFloatingButtons() {
-  //   return Expanded(
-  //     child: Align(
-  //       alignment: FractionalOffset.bottomCenter,
-  //       child: Padding(
-  //         padding: EdgeInsets.symmetric(vertical: 10),
-  //         child: Row(
-  //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-  //           children: [
-  //             MaterialButton(
-  //               color: Colors.black,
-  //               child: Row(
-  //                 children: [
-  //                   Icon(
-  //                     Icons.add,
-  //                     color: Colors.white,
-  //                   ),
-  //                   SizedBox(
-  //                     width: 10,
-  //                   ),
-  //                   Text(
-  //                     'Create New Item',
-  //                     style: TextStyle(fontSize: 16.0, color: Colors.white),
-  //                   ),
-  //                 ],
-  //               ),
-  //               height: 40,
-  //               shape: RoundedRectangleBorder(
-  //                 borderRadius: BorderRadius.circular(22),
-  //               ),
-  //               onPressed: () {
-  //                 Navigator.push(
-  //                   context,
-  //                   PageTransition(
-  //                       type: PageTransitionType.fade,
-  //                       child: CreateItemUi(),
-  //                       inheritTheme: true,
-  //                       ctx: context),
-  //                 );
-  //               },
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
-
   Widget selectCategoryModal(StateSetter setModalState) {
     return Container(
       // height: 200,
@@ -223,34 +185,35 @@ class _ItemsUiState extends State<ItemsUi> {
             },
             child: Text("Manage Categories"),
           ),
-          RadioListTile(
-            title: const Text('All Categories'),
-            value: "All Categories",
-            groupValue: _selectedCategory,
-            onChanged: (value) {
-              print(value.toString());
-              setModalState(() {
-                _selectedCategory = value.toString();
-              });
-            },
-          ),
-          Divider(),
-          RadioListTile(
-            title: const Text('Gold'),
-            value: "Gold",
-            groupValue: _selectedCategory,
-            onChanged: (value) {
-              print(value.toString());
-              setModalState(() {
-                _selectedCategory = value.toString();
-              });
-            },
-          ),
+          categoriesRadioList(setModalState),
           SizedBox(
             height: 100,
           ),
         ],
       ),
+    );
+  }
+
+  Widget categoriesRadioList(StateSetter setModalState) {
+    return Column(
+      children: List.generate(
+          categoryList.length,
+          (index) => Column(
+                children: [
+                  RadioListTile(
+                    title: Text(categoryList[index]),
+                    value: categoryList[index],
+                    groupValue: _selectedCategory,
+                    onChanged: (value) {
+                      print(value.toString());
+                      setModalState(() {
+                        _selectedCategory = value.toString();
+                      });
+                    },
+                  ),
+                  Divider(),
+                ],
+              )),
     );
   }
 }

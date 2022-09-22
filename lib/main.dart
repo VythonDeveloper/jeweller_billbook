@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
     );
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Stockbook',
+      title: 'Jeweller BillBook',
       theme: ThemeData(
         colorSchemeSeed: Colors.blue.shade900,
         useMaterial3: true,

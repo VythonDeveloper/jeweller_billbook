@@ -7,23 +7,16 @@ class CreateItemUi extends StatefulWidget {
   State<CreateItemUi> createState() => _CreateItemUiState();
 }
 
-class _CreateItemUiState extends State<CreateItemUi>
-    with SingleTickerProviderStateMixin {
+class _CreateItemUiState extends State<CreateItemUi> {
+  List<String> categoryList = ['No Category', 'Gold', 'Silver'];
+  String _selectedCategory = "No Category";
   bool _lowStockToggle = false;
-  late TabController _tabController;
-  List<String> unitList = ['KGMS', 'GMS', "PCS"];
-  String _selectedUnit = "GMS";
-  @override
-  void initState() {
-    _tabController = new TabController(length: 2, vsync: this);
-    super.initState();
-  }
 
   String _selectedItemType = "Product";
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 2,
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
@@ -115,13 +108,17 @@ class _CreateItemUiState extends State<CreateItemUi>
               bottom: TabBar(
                 tabs: [
                   Tab(
-                    text: "Pricing",
+                    // text: "Pricing",
+                    child: Text(
+                      "Category",
+                      style: TextStyle(color: Colors.black),
+                    ),
                   ),
                   Tab(
-                    text: "Stock",
-                  ),
-                  Tab(
-                    text: "Other",
+                    child: Text(
+                      "Stock",
+                      style: TextStyle(color: Colors.black),
+                    ),
                   ),
                 ],
               ),
@@ -130,9 +127,8 @@ class _CreateItemUiState extends State<CreateItemUi>
           Expanded(
             child: TabBarView(
               children: [
-                pricingTabBar(),
+                categoryTabBar(),
                 stockTabBar(),
-                otherTabBar(),
               ],
             ),
           ),
@@ -141,7 +137,7 @@ class _CreateItemUiState extends State<CreateItemUi>
     );
   }
 
-  Widget pricingTabBar() {
+  Widget categoryTabBar() {
     return Container(
       color: Colors.white,
       child: Column(
@@ -151,9 +147,9 @@ class _CreateItemUiState extends State<CreateItemUi>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Unit"),
+                Text("Select Category"),
                 DropdownButton<String>(
-                  value: _selectedUnit,
+                  value: _selectedCategory,
                   icon: const Icon(Icons.arrow_downward),
                   elevation: 16,
                   style: const TextStyle(color: Colors.deepPurple),
@@ -164,10 +160,11 @@ class _CreateItemUiState extends State<CreateItemUi>
                   onChanged: (String? value) {
                     // This is called when the user selects an item.
                     setState(() {
-                      _selectedUnit = value!;
+                      _selectedCategory = value!;
                     });
                   },
-                  items: unitList.map<DropdownMenuItem<String>>((String value) {
+                  items: categoryList
+                      .map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: Text(value),
@@ -255,19 +252,6 @@ class _CreateItemUiState extends State<CreateItemUi>
               textCapitalization: TextCapitalization.words,
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget otherTabBar() {
-    return Container(
-      color: Colors.white,
-      child: Column(
-        children: [
-          Row(
-            children: [Text("Unit")],
-          )
         ],
       ),
     );
