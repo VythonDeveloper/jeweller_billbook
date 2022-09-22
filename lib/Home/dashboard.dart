@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class DashboardUi extends StatefulWidget {
@@ -9,6 +10,23 @@ class DashboardUi extends StatefulWidget {
 
 class _DashboardUiState extends State<DashboardUi> {
   String uname = "Not";
+
+  @override
+  void initState() {
+    super.initState();
+    getData();
+  }
+
+  void getData() async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .where('name', isEqualTo: 'Vivek')
+        .get()
+        .then((value) {
+      print(value.docs[0].data());
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
