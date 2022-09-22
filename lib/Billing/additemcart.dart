@@ -13,34 +13,163 @@ class _AddItemCartUiState extends State<AddItemCartUi> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Container(
-          child: Row(
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.all(14),
+          child: Column(
             children: [
-              Icon(Icons.search),
-              Expanded(
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-                  child: TextField(
-                    decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: "Search by name or code"),
-                    keyboardType: TextInputType.number,
+              Row(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: Icon(
+                      Icons.arrow_back_ios,
+                      size: 17,
+                    ),
                   ),
+                  Flexible(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: TextField(
+                        decoration: InputDecoration(
+                          prefixIcon: Icon(
+                            Icons.search,
+                            color: Colors.blue.shade700,
+                          ),
+                          border: InputBorder.none,
+                          hintText: 'Search by name',
+                          hintStyle: TextStyle(
+                            color: Colors.grey.shade500,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {},
+                      child: Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'dataaa',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Icon(
+                              Icons.keyboard_arrow_down_rounded,
+                              size: 15,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {},
+                      child: Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.add_circle_outline,
+                              size: 15,
+                            ),
+                            Expanded(
+                              child: Align(
+                                alignment: Alignment.topRight,
+                                child: Text('Create New Item'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Expanded(
+                child: ListView(
+                  children: [
+                    Container(
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            child: Text('A'),
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Mangtika'),
+                              Text('Stock: 100 gms'),
+                            ],
+                          ),
+                          Spacer(),
+                          Row(
+                            children: [
+                              GestureDetector(
+                                onTap: () {},
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(8),
+                                      bottomLeft: Radius.circular(8),
+                                    ),
+                                  ),
+                                  child: Icon(
+                                    Icons.add,
+                                    size: 15,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
         ),
-      ),
-      body: Column(
-        children: [
-          addItemSortingBar(),
-          addItemCart(),
-          Spacer(),
-          bottomDetails(),
-        ],
       ),
     );
   }

@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:jeweller_billbook/Billing/additemcart.dart';
+import 'package:page_route_transition/page_route_transition.dart';
 
 class DashboardUi extends StatefulWidget {
   const DashboardUi({Key? key}) : super(key: key);
@@ -37,7 +39,7 @@ class _DashboardUiState extends State<DashboardUi> {
         child: ListView(
           children: [
             statusBlocks(),
-            transactions(),
+            ItemTimeline(),
           ],
         ),
       ),
@@ -53,7 +55,9 @@ class _DashboardUiState extends State<DashboardUi> {
             label: Text('Mortage Billing'),
           ),
           FloatingActionButton.extended(
-            onPressed: () {},
+            onPressed: () {
+              PageRouteTransition.push(context, AddItemCartUi());
+            },
             elevation: 2,
             icon: Icon(Icons.print),
             label: Text('Invoice'),
@@ -166,31 +170,108 @@ class _DashboardUiState extends State<DashboardUi> {
     );
   }
 
-  Widget transactions() {
+  Widget ItemTimeline() {
     return Container(
-      padding: EdgeInsets.all(15),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(uname),
-          Text(
-            "Transactions",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15.0),
+            child: Text(
+              "Timeline",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
           SizedBox(
             height: 10,
           ),
           Column(
-            children: List.generate(
-              2,
-              (index) => transactionCard(
-                  customerName: "Vivek",
-                  invoiceNo: 1,
-                  date: "18 Sept",
-                  billAmt: 1543.0,
-                  dueAmt: 0.0),
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                color: Colors.grey.shade200,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Activity',
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey.shade700),
+                      ),
+                    ),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          'Change',
+                          style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey.shade700),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.topRight,
+                        child: Text(
+                          'Final Stock',
+                          style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey.shade700),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              TimelineCard(),
+              TimelineCard(),
+              TimelineCard(),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Container TimelineCard() {
+    return Container(
+      padding: EdgeInsets.all(10),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Mangtika',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text('date'),
+              ],
             ),
-          )
+          ),
+          Expanded(
+            child: Align(alignment: Alignment.center, child: Text('+ 1 Gms')),
+          ),
+          Expanded(
+            child: Align(
+              alignment: Alignment.topRight,
+              child: Text('50 gms'),
+            ),
+          ),
         ],
       ),
     );
