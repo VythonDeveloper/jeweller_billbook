@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jeweller_billbook/Items/createitem.dart';
-import 'package:jeweller_billbook/itemcategory.dart';
+import 'package:jeweller_billbook/Category/itemcategory.dart';
 import 'package:page_transition/page_transition.dart';
 
 class ItemsUi extends StatefulWidget {
