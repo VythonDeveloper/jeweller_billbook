@@ -23,15 +23,24 @@ class _ItemsUiState extends State<ItemsUi> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: ItemsAppbar(),
       body: SafeArea(
         child: Column(
           children: [
+            ItemsAppbar(),
             SizedBox(
               height: 3,
             ),
             itemsSortingBar(),
-            itemsList(),
+            SizedBox(
+              height: 10,
+            ),
+            Expanded(
+              child: ListView(
+                children: [
+                  itemsList(),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -47,9 +56,42 @@ class _ItemsUiState extends State<ItemsUi> {
     );
   }
 
-  AppBar ItemsAppbar() {
-    return AppBar(
-      title: Text('Items'),
+  Widget ItemsAppbar() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 15),
+      child: Row(
+        children: [
+          Text(
+            'Items',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          ),
+          SizedBox(
+            width: 30,
+          ),
+          Flexible(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: TextField(
+                decoration: InputDecoration(
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: Colors.blue.shade700,
+                  ),
+                  border: InputBorder.none,
+                  hintText: 'Search by name',
+                  hintStyle: TextStyle(
+                    color: Colors.grey.shade500,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -58,21 +100,76 @@ class _ItemsUiState extends State<ItemsUi> {
       color: Colors.white,
       padding: EdgeInsets.symmetric(vertical: 3, horizontal: 15),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Text("Low Stock"),
-          OutlinedButton(
-            onPressed: () {
-              showModalBottomSheet<void>(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return StatefulBuilder(builder: (BuildContext context,
-                        StateSetter setModalState /*You can rename this!*/) {
-                      return selectCategoryModal(setModalState);
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                showModalBottomSheet<void>(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return StatefulBuilder(builder: (BuildContext context,
+                          StateSetter setModalState /*You can rename this!*/) {
+                        return selectCategoryModal(setModalState);
+                      });
                     });
-                  });
-            },
-            child: Text("Select Category"),
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'All Catagories',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      size: 15,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          Expanded(
+            child: GestureDetector(
+              onTap: () {},
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.production_quantity_limits,
+                      color: Colors.redAccent,
+                      size: 15,
+                    ),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.topRight,
+                        child: Text(
+                          'Low Stock',
+                          style: TextStyle(color: Colors.redAccent),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -95,52 +192,53 @@ class _ItemsUiState extends State<ItemsUi> {
       {required String itemName,
       required double leftStock,
       required double salePrice}) {
-    return Card(
+    return Container(
       child: Padding(
-        padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, right: 8.0),
+        padding: EdgeInsets.all(10.0),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              flex: 1,
-              child: CircleAvatar(
-                radius: 18,
-              ),
+            CircleAvatar(
+              backgroundColor: Colors.blue.shade100,
+              radius: 18,
+              child: Text("F"),
+            ),
+            SizedBox(
+              width: 10,
             ),
             Expanded(
               flex: 5,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Text(
+                    itemName,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(itemName),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(leftStock.toStringAsFixed(2)),
-                          Text(
-                            "GMS",
-                            style: TextStyle(fontSize: 11),
-                          ),
-                        ],
+                      Text(
+                        "Stockaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:",
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        children: [
-                          Text("Sale Price"),
-                          Text("₹ " + salePrice.toStringAsFixed(2))
-                        ],
-                      ),
-                      Icon(Icons.tune),
+                      Text("100 GMS"),
                     ],
                   ),
                 ],
+              ),
+            ),
+            Spacer(),
+            IconButton(
+              onPressed: () {},
+              icon: Icon(
+                Icons.edit,
+                size: 17,
+                color: Colors.grey.shade600,
               ),
             ),
           ],

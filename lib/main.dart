@@ -1,8 +1,11 @@
+import 'dart:developer';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jeweller_billbook/Home/home.dart';
 import 'package:jeweller_billbook/loginUI.dart';
+import 'package:jeweller_billbook/services/auth.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,7 +27,7 @@ class MyApp extends StatelessWidget {
         statusBarBrightness: Brightness.light,
         statusBarIconBrightness: Brightness.dark,
         statusBarColor: Colors.transparent,
-        systemNavigationBarColor: Colors.white,
+        systemNavigationBarColor: Color.fromARGB(255, 232, 235, 255),
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
     );
@@ -35,9 +38,21 @@ class MyApp extends StatelessWidget {
         colorSchemeSeed: Colors.blue.shade900,
         scaffoldBackgroundColor: Colors.white,
         fontFamily: 'San',
+        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+          backgroundColor: Color.fromARGB(255, 232, 235, 255),
+        ),
         useMaterial3: true,
       ),
-      home: LoginUI(),
+      home: FutureBuilder(
+        future: AuthMethods().getCurrentuser(),
+        builder: ((context, snapshot) {
+          if (snapshot.hasData) {
+            return HomePage();
+          } else {
+            return LoginUI();
+          }
+        }),
+      ),
     );
   }
 }

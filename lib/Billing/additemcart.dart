@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 class AddItemCartUi extends StatefulWidget {
@@ -10,6 +12,13 @@ class AddItemCartUi extends StatefulWidget {
 class _AddItemCartUiState extends State<AddItemCartUi> {
   List<String> categoryList = ['All', 'Gold', 'Silver'];
   String _selectedCategory = "Gold";
+
+  // Future<double> diagonal() {
+  //   final h = MediaQuery.of(context).size.height;
+  //   final w = MediaQuery.of(context).size.width;
+  //   return sqrt((h * h) + (w * w));
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -126,6 +135,7 @@ class _AddItemCartUiState extends State<AddItemCartUi> {
                 child: ListView(
                   children: [
                     Container(
+                      margin: EdgeInsets.only(bottom: 20),
                       child: Row(
                         children: [
                           CircleAvatar(
@@ -142,25 +152,63 @@ class _AddItemCartUiState extends State<AddItemCartUi> {
                             ],
                           ),
                           Spacer(),
-                          Row(
-                            children: [
-                              GestureDetector(
-                                onTap: () {},
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(8),
-                                      bottomLeft: Radius.circular(8),
-                                    ),
+                          GestureDetector(
+                            onTap: () {},
+                            child: Container(
+                              padding: EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade200,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Row(
+                                children: [
+                                  Text('Add'),
+                                  SizedBox(
+                                    width: 10,
                                   ),
-                                  child: Icon(
+                                  Icon(
                                     Icons.add,
                                     size: 15,
                                   ),
-                                ),
+                                ],
                               ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            child: Text('A'),
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Mangtika'),
+                              Text('Stock: 100 gms'),
                             ],
                           ),
+                          Spacer(),
+                          Container(
+                            width: MediaQuery.of(context).size.width * 0.27,
+                            child: Flexible(
+                              child: TextField(
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration(
+                                  suffixText: 'GMS',
+                                  suffixStyle: TextStyle(fontSize: 11),
+                                  contentPadding:
+                                      EdgeInsets.symmetric(horizontal: 10),
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                            ),
+                          )
                         ],
                       ),
                     ),
@@ -170,6 +218,12 @@ class _AddItemCartUiState extends State<AddItemCartUi> {
             ],
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {},
+        elevation: 2,
+        icon: Icon(Icons.done),
+        label: Text('Done'),
       ),
     );
   }

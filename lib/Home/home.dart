@@ -35,11 +35,13 @@ class _HomePageState extends State<HomePage> {
 
   Widget BottomNavNew() {
     return BottomNavigationBar(
-      backgroundColor: Color.fromARGB(255, 226, 242, 255),
       type: BottomNavigationBarType.fixed,
       currentIndex: _selectedbottomNavIndex,
       selectedItemColor: Colors.black,
-      unselectedItemColor: Colors.grey,
+      unselectedItemColor: Colors.grey.withOpacity(0.5),
+      unselectedIconTheme: IconThemeData(
+        color: Colors.grey.withOpacity(0.5),
+      ),
       selectedLabelStyle: TextStyle(
         fontWeight: FontWeight.w700,
         fontSize: 12,
@@ -59,23 +61,11 @@ class _HomePageState extends State<HomePage> {
         ),
         BottomNavigationBarItem(
           label: 'Items',
-          icon: SvgPicture.asset(
-            './lib/assets/icons/items.svg',
-            color: _selectedbottomNavIndex == 1
-                ? Color.fromARGB(255, 0, 55, 100)
-                : Colors.grey,
-            height: 20,
-          ),
+          icon: Icon(Icons.inventory_2),
         ),
         BottomNavigationBarItem(
           label: 'More',
-          icon: SvgPicture.asset(
-            './lib/assets/icons/more.svg',
-            color: _selectedbottomNavIndex == 2
-                ? Color.fromARGB(255, 0, 55, 100)
-                : Colors.grey,
-            height: 20,
-          ),
+          icon: Icon(Icons.apps),
         ),
       ],
     );

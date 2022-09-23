@@ -21,14 +21,25 @@ class _CreateItemUiState extends State<CreateItemUi> {
         appBar: AppBar(
           title: Text(
             "Create New Item",
-            style: TextStyle(color: Colors.black),
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 17,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+            ),
           ),
         ),
-        body: Column(
-          children: <Widget>[
-            basicItemDetails(),
-            otherDetailsTabBar(),
-          ],
+        body: Padding(
+          padding: EdgeInsets.all(12),
+          child: Column(
+            children: <Widget>[
+              basicItemDetails(),
+              SizedBox(
+                height: 10,
+              ),
+              otherDetailsTabBar(),
+            ],
+          ),
         ),
       ),
     );
@@ -41,20 +52,17 @@ class _CreateItemUiState extends State<CreateItemUi> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-            child: TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'Enter Item Name',
-                label: Text("Item Name"),
-              ),
-              keyboardType: TextInputType.name,
-              textCapitalization: TextCapitalization.words,
+          TextField(
+            decoration: InputDecoration(
+              contentPadding: EdgeInsets.symmetric(horizontal: 10),
+              border: OutlineInputBorder(),
+              label: Text("Item Name"),
             ),
+            keyboardType: TextInputType.name,
+            textCapitalization: TextCapitalization.words,
           ),
           Padding(
-            padding: const EdgeInsets.all(10),
+            padding: EdgeInsets.symmetric(vertical: 10.0),
             child: Text("Item Type"),
           ),
           Row(
@@ -66,13 +74,26 @@ class _CreateItemUiState extends State<CreateItemUi> {
                   });
                 },
                 child: Container(
-                  padding: EdgeInsets.all(11),
-                  margin: EdgeInsets.all(10),
-                  color: _selectedItemType == "Product"
-                      ? Colors.green
-                      : Color.fromARGB(255, 168, 206, 169),
-                  child: Text("Product"),
+                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    color: _selectedItemType == "Product"
+                        ? Colors.indigo
+                        : Color.fromARGB(255, 220, 226, 255),
+                  ),
+                  child: Text(
+                    "Product",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      color: _selectedItemType == "Product"
+                          ? Colors.white
+                          : Colors.indigo,
+                    ),
+                  ),
                 ),
+              ),
+              SizedBox(
+                width: 10,
               ),
               GestureDetector(
                 onTap: () {
@@ -81,12 +102,22 @@ class _CreateItemUiState extends State<CreateItemUi> {
                   });
                 },
                 child: Container(
-                  padding: EdgeInsets.all(11),
-                  margin: EdgeInsets.all(10),
-                  color: _selectedItemType == "Service"
-                      ? Colors.green
-                      : Color.fromARGB(255, 168, 206, 169),
-                  child: Text("Service"),
+                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    color: _selectedItemType == "Service"
+                        ? Colors.indigo
+                        : Color.fromARGB(255, 220, 226, 255),
+                  ),
+                  child: Text(
+                    "Service",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      color: _selectedItemType == "Service"
+                          ? Colors.white
+                          : Colors.indigo,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -104,18 +135,26 @@ class _CreateItemUiState extends State<CreateItemUi> {
             height: 50,
             child: AppBar(
               bottom: TabBar(
+                automaticIndicatorColorAdjustment: true,
+                indicatorWeight: 2,
+                indicatorColor: Colors.indigo,
                 tabs: [
                   Tab(
-                    // text: "Pricing",
                     child: Text(
                       "Category",
-                      style: TextStyle(color: Colors.black),
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                      ),
                     ),
                   ),
                   Tab(
                     child: Text(
                       "Stock",
-                      style: TextStyle(color: Colors.black),
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                      ),
                     ),
                   ),
                 ],
@@ -140,21 +179,51 @@ class _CreateItemUiState extends State<CreateItemUi> {
       color: Colors.white,
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("Select Category"),
-                DropdownButton<String>(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("Select Category"),
+              DropdownButton<String>(
+                value: _selectedCategory,
+                icon: const Icon(Icons.arrow_downward),
+                elevation: 16,
+                style: const TextStyle(color: Colors.deepPurple),
+                underline: Container(
+                  height: 2,
+                  color: Colors.deepPurpleAccent,
+                ),
+                onChanged: (String? value) {
+                  // This is called when the user selects an item.
+                  setState(() {
+                    _selectedCategory = value!;
+                  });
+                },
+                items:
+                    categoryList.map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("Unit"),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: DropdownButton<String>(
                   value: _selectedCategory,
-                  icon: const Icon(Icons.arrow_downward),
+                  icon: Icon(Icons.keyboard_arrow_down_rounded),
                   elevation: 16,
                   style: const TextStyle(color: Colors.deepPurple),
-                  underline: Container(
-                    height: 2,
-                    color: Colors.deepPurpleAccent,
-                  ),
+                  underline: Container(),
                   onChanged: (String? value) {
                     // This is called when the user selects an item.
                     setState(() {
@@ -165,12 +234,16 @@ class _CreateItemUiState extends State<CreateItemUi> {
                       .map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
-                      child: Text(value),
+                      child: Text(
+                        'All Catagories',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     );
                   }).toList(),
                 ),
-              ],
-            ),
+              ),
+            ],
           )
         ],
       ),
