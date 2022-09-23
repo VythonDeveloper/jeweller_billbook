@@ -4,7 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jeweller_billbook/Home/home.dart';
-import 'package:jeweller_billbook/loginUI.dart';
+import 'package:jeweller_billbook/Signin/loginUI.dart';
 import 'package:jeweller_billbook/services/auth.dart';
 
 void main() async {

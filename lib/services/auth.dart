@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:jeweller_billbook/Home/home.dart';
-import 'package:jeweller_billbook/loginUI.dart';
+import 'package:jeweller_billbook/Signin/loginUI.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'database.dart';

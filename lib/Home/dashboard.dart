@@ -17,17 +17,6 @@ class _DashboardUiState extends State<DashboardUi> {
   @override
   void initState() {
     super.initState();
-    getData();
-  }
-
-  void getData() async {
-    await FirebaseFirestore.instance
-        .collection('users')
-        .where('name', isEqualTo: 'Vivek')
-        .get()
-        .then((value) {
-      print(value.docs[0].data());
-    });
   }
 
   @override

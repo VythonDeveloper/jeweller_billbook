@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:jeweller_billbook/Items/createitem.dart';
 import 'package:jeweller_billbook/Category/itemcategory.dart';
@@ -13,7 +14,7 @@ class ItemsUi extends StatefulWidget {
 
 class _ItemsUiState extends State<ItemsUi> {
   List<String> categoryList = ['All Categories', 'Gold', 'Silver'];
-  String _selectedCategory = "Gold";
+  String _selectedCategory = "All Categories";
 
   @override
   void initState() {
@@ -125,7 +126,7 @@ class _ItemsUiState extends State<ItemsUi> {
                   children: [
                     Expanded(
                       child: Text(
-                        'All Catagories',
+                        _selectedCategory,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -275,10 +276,23 @@ class _ItemsUiState extends State<ItemsUi> {
           Divider(),
           OutlinedButton(
             onPressed: () {
-              PageRouteTransition.push(context, ItemCategoryUi());
+              PageRouteTransition.push(context, ItemCategoryUi())
+                  .then((value) => setModalState(() {}));
             },
             child: Text("Manage Categories"),
           ),
+          RadioListTile(
+            title: Text("All Categories"),
+            value: "All Categories",
+            groupValue: _selectedCategory,
+            onChanged: (value) {
+              print(value.toString());
+              setModalState(() {
+                _selectedCategory = value.toString();
+              });
+            },
+          ),
+          Divider(),
           categoriesRadioList(setModalState),
           SizedBox(
             height: 100,
@@ -289,25 +303,41 @@ class _ItemsUiState extends State<ItemsUi> {
   }
 
   Widget categoriesRadioList(StateSetter setModalState) {
-    return Column(
-      children: List.generate(
-          categoryList.length,
-          (index) => Column(
-                children: [
-                  RadioListTile(
-                    title: Text(categoryList[index]),
-                    value: categoryList[index],
-                    groupValue: _selectedCategory,
-                    onChanged: (value) {
-                      print(value.toString());
-                      setModalState(() {
-                        _selectedCategory = value.toString();
-                      });
-                    },
-                  ),
-                  Divider(),
-                ],
-              )),
+    return FutureBuilder<dynamic>(
+      future: FirebaseFirestore.instance
+          .collection('categories')
+          .orderBy('id')
+          .get(),
+      builder: ((context, snapshot) {
+        if (snapshot.hasData) {
+          if (snapshot.data.docs.length > 0) {
+            return ListView.builder(
+              shrinkWrap: true,
+              itemCount: snapshot.data.docs.length,
+              itemBuilder: ((context, index) {
+                String categoryName = snapshot.data.docs[index]['name'];
+                return Column(
+                  children: [
+                    RadioListTile(
+                      title: Text(categoryName),
+                      value: categoryName,
+                      groupValue: _selectedCategory,
+                      onChanged: (value) {
+                        print(value.toString());
+                        setModalState(() {
+                          _selectedCategory = value.toString();
+                        });
+                      },
+                    ),
+                    Divider(),
+                  ],
+                );
+              }),
+            );
+          }
+        }
+        return CircularProgressIndicator();
+      }),
     );
   }
 }
