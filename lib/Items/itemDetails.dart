@@ -3,13 +3,22 @@ import 'package:jeweller_billbook/Items/editItem.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 
 class ItemDetailsUI extends StatefulWidget {
-  const ItemDetailsUI({super.key});
+  final id;
+  const ItemDetailsUI({super.key, required this.id});
 
   @override
-  State<ItemDetailsUI> createState() => _ItemDetailsUIState();
+  State<ItemDetailsUI> createState() => _ItemDetailsUIState(id: id);
 }
 
 class _ItemDetailsUIState extends State<ItemDetailsUI> {
+  final id;
+  _ItemDetailsUIState({this.id});
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -41,6 +50,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             FloatingActionButton.extended(
+              heroTag: 'btn3',
               extendedPadding: EdgeInsets.symmetric(horizontal: 50),
               onPressed: () {},
               elevation: 2,
@@ -59,6 +69,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
               ),
             ),
             FloatingActionButton.extended(
+              heroTag: 'btn4',
               onPressed: () {},
               extendedPadding: EdgeInsets.symmetric(horizontal: 50),
               extendedIconLabelSpacing: 10,

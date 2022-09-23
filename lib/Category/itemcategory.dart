@@ -13,33 +13,26 @@ class ItemCategoryUi extends StatefulWidget {
 class _ItemCategoryUiState extends State<ItemCategoryUi> {
   final _formKey = GlobalKey<FormState>();
   final _categoryName = TextEditingController();
+  final _searchKey = TextEditingController();
 
   @override
   void dispose() {
     super.dispose();
     _categoryName.dispose();
+    _searchKey.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 233, 233, 233),
-      appBar: AppBar(
-        title: Text(
-          "Item Categories",
-          style: TextStyle(color: Colors.black),
+      body: SafeArea(
+        child: Column(
+          children: [
+            CategoryAppbar(),
+            categories(),
+          ],
         ),
-        actions: [
-          Icon(Icons.search),
-          SizedBox(
-            width: 10,
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          categories(),
-        ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton.extended(
@@ -61,6 +54,49 @@ class _ItemCategoryUiState extends State<ItemCategoryUi> {
     );
   }
 
+  Widget CategoryAppbar() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 15),
+      child: Row(
+        children: [
+          Text(
+            'Category',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          ),
+          SizedBox(
+            width: 30,
+          ),
+          Flexible(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: TextField(
+                controller: _searchKey,
+                decoration: InputDecoration(
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: Colors.blue.shade700,
+                  ),
+                  border: InputBorder.none,
+                  hintText: 'Search by name',
+                  hintStyle: TextStyle(
+                    color: Colors.grey.shade500,
+                    fontSize: 16,
+                  ),
+                ),
+                onChanged: (value) {
+                  setState(() {});
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget categories() {
     return FutureBuilder<dynamic>(
         future: FirebaseFirestore.instance
@@ -76,7 +112,16 @@ class _ItemCategoryUiState extends State<ItemCategoryUi> {
                   itemBuilder: (context, index) {
                     String name = snapshot.data.docs[index]['name'];
                     int id = snapshot.data.docs[index]['id'];
-                    return categoryCard(id: id, name: name);
+                    if (_searchKey.text.isEmpty) {
+                      return categoryCard(id: id, name: name);
+                    } else {
+                      if (name
+                          .toLowerCase()
+                          .contains(_searchKey.text.toLowerCase())) {
+                        return categoryCard(id: id, name: name);
+                      }
+                    }
+                    return SizedBox();
                   });
             } else {
               return Text("No Category");

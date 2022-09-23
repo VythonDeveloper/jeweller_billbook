@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:page_route_transition/page_route_transition.dart';
-
-import '../Items/itemDetails.dart';
 
 class LowStockUI extends StatefulWidget {
   const LowStockUI({super.key});

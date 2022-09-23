@@ -13,13 +13,20 @@ class ItemsUi extends StatefulWidget {
 }
 
 class _ItemsUiState extends State<ItemsUi> {
-  List<String> categoryList = ['All Categories', 'Gold', 'Silver'];
+  final _searchKey = TextEditingController();
+  List<String> categoryList = ['All Categories'];
   String _selectedCategory = "All Categories";
 
   @override
   void initState() {
     super.initState();
     PageRouteTransition.effect = TransitionEffect.fade;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _searchKey.dispose();
   }
 
   @override
@@ -48,7 +55,8 @@ class _ItemsUiState extends State<ItemsUi> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          PageRouteTransition.push(context, CreateItemUi());
+          PageRouteTransition.push(context, CreateItemUi())
+              .then((value) => setState(() {}));
         },
         elevation: 2,
         heroTag: 'btn2',
@@ -77,6 +85,7 @@ class _ItemsUiState extends State<ItemsUi> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: TextField(
+                controller: _searchKey,
                 decoration: InputDecoration(
                   prefixIcon: Icon(
                     Icons.search,
@@ -89,6 +98,9 @@ class _ItemsUiState extends State<ItemsUi> {
                     fontSize: 16,
                   ),
                 ),
+                onChanged: (value) {
+                  setState(() {});
+                },
               ),
             ),
           ),
@@ -178,22 +190,76 @@ class _ItemsUiState extends State<ItemsUi> {
     );
   }
 
+  // Widget itemsList() {
+  //   // return Padding(
+  //   //   padding: const EdgeInsets.only(top: 2, left: 10, right: 10, bottom: 12),
+  //   //   child: Column(
+  //   //     children: List.generate(
+  //   //         3,
+  //   //         (index) => itemsCard(
+  //   //             itemName: "Gold Ring", leftStock: 17.0, salePrice: 2570.3)),
+  //   //   ),
+  //   // );
+
+  //   return FutureBuilder<dynamic>(
+  //     future: FirebaseFirestore.instance
+  //         .collection("categories")
+  //         .orderBy('id')
+  //         .get(),
+  //     builder: ((context, snapshot) {
+  //       if (snapshot.hasData) {
+  //         if (snapshot.data.docs.length > 0) {
+  //           ListView.builder(
+  //             itemCount: snapshot.data.docs.length,
+  //             itemBuilder: (context, index) {
+  //               return itemsCard(
+  //                   itemName: snapshot.data.docs[index]['name'],
+  //                   leftStock: snapshot.data.docs[index]['openingStock']);
+  //             },
+  //           );
+  //         }
+  //         return Text("No Itemsff");
+  //       }
+  //       return Container(child: CircularProgressIndicator());
+  //     }),
+  //   );
+  // }
+
   Widget itemsList() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 2, left: 10, right: 10, bottom: 12),
-      child: Column(
-        children: List.generate(
-            3,
-            (index) => itemsCard(
-                itemName: "Gold Ring", leftStock: 17.0, salePrice: 2570.3)),
-      ),
-    );
+    return FutureBuilder<dynamic>(
+        future:
+            FirebaseFirestore.instance.collection("items").orderBy('id').get(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            if (snapshot.data.docs.length > 0) {
+              return ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: snapshot.data.docs.length,
+                  itemBuilder: (context, index) {
+                    int id = snapshot.data.docs[index]['id'];
+                    String name = snapshot.data.docs[index]['name'];
+                    String unit = snapshot.data.docs[index]['unit'];
+                    if (_searchKey.text.isEmpty) {
+                      return itemsCard(id: id, itemName: name, unit: unit);
+                    } else {
+                      if (name
+                          .toLowerCase()
+                          .contains(_searchKey.text.toLowerCase())) {
+                        return itemsCard(id: id, itemName: name, unit: unit);
+                      }
+                    }
+                    return SizedBox();
+                  });
+            } else {
+              return Text("No Category");
+            }
+          }
+          return CircularProgressIndicator();
+        });
   }
 
   Widget itemsCard(
-      {required String itemName,
-      required double leftStock,
-      required double salePrice}) {
+      {required int id, required String itemName, required String unit}) {
     return Container(
       child: Padding(
         padding: EdgeInsets.all(10.0),
@@ -203,7 +269,7 @@ class _ItemsUiState extends State<ItemsUi> {
             CircleAvatar(
               backgroundColor: Colors.blue.shade100,
               radius: 18,
-              child: Text("F"),
+              child: Text(itemName[0]),
             ),
             SizedBox(
               width: 10,
@@ -224,11 +290,11 @@ class _ItemsUiState extends State<ItemsUi> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Stockaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:",
+                        "Stock:",
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      Text("100 GMS"),
+                      Text("100 " + unit),
                     ],
                   ),
                 ],
@@ -237,7 +303,7 @@ class _ItemsUiState extends State<ItemsUi> {
             Spacer(),
             IconButton(
               onPressed: () {
-                PageRouteTransition.push(context, ItemDetailsUI());
+                PageRouteTransition.push(context, ItemDetailsUI(id: id));
               },
               icon: Icon(
                 Icons.tune,

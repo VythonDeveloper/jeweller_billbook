@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 class AddItemCartUi extends StatefulWidget {
@@ -12,12 +10,6 @@ class AddItemCartUi extends StatefulWidget {
 class _AddItemCartUiState extends State<AddItemCartUi> {
   List<String> categoryList = ['All', 'Gold', 'Silver'];
   String _selectedCategory = "Gold";
-
-  // Future<double> diagonal() {
-  //   final h = MediaQuery.of(context).size.height;
-  //   final w = MediaQuery.of(context).size.width;
-  //   return sqrt((h * h) + (w * w));
-  // }
 
   @override
   Widget build(BuildContext context) {
