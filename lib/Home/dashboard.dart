@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:jeweller_billbook/Billing/additemcart.dart';
+import 'package:jeweller_billbook/Stock/lowStock.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 
 class DashboardUi extends StatefulWidget {
@@ -83,7 +84,7 @@ class _DashboardUiState extends State<DashboardUi> {
                 onPress: () {},
                 icon: Icons.file_download_outlined,
                 cardColor: Color.fromARGB(255, 217, 241, 218),
-                label: 'To Collect',
+                label: 'Mortage',
                 amount: '₹ ' + '0',
               ),
               SizedBox(
@@ -93,7 +94,7 @@ class _DashboardUiState extends State<DashboardUi> {
                 onPress: () {},
                 icon: Icons.file_upload_outlined,
                 cardColor: Color.fromARGB(255, 255, 223, 227),
-                label: 'To Pay',
+                label: 'Sales',
                 amount: '₹ ' + '0',
               ),
             ],
@@ -104,11 +105,13 @@ class _DashboardUiState extends State<DashboardUi> {
           Row(
             children: [
               StatsCard(
-                onPress: () {},
+                onPress: () {
+                  PageRouteTransition.push(context, LowStockUI());
+                },
                 icon: null,
                 cardColor: Colors.grey.shade200,
                 label: 'Value of Items',
-                amount: 'Stock Value',
+                amount: 'Low Stocks',
               ),
               SizedBox(
                 width: 10,
@@ -196,8 +199,8 @@ class _DashboardUiState extends State<DashboardUi> {
           Column(
             children: [
               Container(
-                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                color: Colors.grey.shade200,
+                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                color: Colors.grey.shade100,
                 child: Row(
                   children: [
                     Expanded(
@@ -251,7 +254,7 @@ class _DashboardUiState extends State<DashboardUi> {
 
   Container TimelineCard() {
     return Container(
-      padding: EdgeInsets.all(10),
+      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
       child: Row(
         children: [
           Expanded(

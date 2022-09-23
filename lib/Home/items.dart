@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jeweller_billbook/Items/createitem.dart';
 import 'package:jeweller_billbook/Category/itemcategory.dart';
+import 'package:jeweller_billbook/Items/itemDetails.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 
 class ItemsUi extends StatefulWidget {
@@ -234,11 +235,13 @@ class _ItemsUiState extends State<ItemsUi> {
             ),
             Spacer(),
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                PageRouteTransition.push(context, ItemDetailsUI());
+              },
               icon: Icon(
-                Icons.edit,
+                Icons.tune,
                 size: 17,
-                color: Colors.grey.shade600,
+                color: Colors.black,
               ),
             ),
           ],
