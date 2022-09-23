@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class CreateItemUi extends StatefulWidget {
@@ -10,7 +11,7 @@ class CreateItemUi extends StatefulWidget {
 class _CreateItemUiState extends State<CreateItemUi> {
   List<String> categoryList = ['No Category', 'Gold', 'Silver'];
   String _selectedCategory = "No Category";
-  bool _lowStockToggle = false;
+  final ValueNotifier<bool> _lowStockToggle = ValueNotifier<bool>(false);
 
   String _selectedItemType = "Product";
   @override
@@ -60,6 +61,18 @@ class _CreateItemUiState extends State<CreateItemUi> {
             ),
             keyboardType: TextInputType.name,
             textCapitalization: TextCapitalization.words,
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          TextField(
+            decoration: InputDecoration(
+              contentPadding: EdgeInsets.symmetric(horizontal: 10),
+              border: OutlineInputBorder(),
+              label: Text("Item Code"),
+            ),
+            keyboardType: TextInputType.name,
+            textCapitalization: TextCapitalization.characters,
           ),
           Padding(
             padding: EdgeInsets.symmetric(vertical: 10.0),
@@ -177,52 +190,30 @@ class _CreateItemUiState extends State<CreateItemUi> {
   Widget categoryTabBar() {
     return Container(
       color: Colors.white,
-      child: Column(
+      child: ListView(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text("Select Category"),
-              DropdownButton<String>(
-                value: _selectedCategory,
-                icon: const Icon(Icons.arrow_downward),
-                elevation: 16,
-                style: const TextStyle(color: Colors.deepPurple),
-                underline: Container(
-                  height: 2,
-                  color: Colors.deepPurpleAccent,
-                ),
-                onChanged: (String? value) {
-                  // This is called when the user selects an item.
-                  setState(() {
-                    _selectedCategory = value!;
-                  });
-                },
-                items:
-                    categoryList.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
-            ],
+          SizedBox(
+            height: 10,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Unit"),
+              Text("Select Category"),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 10),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 7),
                 decoration: BoxDecoration(
                   color: Colors.grey.shade100,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: DropdownButton<String>(
                   value: _selectedCategory,
-                  icon: Icon(Icons.keyboard_arrow_down_rounded),
-                  elevation: 16,
-                  style: const TextStyle(color: Colors.deepPurple),
+                  isDense: true,
+                  icon: Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    size: 17,
+                  ),
+                  elevation: 2,
+                  borderRadius: BorderRadius.circular(10),
                   underline: Container(),
                   onChanged: (String? value) {
                     // This is called when the user selects an item.
@@ -234,17 +225,67 @@ class _CreateItemUiState extends State<CreateItemUi> {
                       .map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
-                      child: Text(
-                        'All Catagories',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      child: Padding(
+                        padding: EdgeInsets.only(right: 8.0),
+                        child: Text(
+                          'GMS',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     );
                   }).toList(),
                 ),
               ),
             ],
-          )
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("Unit"),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: DropdownButton<String>(
+                  isDense: true,
+                  value: _selectedCategory,
+                  icon: Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    size: 17,
+                  ),
+                  elevation: 2,
+                  borderRadius: BorderRadius.circular(10),
+                  underline: Container(),
+                  onChanged: (String? value) {
+                    // This is called when the user selects an item.
+                    setState(() {
+                      _selectedCategory = value!;
+                    });
+                  },
+                  items: categoryList
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Padding(
+                        padding: EdgeInsets.only(right: 8.0),
+                        child: Text(
+                          'GMS',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -253,74 +294,154 @@ class _CreateItemUiState extends State<CreateItemUi> {
   Widget stockTabBar() {
     return Container(
       color: Colors.white,
-      child: Column(
+      child: ListView(
         children: [
+          SizedBox(
+            height: 10,
+          ),
           Row(
             children: [
               Expanded(
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: "Opening Stock",
-                      suffixText: "GMS",
-                      label: Text("GMS"),
-                      border: OutlineInputBorder(),
-                    ),
-                    keyboardType: TextInputType.number,
+                child: TextField(
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                    suffixText: "GMS",
+                    label: Text("Opening Stock"),
+                    border: OutlineInputBorder(),
                   ),
+                  keyboardType: TextInputType.number,
                 ),
               ),
+              SizedBox(
+                width: 10,
+              ),
               Expanded(
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: "As of Date",
-                      label: Text("As of Date"),
-                      border: OutlineInputBorder(),
-                    ),
-                    keyboardType: TextInputType.number,
+                child: TextField(
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                    label: Text("As of Date"),
+                    border: OutlineInputBorder(),
                   ),
+                  keyboardType: TextInputType.number,
                 ),
               )
             ],
           ),
-          Container(
-            margin: EdgeInsets.all(10),
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            color: Colors.amber,
-            width: double.infinity,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("Low stock alert"),
-                Transform.scale(
-                  scale: 1.1,
-                  child: Switch(
-                    onChanged: (value) {},
-                    value: _lowStockToggle,
-                    activeColor: Colors.blue.shade800,
-                    activeTrackColor: Colors.blue.shade100,
-                    inactiveThumbColor: Colors.redAccent,
-                    inactiveTrackColor: Colors.red.shade100,
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _lowStockToggle.value = !_lowStockToggle.value;
+              });
+            },
+            child: Container(
+              margin: EdgeInsets.only(top: 10),
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              decoration: BoxDecoration(
+                borderRadius: _lowStockToggle.value
+                    ? BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(10),
+                      )
+                    : BorderRadius.circular(10),
+                color: _lowStockToggle.value
+                    ? Color.fromARGB(255, 230, 233, 253)
+                    : Colors.grey.shade100,
+              ),
+              width: double.infinity,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Low Stock Alert",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                      color: _lowStockToggle.value
+                          ? Colors.indigo.shade700
+                          : Colors.black,
+                    ),
                   ),
-                ),
-              ],
+                  Transform.scale(
+                    scale: 1.1,
+                    child: Switch(
+                      onChanged: (value) {
+                        setState(() {
+                          _lowStockToggle.value = !_lowStockToggle.value;
+                        });
+                      },
+                      value: _lowStockToggle.value,
+                      activeColor: Colors.indigoAccent,
+                      activeTrackColor: Colors.indigo.shade100,
+                      inactiveThumbColor: Colors.grey,
+                      inactiveTrackColor: Colors.grey.shade700,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: "Item Code",
-                label: Text("Item Code"),
-                border: OutlineInputBorder(),
-              ),
-              keyboardType: TextInputType.name,
-              textCapitalization: TextCapitalization.words,
+          AnimatedSize(
+            duration: Duration(milliseconds: 100),
+            child: ValueListenableBuilder<bool>(
+              valueListenable: _lowStockToggle,
+              builder: ((context, lowStockToggle, child) {
+                return lowStockToggle
+                    ? Container(
+                        padding: EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(255, 237, 240, 255),
+                          borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(10),
+                            bottomRight: Radius.circular(10),
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  'Low Stock Quantity',
+                                  style: TextStyle(
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 30,
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    color: Colors.white,
+                                    child: TextField(
+                                      decoration: InputDecoration(
+                                        contentPadding: EdgeInsets.symmetric(
+                                            horizontal: 10),
+                                        suffixText: "GMS",
+                                        border: OutlineInputBorder(),
+                                      ),
+                                      keyboardType: TextInputType.number,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            Divider(),
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 10),
+                              child: Text(
+                                'You will be notified when stock goes below 0 GMS',
+                                textAlign: TextAlign.start,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : Container();
+              }),
             ),
           ),
         ],

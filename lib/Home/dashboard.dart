@@ -33,7 +33,12 @@ class _DashboardUiState extends State<DashboardUi> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('StockBook'),
+        title: Row(
+          children: [
+            Icon(Icons.book),
+            Text('StockBook'),
+          ],
+        ),
       ),
       body: SafeArea(
         child: ListView(
