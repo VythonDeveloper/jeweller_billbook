@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:jeweller_billbook/Billing/additemcart.dart';
 import 'package:jeweller_billbook/Stock/lowStock.dart';
@@ -39,22 +40,10 @@ class _DashboardUiState extends State<DashboardUi> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          CustomFABButton(
-            onPressed: () {},
-            icon: Icons.receipt,
-            label: 'Mortage Billing',
-          ),
-          CustomFABButton(
-              onPressed: () {
-                PageRouteTransition.push(context, AddItemCartUi());
-              },
-              icon: Icons.print,
-              label: 'Invoice',
-              heroTag: 'btn3'),
-        ],
+      floatingActionButton: CustomFABButton(
+        onPressed: () {},
+        icon: Icons.receipt,
+        label: 'Mortage Billing',
       ),
     );
   }

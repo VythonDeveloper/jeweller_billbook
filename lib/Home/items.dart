@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:jeweller_billbook/Items/createitem.dart';
 import 'package:jeweller_billbook/Category/itemcategory.dart';
 import 'package:jeweller_billbook/Items/itemDetails.dart';
+import 'package:jeweller_billbook/Stock/lowStock.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 
 import '../components.dart';
@@ -164,7 +165,9 @@ class _ItemsUiState extends State<ItemsUi> {
           ),
           Expanded(
             child: GestureDetector(
-              onTap: () {},
+              onTap: () {
+                PageRouteTransition.push(context, LowStockUI());
+              },
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                 decoration: BoxDecoration(
@@ -243,16 +246,15 @@ class _ItemsUiState extends State<ItemsUi> {
                   shrinkWrap: true,
                   itemCount: snapshot.data.docs.length,
                   itemBuilder: (context, index) {
-                    int id = snapshot.data.docs[index]['id'];
-                    String name = snapshot.data.docs[index]['name'];
-                    String unit = snapshot.data.docs[index]['unit'];
+                    var itemMap = snapshot.data.docs[index];
+
                     if (_searchKey.text.isEmpty) {
-                      return itemsCard(id: id, itemName: name, unit: unit);
+                      return itemsCard(itemMap: itemMap);
                     } else {
-                      if (name
+                      if (itemMap['name']
                           .toLowerCase()
                           .contains(_searchKey.text.toLowerCase())) {
-                        return itemsCard(id: id, itemName: name, unit: unit);
+                        return itemsCard(itemMap: itemMap);
                       }
                     }
                     return SizedBox();
@@ -267,8 +269,7 @@ class _ItemsUiState extends State<ItemsUi> {
         });
   }
 
-  Widget itemsCard(
-      {required int id, required String itemName, required String unit}) {
+  Widget itemsCard({required var itemMap}) {
     return Container(
       margin: EdgeInsets.only(bottom: 10),
       padding: EdgeInsets.symmetric(horizontal: 15),
@@ -278,7 +279,7 @@ class _ItemsUiState extends State<ItemsUi> {
           CircleAvatar(
             backgroundColor: Colors.blue.shade100,
             radius: 18,
-            child: Text(itemName[0]),
+            child: Text(itemMap['name'][0]),
           ),
           SizedBox(
             width: 10,
@@ -289,7 +290,7 @@ class _ItemsUiState extends State<ItemsUi> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  itemName,
+                  itemMap['name'],
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 SizedBox(
@@ -303,7 +304,12 @@ class _ItemsUiState extends State<ItemsUi> {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    Text("100 " + unit),
+                    Text(
+                      itemMap['leftStock'].toStringAsFixed(2) +
+                          ' ' +
+                          itemMap['unit'],
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
                   ],
                 ),
               ],
@@ -312,7 +318,10 @@ class _ItemsUiState extends State<ItemsUi> {
           Spacer(),
           IconButton(
             onPressed: () {
-              PageRouteTransition.push(context, ItemDetailsUI(id: id));
+              FocusScope.of(context).unfocus();
+              PageRouteTransition.push(
+                      context, ItemDetailsUI(itemId: itemMap['id']))
+                  .then((value) => setState(() {}));
             },
             icon: Icon(
               Icons.tune,

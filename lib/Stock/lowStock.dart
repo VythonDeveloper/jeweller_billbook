@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:jeweller_billbook/Items/itemDetails.dart';
+import 'package:page_route_transition/page_route_transition.dart';
 
 class LowStockUI extends StatefulWidget {
   const LowStockUI({super.key});
@@ -79,62 +82,89 @@ class _LowStockUIState extends State<LowStockUI> {
   Widget itemsList() {
     return Padding(
       padding: const EdgeInsets.only(top: 2, left: 10, right: 10, bottom: 12),
-      child: Column(
-        children: List.generate(
-            3,
-            (index) => itemsCard(
-                itemName: "Gold Ring", leftStock: 17.0, salePrice: 2570.3)),
+      child: FutureBuilder<dynamic>(
+        future: FirebaseFirestore.instance.collection('items').get(),
+        builder: ((context, snapshot) {
+          if (snapshot.hasData) {
+            if (snapshot.data.docs.length > 0) {
+              return ListView.builder(
+                shrinkWrap: true,
+                itemCount: snapshot.data.docs.length,
+                itemBuilder: (context, index) {
+                  var itemMap = snapshot.data.docs[index];
+                  if (itemMap['leftStock'] < itemMap['lowStock']) {
+                    return itemsCard(itemMap: itemMap);
+                  }
+                  return SizedBox();
+                },
+              );
+            }
+            return Text("No Data");
+          }
+          return LinearProgressIndicator();
+        }),
       ),
     );
   }
 
-  Widget itemsCard(
-      {required String itemName,
-      required double leftStock,
-      required double salePrice}) {
+  Widget itemsCard({required var itemMap}) {
     return Container(
-      padding: EdgeInsets.all(10.0),
       margin: EdgeInsets.only(bottom: 10),
+      padding: EdgeInsets.symmetric(horizontal: 15),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CircleAvatar(
             backgroundColor: Colors.blue.shade100,
             radius: 18,
-            child: Text("F"),
+            child: Text(itemMap['name'][0]),
           ),
           SizedBox(
             width: 10,
           ),
           Expanded(
+            flex: 5,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Item Name",
-                ),
-                Text(
-                  itemName,
+                  itemMap['name'],
                   style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Stock:",
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      itemMap['leftStock'].toStringAsFixed(2) +
+                          ' ' +
+                          itemMap['unit'],
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
-          Expanded(
-            child: Align(
-              alignment: Alignment.topRight,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    "Stock",
-                  ),
-                  Text(
-                    "100 GMS",
-                    style: TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                ],
-              ),
+          Spacer(),
+          IconButton(
+            onPressed: () {
+              FocusScope.of(context).unfocus();
+              PageRouteTransition.push(
+                      context, ItemDetailsUI(itemId: itemMap['id']))
+                  .then((value) => setState(() {}));
+            },
+            icon: Icon(
+              Icons.tune,
+              size: 17,
+              color: Colors.black,
             ),
           ),
         ],

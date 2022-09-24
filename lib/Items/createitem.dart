@@ -122,15 +122,34 @@ class _CreateItemUiState extends State<CreateItemUi> {
                 'type': _selectedItemType,
                 'category': _selectedCategory,
                 'unit': _selectedUnit,
-                'openingStock': _openingStock.text,
+                'openingStock': double.parse(_openingStock.text),
+                'leftStock': double.parse(_openingStock.text),
                 'date': _date.text,
-                'lowStock': _lowStock.text
+                'lowStock': double.parse(_lowStock.text)
               };
               FirebaseFirestore.instance
                   .collection('items')
                   .doc(uniqueId.toString())
                   .set(itemMap)
                   .then((value) {
+                uniqueId = DateTime.now().millisecondsSinceEpoch;
+                Map<String, dynamic> stkTxnMap = {
+                  'id': uniqueId,
+                  'activity': "Opening Stock",
+                  'itemName': itemMap['name'],
+                  'itemCategory': itemMap['category'],
+                  'itemId': itemMap['id'],
+                  'unit': itemMap['unit'],
+                  'change': '+ ' + itemMap['openingStock'].toStringAsFixed(2),
+                  'finalStock': itemMap['openingStock'],
+                  'date': uniqueId
+                };
+
+                FirebaseFirestore.instance
+                    .collection('stockTransaction')
+                    .doc(uniqueId.toString())
+                    .set(stkTxnMap);
+
                 PageRouteTransition.pop(context);
                 PageRouteTransition.pop(context);
               });
