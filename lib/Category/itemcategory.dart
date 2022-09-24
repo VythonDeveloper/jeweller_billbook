@@ -15,6 +15,33 @@ class _ItemCategoryUiState extends State<ItemCategoryUi> {
   final _categoryName = TextEditingController();
   final _searchKey = TextEditingController();
 
+  createItemCategory() async {
+    FocusScope.of(context).unfocus();
+    try {
+      if (_formKey.currentState!.validate()) {
+        showLoading(context);
+        int uniqueId = DateTime.now().millisecondsSinceEpoch;
+        Map<String, dynamic> categoryMap = {
+          'id': uniqueId,
+          'name': _categoryName.text
+        };
+        await FirebaseFirestore.instance
+            .collection('categories')
+            .doc(uniqueId.toString())
+            .set(categoryMap)
+            .then((value) {
+          _categoryName.clear();
+          PageRouteTransition.pop(context);
+          PageRouteTransition.pop(context);
+        });
+      }
+      setState(() {});
+      print('success');
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -25,38 +52,38 @@ class _ItemCategoryUiState extends State<ItemCategoryUi> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 233, 233, 233),
       body: SafeArea(
         child: Column(
           children: [
             CategoryAppbar(),
-            categories(),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 15),
+              child: categories(),
+            ),
           ],
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: CustomFABButton(
         onPressed: () {
           showModalBottomSheet<void>(
-              context: context,
-              isScrollControlled: true,
-              builder: (BuildContext context) {
-                return StatefulBuilder(builder: (BuildContext context,
-                    StateSetter setModalState /*You can rename this!*/) {
-                  return createCategoryModal(setModalState);
-                });
-              });
+            context: context,
+            isScrollControlled: true,
+            builder: (BuildContext context) {
+              return createCategoryModal();
+            },
+          );
         },
-        elevation: 2,
-        icon: Icon(Icons.add),
-        label: Text('Create Category'),
+        icon: Icons.add,
+        label: 'Create Category',
+        heroTag: '',
       ),
     );
   }
 
   Widget CategoryAppbar() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 15),
+      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       child: Row(
         children: [
           Text(
@@ -132,7 +159,12 @@ class _ItemCategoryUiState extends State<ItemCategoryUi> {
   }
 
   Widget categoryCard({required int id, required String name}) {
-    return Card(
+    return Container(
+      margin: EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.indigo.withOpacity(0.1),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(
@@ -144,7 +176,14 @@ class _ItemCategoryUiState extends State<ItemCategoryUi> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(name),
+                  Text(
+                    name,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                  ),
                   FutureBuilder<dynamic>(
                     future: FirebaseFirestore.instance
                         .collection('items')
@@ -164,8 +203,15 @@ class _ItemCategoryUiState extends State<ItemCategoryUi> {
             ),
             IconButton(
               onPressed: () {},
-              icon: Icon(Icons.edit),
-              color: Colors.deepPurple,
+              icon: CircleAvatar(
+                backgroundColor: Colors.indigo,
+                radius: 18,
+                child: Icon(
+                  Icons.edit,
+                  color: Colors.white,
+                  size: 15,
+                ),
+              ),
             ),
             IconButton(
               onPressed: () {
@@ -173,131 +219,144 @@ class _ItemCategoryUiState extends State<ItemCategoryUi> {
                   context: context,
                   barrierDismissible: false, // user must tap button!
                   builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text('Delete ' + name + '?'),
-                      content: SingleChildScrollView(
-                        child: ListBody(
-                          children: const <Widget>[
-                            Text('Deleting category will not effect items.'),
-                            Text('Would you like to delete?'),
-                          ],
-                        ),
-                      ),
-                      actions: <Widget>[
-                        TextButton(
-                          child: const Text('Approve'),
-                          onPressed: () {
-                            showLoading(context);
-                            FirebaseFirestore.instance
-                                .collection('categories')
-                                .doc(id.toString())
-                                .delete()
-                                .then((value) {
-                              PageRouteTransition.pop(context);
-                              PageRouteTransition.pop(context);
-                            });
-                            setState(() {});
-                          },
-                        ),
-                      ],
-                    );
+                    return DeleteAlertBox(name, context, id);
                   },
                 );
               },
-              icon: Icon(Icons.delete),
-              color: Colors.red,
-            )
+              icon: CircleAvatar(
+                backgroundColor: Colors.red,
+                radius: 18,
+                child: Icon(
+                  Icons.delete,
+                  color: Colors.white,
+                  size: 15,
+                ),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget createCategoryModal(StateSetter setModalState) {
-    return Container(
-      // height: 200,
-      color: Color.fromARGB(255, 255, 255, 255),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Create Item category'),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: Icon(Icons.close),
-                  )
-                ],
-              ),
-            ),
-            Divider(),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
-              child: Text("Category Name"),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-              child: TextFormField(
-                controller: _categoryName,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Ex: Gold, Silver',
-                ),
-                keyboardType: TextInputType.name,
-                textCapitalization: TextCapitalization.words,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "This is required";
-                  }
-                  return null;
-                },
-              ),
-            ),
-            Center(
-              child: MaterialButton(
-                onPressed: () async {
-                  FocusScope.of(context).unfocus();
-                  if (_formKey.currentState!.validate()) {
-                    showLoading(context);
-                    int uniqueId = DateTime.now().millisecondsSinceEpoch;
-                    Map<String, dynamic> categoryMap = {
-                      'id': uniqueId,
-                      'name': _categoryName.text
-                    };
-                    await FirebaseFirestore.instance
-                        .collection('categories')
-                        .doc(uniqueId.toString())
-                        .set(categoryMap)
-                        .then((value) {
-                      _categoryName.clear();
-                      PageRouteTransition.pop(context);
-                      PageRouteTransition.pop(context);
-                    });
-                  }
-                  setState(() {});
-                },
-                child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 10),
-                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 25),
-                    color: Colors.purple,
-                    width: double.infinity,
-                    child: Center(child: Text("Create"))),
-              ),
-            ),
-            SizedBox(
-              height: 100,
-            ),
+  AlertDialog DeleteAlertBox(String name, BuildContext context, int id) {
+    return AlertDialog(
+      title: Text('Delete ' + name + '?'),
+      content: SingleChildScrollView(
+        child: ListBody(
+          children: const <Widget>[
+            Text('Deleting category will not effect items.'),
+            Text('Would you like to delete?'),
           ],
         ),
       ),
+      actions: <Widget>[
+        TextButton(
+          child: const Text('Approve'),
+          onPressed: () {
+            showLoading(context);
+            FirebaseFirestore.instance
+                .collection('categories')
+                .doc(id.toString())
+                .delete()
+                .then((value) {
+              PageRouteTransition.pop(context);
+              PageRouteTransition.pop(context);
+            });
+            setState(() {});
+          },
+        ),
+      ],
     );
+  }
+
+  Widget createCategoryModal() {
+    return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setModalState) {
+      return Container(
+        margin: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        color: Color.fromARGB(255, 255, 255, 255),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.only(top: 10, left: 10, right: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Create Item Category',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Icon(Icons.close),
+                    ),
+                  ],
+                ),
+              ),
+              Divider(),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                child: TextFormField(
+                  controller: _categoryName,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Ex: Gold, Silver',
+                    labelText: 'Category Name',
+                  ),
+                  keyboardType: TextInputType.name,
+                  textCapitalization: TextCapitalization.words,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "This is required";
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              Center(
+                child: MaterialButton(
+                  onPressed: () async {
+                    createItemCategory();
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 25),
+                    decoration: BoxDecoration(
+                      color: Colors.indigo,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    width: double.infinity,
+                    child: Center(
+                      child: Text(
+                        "Create",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 30,
+              ),
+            ],
+          ),
+        ),
+      );
+    });
   }
 }

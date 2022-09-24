@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jeweller_billbook/Items/editItem.dart';
+import 'package:jeweller_billbook/components.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 
 class ItemDetailsUI extends StatefulWidget {
@@ -46,48 +47,67 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
           ],
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            FloatingActionButton.extended(
-              heroTag: 'btn3',
-              extendedPadding: EdgeInsets.symmetric(horizontal: 50),
-              onPressed: () {},
-              elevation: 2,
-              backgroundColor: Colors.indigo,
-              extendedIconLabelSpacing: 10,
-              icon: Icon(
-                Icons.add,
-                color: Colors.white,
-              ),
-              label: Text(
-                'Stock',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
+        floatingActionButton: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Expanded(
+                child: FloatingActionButton.extended(
+                  heroTag: 'btn3',
+                  extendedPadding: EdgeInsets.symmetric(horizontal: 50),
+                  onPressed: () {},
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      bottomLeft: Radius.circular(10),
+                    ),
+                  ),
+                  backgroundColor: Colors.indigo,
+                  extendedIconLabelSpacing: 10,
+                  icon: Icon(
+                    Icons.add,
+                    color: Colors.white,
+                  ),
+                  label: Text(
+                    'Stock',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
-            ),
-            FloatingActionButton.extended(
-              heroTag: 'btn4',
-              onPressed: () {},
-              extendedPadding: EdgeInsets.symmetric(horizontal: 50),
-              extendedIconLabelSpacing: 10,
-              elevation: 2,
-              backgroundColor: Colors.red,
-              icon: Icon(
-                Icons.horizontal_rule_rounded,
-                color: Colors.white,
-              ),
-              label: Text(
-                'Stock',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
+              Expanded(
+                child: FloatingActionButton.extended(
+                  heroTag: 'btn4',
+                  onPressed: () {},
+                  extendedPadding: EdgeInsets.symmetric(horizontal: 50),
+                  extendedIconLabelSpacing: 10,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(10),
+                      bottomRight: Radius.circular(10),
+                    ),
+                  ),
+                  backgroundColor: Colors.red,
+                  icon: Icon(
+                    Icons.horizontal_rule_rounded,
+                    color: Colors.white,
+                  ),
+                  label: Text(
+                    'Stock',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

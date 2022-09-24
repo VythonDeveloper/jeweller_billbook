@@ -5,6 +5,8 @@ import 'package:jeweller_billbook/Category/itemcategory.dart';
 import 'package:jeweller_billbook/Items/itemDetails.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 
+import '../components.dart';
+
 class ItemsUi extends StatefulWidget {
   const ItemsUi({Key? key}) : super(key: key);
 
@@ -20,7 +22,6 @@ class _ItemsUiState extends State<ItemsUi> {
   @override
   void initState() {
     super.initState();
-    PageRouteTransition.effect = TransitionEffect.fade;
   }
 
   @override
@@ -35,6 +36,9 @@ class _ItemsUiState extends State<ItemsUi> {
       body: SafeArea(
         child: Column(
           children: [
+            SizedBox(
+              height: 10,
+            ),
             ItemsAppbar(),
             SizedBox(
               height: 3,
@@ -46,6 +50,9 @@ class _ItemsUiState extends State<ItemsUi> {
             Expanded(
               child: ListView(
                 children: [
+                  SizedBox(
+                    height: 10,
+                  ),
                   itemsList(),
                 ],
               ),
@@ -53,16 +60,13 @@ class _ItemsUiState extends State<ItemsUi> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          PageRouteTransition.push(context, CreateItemUi())
-              .then((value) => setState(() {}));
-        },
-        elevation: 2,
-        heroTag: 'btn2',
-        icon: Icon(Icons.add),
-        label: Text('Add Item'),
-      ),
+      floatingActionButton: CustomFABButton(
+          onPressed: () {
+            PageRouteTransition.push(context, CreateItemUi())
+                .then((value) => setState(() {}));
+          },
+          icon: Icons.add,
+          label: 'Add Item'),
     );
   }
 
@@ -121,10 +125,7 @@ class _ItemsUiState extends State<ItemsUi> {
                 showModalBottomSheet<void>(
                     context: context,
                     builder: (BuildContext context) {
-                      return StatefulBuilder(builder: (BuildContext context,
-                          StateSetter setModalState /*You can rename this!*/) {
-                        return selectCategoryModal(setModalState);
-                      });
+                      return selectCategoryModal();
                     });
               },
               child: Container(
@@ -254,118 +255,140 @@ class _ItemsUiState extends State<ItemsUi> {
               return Text("No Category");
             }
           }
-          return CircularProgressIndicator();
+          return LinearProgressIndicator(
+            minHeight: 3,
+          );
         });
   }
 
   Widget itemsCard(
       {required int id, required String itemName, required String unit}) {
     return Container(
-      child: Padding(
-        padding: EdgeInsets.all(10.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CircleAvatar(
-              backgroundColor: Colors.blue.shade100,
-              radius: 18,
-              child: Text(itemName[0]),
-            ),
-            SizedBox(
-              width: 10,
-            ),
-            Expanded(
-              flex: 5,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    itemName,
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Stock:",
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Text("100 " + unit),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            Spacer(),
-            IconButton(
-              onPressed: () {
-                PageRouteTransition.push(context, ItemDetailsUI(id: id));
-              },
-              icon: Icon(
-                Icons.tune,
-                size: 17,
-                color: Colors.black,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget selectCategoryModal(StateSetter setModalState) {
-    return Container(
-      // height: 200,
-      color: Color.fromARGB(255, 255, 255, 255),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      margin: EdgeInsets.only(bottom: 10),
+      padding: EdgeInsets.symmetric(horizontal: 15),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CircleAvatar(
+            backgroundColor: Colors.blue.shade100,
+            radius: 18,
+            child: Text(itemName[0]),
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          Expanded(
+            flex: 5,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Select Item category'),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Icon(Icons.close),
-                )
+                Text(
+                  itemName,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Stock:",
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text("100 " + unit),
+                  ],
+                ),
               ],
             ),
           ),
-          Divider(),
-          OutlinedButton(
+          Spacer(),
+          IconButton(
             onPressed: () {
-              PageRouteTransition.push(context, ItemCategoryUi())
-                  .then((value) => setModalState(() {}));
+              PageRouteTransition.push(context, ItemDetailsUI(id: id));
             },
-            child: Text("Manage Categories"),
-          ),
-          RadioListTile(
-            title: Text("All Categories"),
-            value: "All Categories",
-            groupValue: _selectedCategory,
-            onChanged: (value) {
-              print(value.toString());
-              setModalState(() {
-                _selectedCategory = value.toString();
-              });
-            },
-          ),
-          Divider(),
-          categoriesRadioList(setModalState),
-          SizedBox(
-            height: 100,
+            icon: Icon(
+              Icons.tune,
+              size: 17,
+              color: Colors.black,
+            ),
           ),
         ],
       ),
     );
+  }
+
+  Widget selectCategoryModal() {
+    return StatefulBuilder(builder: (context, StateSetter setModalState) {
+      return Container(
+        color: Color.fromARGB(255, 255, 255, 255),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(top: 10, left: 10, right: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Select Item Category'),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Icon(Icons.close),
+                  )
+                ],
+              ),
+            ),
+            Divider(),
+            MaterialButton(
+              onPressed: () {
+                PageRouteTransition.push(context, ItemCategoryUi())
+                    .then((value) => setModalState(() {}));
+              },
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              color: Colors.indigo,
+              elevation: 0,
+              padding: EdgeInsets.symmetric(vertical: 12, horizontal: 15),
+              child: Text(
+                "Manage Categories",
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.only(top: 10, left: 10, right: 10),
+              decoration: BoxDecoration(
+                color: _selectedCategory == 'All Categories'
+                    ? Colors.indigo.withOpacity(0.1)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: RadioListTile(
+                title: Text("All Categories"),
+                value: "All Categories",
+                groupValue: _selectedCategory,
+                onChanged: (value) {
+                  print(value.toString());
+                  setModalState(() {
+                    _selectedCategory = value.toString();
+                    print('_selectedCategory - ' + _selectedCategory);
+                  });
+                },
+              ),
+            ),
+            categoriesRadioList(setModalState),
+            SizedBox(
+              height: 20,
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   Widget categoriesRadioList(StateSetter setModalState) {
@@ -374,7 +397,7 @@ class _ItemsUiState extends State<ItemsUi> {
           .collection('categories')
           .orderBy('id')
           .get(),
-      builder: ((context, snapshot) {
+      builder: (context, snapshot) {
         if (snapshot.hasData) {
           if (snapshot.data.docs.length > 0) {
             return ListView.builder(
@@ -384,26 +407,38 @@ class _ItemsUiState extends State<ItemsUi> {
                 String categoryName = snapshot.data.docs[index]['name'];
                 return Column(
                   children: [
-                    RadioListTile(
-                      title: Text(categoryName),
-                      value: categoryName,
-                      groupValue: _selectedCategory,
-                      onChanged: (value) {
-                        print(value.toString());
-                        setModalState(() {
-                          _selectedCategory = value.toString();
-                        });
-                      },
+                    Container(
+                      margin: EdgeInsets.only(top: 10, left: 10, right: 10),
+                      decoration: BoxDecoration(
+                        color: _selectedCategory == categoryName
+                            ? Colors.indigo.withOpacity(0.1)
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: RadioListTile(
+                        title: Text(categoryName),
+                        value: categoryName,
+                        groupValue: _selectedCategory,
+                        onChanged: (value) {
+                          print(value.toString());
+                          setModalState(() {
+                            _selectedCategory = value.toString();
+                            print('_selectedCategory - ' + _selectedCategory);
+                          });
+                        },
+                      ),
                     ),
-                    Divider(),
                   ],
                 );
               }),
             );
           }
         }
-        return CircularProgressIndicator();
-      }),
+        return Padding(
+          padding: EdgeInsets.only(top: 10.0),
+          child: CircularProgressIndicator(),
+        );
+      },
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:jeweller_billbook/Home/home.dart';
 import 'package:jeweller_billbook/Signin/loginUI.dart';
 import 'package:jeweller_billbook/services/auth.dart';
+import 'package:page_route_transition/page_route_transition.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,6 +30,8 @@ class MyApp extends StatelessWidget {
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
     );
+
+    PageRouteTransition.effect = TransitionEffect.rightToLeft;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'StockBook',

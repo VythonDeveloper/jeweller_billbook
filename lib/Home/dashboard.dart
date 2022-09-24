@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jeweller_billbook/Billing/additemcart.dart';
 import 'package:jeweller_billbook/Stock/lowStock.dart';
+import 'package:jeweller_billbook/components.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 
 class DashboardUi extends StatefulWidget {
@@ -41,20 +42,17 @@ class _DashboardUiState extends State<DashboardUi> {
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          FloatingActionButton.extended(
+          CustomFABButton(
             onPressed: () {},
-            elevation: 2,
-            heroTag: 'btn1',
-            icon: Icon(Icons.receipt),
-            label: Text('Mortage Billing'),
+            icon: Icons.receipt,
+            label: 'Mortage Billing',
           ),
-          FloatingActionButton.extended(
+          CustomFABButton(
             onPressed: () {
               PageRouteTransition.push(context, AddItemCartUi());
             },
-            elevation: 2,
-            icon: Icon(Icons.print),
-            label: Text('Invoice'),
+            icon: Icons.print,
+            label: 'Invoice',
           ),
         ],
       ),

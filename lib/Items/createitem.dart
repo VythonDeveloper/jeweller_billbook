@@ -110,7 +110,7 @@ class _CreateItemUiState extends State<CreateItemUi> {
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: FloatingActionButton.extended(
+        floatingActionButton: CustomFABButton(
           onPressed: () {
             if (_formKey1.currentState!.validate() &&
                 _formKey2.currentState!.validate()) {
@@ -136,9 +136,8 @@ class _CreateItemUiState extends State<CreateItemUi> {
               });
             }
           },
-          elevation: 2,
-          icon: Icon(Icons.done),
-          label: Text('Save'),
+          icon: Icons.done,
+          label: 'Save',
         ),
       ),
     );

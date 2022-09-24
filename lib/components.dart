@@ -29,3 +29,16 @@ showSnackBar(BuildContext context, String msg) {
     backgroundColor: Colors.blueGrey,
   ));
 }
+
+Widget CustomFABButton({final onPressed, heroTag, icon, label}) {
+  return FloatingActionButton.extended(
+    onPressed: onPressed,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(10),
+    ),
+    elevation: 0,
+    heroTag: heroTag,
+    icon: Icon(icon),
+    label: Text(label),
+  );
+}

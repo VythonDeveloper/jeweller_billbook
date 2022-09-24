@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jeweller_billbook/components.dart';
 
 class AddItemCartUi extends StatefulWidget {
   const AddItemCartUi({Key? key}) : super(key: key);
@@ -30,7 +31,7 @@ class _AddItemCartUiState extends State<AddItemCartUi> {
                       size: 17,
                     ),
                   ),
-                  Flexible(
+                  Expanded(
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.grey.shade100,
@@ -188,7 +189,7 @@ class _AddItemCartUiState extends State<AddItemCartUi> {
                           Spacer(),
                           Container(
                             width: MediaQuery.of(context).size.width * 0.27,
-                            child: Flexible(
+                            child: Expanded(
                               child: TextField(
                                 keyboardType: TextInputType.number,
                                 decoration: InputDecoration(
@@ -211,12 +212,8 @@ class _AddItemCartUiState extends State<AddItemCartUi> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
-        elevation: 2,
-        icon: Icon(Icons.done),
-        label: Text('Done'),
-      ),
+      floatingActionButton:
+          CustomFABButton(onPressed: () {}, icon: Icons.done, label: 'Done'),
     );
   }
 
