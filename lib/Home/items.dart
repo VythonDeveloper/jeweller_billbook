@@ -77,7 +77,11 @@ class _ItemsUiState extends State<ItemsUi> {
         children: [
           Text(
             'Items',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 0.5,
+            ),
           ),
           SizedBox(
             width: 30,
@@ -126,7 +130,9 @@ class _ItemsUiState extends State<ItemsUi> {
                     context: context,
                     builder: (BuildContext context) {
                       return selectCategoryModal();
-                    });
+                    }).then((value) {
+                  setState(() {});
+                });
               },
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
