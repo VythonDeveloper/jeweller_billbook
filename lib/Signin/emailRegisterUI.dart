@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jeweller_billbook/Home/home.dart';
+import 'package:jeweller_billbook/Services/auth.dart';
 import 'package:page_route_transition/page_route_transition.dart';
-
 import '../colors.dart';
-import '../services/auth.dart';
 
 class EmailRegisterUI extends StatefulWidget {
   const EmailRegisterUI({Key? key}) : super(key: key);

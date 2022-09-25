@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:jeweller_billbook/Items/itemDetails.dart';
+import 'package:jeweller_billbook/Services/user.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 
 class LowStockUI extends StatefulWidget {
@@ -83,7 +84,11 @@ class _LowStockUIState extends State<LowStockUI> {
     return Padding(
       padding: const EdgeInsets.only(top: 2, left: 10, right: 10, bottom: 12),
       child: FutureBuilder<dynamic>(
-        future: FirebaseFirestore.instance.collection('items').get(),
+        future: FirebaseFirestore.instance
+            .collection('users')
+            .doc(UserData.uid)
+            .collection('items')
+            .get(),
         builder: ((context, snapshot) {
           if (snapshot.hasData) {
             if (snapshot.data.docs.length > 0) {

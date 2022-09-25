@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:jeweller_billbook/Billing/additemcart.dart';
+import 'package:jeweller_billbook/Services/user.dart';
 import 'package:jeweller_billbook/Stock/lowStock.dart';
 import 'package:jeweller_billbook/components.dart';
 import 'package:page_route_transition/page_route_transition.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DashboardUi extends StatefulWidget {
   const DashboardUi({Key? key}) : super(key: key);
@@ -13,11 +14,22 @@ class DashboardUi extends StatefulWidget {
 }
 
 class _DashboardUiState extends State<DashboardUi> {
-  String uname = "Not";
-
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   @override
   void initState() {
     super.initState();
+    userDetails();
+  }
+
+  void userDetails() async {
+    final SharedPreferences prefs = await _prefs;
+
+    UserData.uid = prefs.getString('USERKEY')!;
+    UserData.username = prefs.getString('USERNAMEKEY')!;
+    UserData.userDisplayName = prefs.getString('USERDISPLAYNAMEKEY')!;
+    UserData.email = prefs.getString('USEREMAILKEY')!;
+    UserData.profileUrl = prefs.getString('USERPROFILEKEY')!;
+    setState(() {});
   }
 
   @override
@@ -27,8 +39,11 @@ class _DashboardUiState extends State<DashboardUi> {
         automaticallyImplyLeading: false,
         title: Row(
           children: [
-            Icon(Icons.book),
-            Text('StockBook'),
+            Icon(Icons.storefront),
+            SizedBox(
+              width: 10,
+            ),
+            Text(UserData.userDisplayName),
           ],
         ),
       ),
@@ -42,7 +57,9 @@ class _DashboardUiState extends State<DashboardUi> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: CustomFABButton(
-        onPressed: () {},
+        onPressed: () {
+          print(UserData.uid);
+        },
         icon: Icons.receipt,
         label: 'Mortage Billing',
       ),

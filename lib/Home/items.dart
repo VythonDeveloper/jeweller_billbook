@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:jeweller_billbook/Items/createitem.dart';
 import 'package:jeweller_billbook/Category/itemcategory.dart';
 import 'package:jeweller_billbook/Items/itemDetails.dart';
+import 'package:jeweller_billbook/Services/user.dart';
 import 'package:jeweller_billbook/Stock/lowStock.dart';
 import 'package:page_route_transition/page_route_transition.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../components.dart';
 
@@ -23,6 +25,39 @@ class _ItemsUiState extends State<ItemsUi> {
   @override
   void initState() {
     super.initState();
+    _firebaseItems();
+  }
+
+  void userDetails() async {
+    final SharedPreferences prefs = await _prefs;
+
+    UserData.uid = prefs.getString('USERKEY')!;
+    UserData.username = prefs.getString('USERNAMEKEY')!;
+    UserData.userDisplayName = prefs.getString('USERDISPLAYNAMEKEY')!;
+    UserData.email = prefs.getString('USEREMAILKEY')!;
+    UserData.profileUrl = prefs.getString('USERPROFILEKEY')!;
+    setState(() {});
+  }
+
+  QuerySnapshot<Map<String, dynamic>>? initData;
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+
+  void _firebaseItems() async {
+    final SharedPreferences prefs = await _prefs;
+    UserData.uid == ''
+        ? UserData.uid = prefs.getString('USERKEY')!
+        : await FirebaseFirestore.instance
+            .collection('users')
+            .doc(UserData.uid)
+            .collection("items")
+            .orderBy('id')
+            .get()
+            .then((value) {
+            initData = value;
+            setState(() {});
+          });
+
+    setState(() {});
   }
 
   @override
@@ -200,45 +235,9 @@ class _ItemsUiState extends State<ItemsUi> {
     );
   }
 
-  // Widget itemsList() {
-  //   // return Padding(
-  //   //   padding: const EdgeInsets.only(top: 2, left: 10, right: 10, bottom: 12),
-  //   //   child: Column(
-  //   //     children: List.generate(
-  //   //         3,
-  //   //         (index) => itemsCard(
-  //   //             itemName: "Gold Ring", leftStock: 17.0, salePrice: 2570.3)),
-  //   //   ),
-  //   // );
-
-  //   return FutureBuilder<dynamic>(
-  //     future: FirebaseFirestore.instance
-  //         .collection("categories")
-  //         .orderBy('id')
-  //         .get(),
-  //     builder: ((context, snapshot) {
-  //       if (snapshot.hasData) {
-  //         if (snapshot.data.docs.length > 0) {
-  //           ListView.builder(
-  //             itemCount: snapshot.data.docs.length,
-  //             itemBuilder: (context, index) {
-  //               return itemsCard(
-  //                   itemName: snapshot.data.docs[index]['name'],
-  //                   leftStock: snapshot.data.docs[index]['openingStock']);
-  //             },
-  //           );
-  //         }
-  //         return Text("No Itemsff");
-  //       }
-  //       return Container(child: CircularProgressIndicator());
-  //     }),
-  //   );
-  // }
-
   Widget itemsList() {
     return FutureBuilder<dynamic>(
-        future:
-            FirebaseFirestore.instance.collection("items").orderBy('id').get(),
+        future: initData,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             if (snapshot.data.docs.length > 0) {
@@ -409,6 +408,8 @@ class _ItemsUiState extends State<ItemsUi> {
   Widget categoriesRadioList(StateSetter setModalState) {
     return FutureBuilder<dynamic>(
       future: FirebaseFirestore.instance
+          .collection('users')
+          .doc(UserData.uid)
           .collection('categories')
           .orderBy('id')
           .get(),

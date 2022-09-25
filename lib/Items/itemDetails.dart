@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:jeweller_billbook/Items/editItem.dart';
+import 'package:jeweller_billbook/Services/user.dart';
 import 'package:jeweller_billbook/components.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 
@@ -48,6 +49,8 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
 
   Future<void> fetchitemDetails() async {
     await FirebaseFirestore.instance
+        .collection('users')
+        .doc(UserData.uid)
         .collection('items')
         .doc(itemId.toString())
         .get()
@@ -344,6 +347,8 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
               ),
               FutureBuilder<dynamic>(
                 future: FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(UserData.uid)
                     .collection('stockTransaction')
                     .where('itemId', isEqualTo: itemMap['id'])
                     .orderBy('id', descending: true)
@@ -621,11 +626,15 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
 
               itemMap['leftStock'] = stkTxnMap['finalStock'];
               await FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(UserData.uid)
                   .collection('stockTransaction')
                   .doc(uniqueId.toString())
                   .set(stkTxnMap)
                   .then((value) {
                 FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(UserData.uid)
                     .collection('items')
                     .doc(itemMap['id'].toString())
                     .update({'leftStock': stkTxnMap['finalStock']});
@@ -706,11 +715,15 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
 
               itemMap['leftStock'] = stkTxnMap['finalStock'];
               await FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(UserData.uid)
                   .collection('stockTransaction')
                   .doc(uniqueId.toString())
                   .set(stkTxnMap)
                   .then((value) {
                 FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(UserData.uid)
                     .collection('items')
                     .doc(itemMap['id'].toString())
                     .update({'leftStock': stkTxnMap['finalStock']});

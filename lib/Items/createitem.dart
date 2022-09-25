@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:jeweller_billbook/Services/user.dart';
 import 'package:jeweller_billbook/components.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 
@@ -41,6 +42,8 @@ class _CreateItemUiState extends State<CreateItemUi> {
 
   fetchCategories() async {
     await FirebaseFirestore.instance
+        .collection('users')
+        .doc(UserData.uid)
         .collection('categories')
         .orderBy('id')
         .get()
@@ -128,6 +131,8 @@ class _CreateItemUiState extends State<CreateItemUi> {
                 'lowStock': double.parse(_lowStock.text)
               };
               FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(UserData.uid)
                   .collection('items')
                   .doc(uniqueId.toString())
                   .set(itemMap)
@@ -146,6 +151,8 @@ class _CreateItemUiState extends State<CreateItemUi> {
                 };
 
                 FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(UserData.uid)
                     .collection('stockTransaction')
                     .doc(uniqueId.toString())
                     .set(stkTxnMap);

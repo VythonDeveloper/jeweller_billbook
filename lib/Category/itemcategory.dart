@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:jeweller_billbook/Services/user.dart';
 import 'package:jeweller_billbook/components.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 
@@ -26,6 +27,8 @@ class _ItemCategoryUiState extends State<ItemCategoryUi> {
           'name': _categoryName.text
         };
         await FirebaseFirestore.instance
+            .collection('users')
+            .doc(UserData.uid)
             .collection('categories')
             .doc(uniqueId.toString())
             .set(categoryMap)
@@ -127,6 +130,8 @@ class _ItemCategoryUiState extends State<ItemCategoryUi> {
   Widget categories() {
     return FutureBuilder<dynamic>(
         future: FirebaseFirestore.instance
+            .collection('users')
+            .doc(UserData.uid)
             .collection("categories")
             .orderBy('id')
             .get(),
@@ -186,6 +191,8 @@ class _ItemCategoryUiState extends State<ItemCategoryUi> {
                   ),
                   FutureBuilder<dynamic>(
                     future: FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(UserData.uid)
                         .collection('items')
                         .where('category', isEqualTo: name)
                         .get(),
@@ -256,6 +263,8 @@ class _ItemCategoryUiState extends State<ItemCategoryUi> {
           onPressed: () {
             showLoading(context);
             FirebaseFirestore.instance
+                .collection('users')
+                .doc(UserData.uid)
                 .collection('categories')
                 .doc(id.toString())
                 .delete()
