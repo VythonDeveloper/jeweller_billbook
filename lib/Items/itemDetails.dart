@@ -5,7 +5,6 @@ import 'package:jeweller_billbook/Services/user.dart';
 import 'package:jeweller_billbook/components.dart';
 import 'package:jeweller_billbook/constants.dart';
 import 'package:page_route_transition/page_route_transition.dart';
-import 'dart:math' as math;
 import 'package:flutter/services.dart';
 
 class ItemDetailsUI extends StatefulWidget {
@@ -19,28 +18,36 @@ class ItemDetailsUI extends StatefulWidget {
 class _ItemDetailsUIState extends State<ItemDetailsUI> {
   final itemId;
   _ItemDetailsUIState({this.itemId});
-  final _formKey = GlobalKey<FormState>();
-  final _addStockQuantity = TextEditingController();
-  final _reduceStockQuantity = TextEditingController();
+  final _formKey1 = GlobalKey<FormState>();
+  final _formKey2 = GlobalKey<FormState>();
+  final _addStockWeight = TextEditingController();
+  final _addStockPiece = TextEditingController();
+  final _reduceStockWeight = TextEditingController();
+  final _reduceStockPiece = TextEditingController();
 
   @override
   void dispose() {
     super.dispose();
-    _addStockQuantity.dispose();
-    _reduceStockQuantity.dispose();
+    _addStockWeight.dispose();
+    _addStockPiece.dispose();
+    _reduceStockWeight.dispose();
+    _reduceStockPiece.dispose();
   }
 
   Map<String, dynamic> itemMap = {
-    'id': '',
+    'id': 0,
     'name': '',
     'code': '',
     'type': '',
     'category': '',
     'unit': '',
-    'openingStock': 0.0,
-    'leftStock': 0.0,
+    'openingStockWeight': 0.0,
+    'openingStockPiece': 0,
+    'leftStockWeight': 0.0,
+    'leftStockPiece': 0,
     'date': '',
-    'lowStock': 0.0
+    'lowStockWeight': 0.0,
+    'lowStockPiece': 0
   };
 
   @override
@@ -73,7 +80,20 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
           actions: [
             IconButton(
               onPressed: () {
-                PageRouteTransition.push(context, EditItemUI());
+                PageRouteTransition.push(context, EditItemUI(itemMap: itemMap))
+                    .then((value) {
+                  FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(UserData.uid)
+                      .collection('items')
+                      .doc(itemMap['id'].toString())
+                      .get()
+                      .then((value) {
+                    setState(() {
+                      itemMap = value.data()!;
+                    });
+                  });
+                });
               },
               icon: Icon(Icons.edit),
             ),
@@ -237,7 +257,17 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                 ),
               ),
               Text(
-                itemMap['leftStock'].toStringAsFixed(3) + ' ' + itemMap['unit'],
+                itemMap['leftStockWeight'].toStringAsFixed(3) +
+                    ' ' +
+                    itemMap['unit'],
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Text(
+                itemMap['leftStockPiece'].toString() + ' PCS',
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 15,
@@ -389,6 +419,15 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
   }
 
   Container TimelineCard({required var stkTxnMap}) {
+    String change = stkTxnMap['change'].split("#")[0] +
+        '\n' +
+        stkTxnMap['change'].split("#")[1];
+    String finalStock = stkTxnMap['finalStockWeight'].toStringAsFixed(3) +
+        ' ' +
+        stkTxnMap['unit'] +
+        '\n' +
+        stkTxnMap['finalStockPiece'].toString() +
+        " PCS";
     return Container(
       padding: EdgeInsets.all(12),
       child: Row(
@@ -408,16 +447,12 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
             ),
           ),
           Expanded(
-            child: Align(
-                alignment: Alignment.center,
-                child: Text(stkTxnMap['change'] + ' ' + stkTxnMap['unit'])),
+            child: Align(alignment: Alignment.center, child: Text(change)),
           ),
           Expanded(
             child: Align(
               alignment: Alignment.topRight,
-              child: Text(stkTxnMap['finalStock'].toStringAsFixed(3) +
-                  ' ' +
-                  stkTxnMap['unit']),
+              child: Text(finalStock),
             ),
           ),
         ],
@@ -495,7 +530,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                       ),
                     ),
                     Text(
-                      itemMap['lowStock'].toStringAsFixed(3) +
+                      itemMap['lowStockWeight'].toStringAsFixed(3) +
                           ' ' +
                           itemMap['unit'],
                       style: TextStyle(
@@ -551,7 +586,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                       ),
                     ),
                     Text(
-                      itemMap['leftStock'].toStringAsFixed(3) +
+                      itemMap['leftStockWeight'].toStringAsFixed(3) +
                           ' ' +
                           itemMap['unit'],
                       style: TextStyle(
@@ -563,7 +598,31 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                   ],
                 ),
               ),
-              Spacer()
+              SizedBox(
+                width: 10,
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Left Piece',
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 14,
+                      ),
+                    ),
+                    Text(
+                      itemMap['leftStockPiece'].toString() + ' PCS',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ],
@@ -576,20 +635,20 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
       title: Text('Add Stock for ' + itemMap['name']),
       content: SingleChildScrollView(
         child: Form(
-          key: _formKey,
+          key: _formKey1,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 15),
                 child: TextFormField(
-                  controller: _addStockQuantity,
+                  controller: _addStockWeight,
                   autofocus: true,
                   decoration: InputDecoration(
                       contentPadding: EdgeInsets.symmetric(horizontal: 10),
                       border: OutlineInputBorder(),
                       hintText: '0.0',
-                      labelText: 'Stock Qunatity',
+                      labelText: 'Add Weight',
                       prefixText: '+ ',
                       suffixText: itemMap['unit']),
                   inputFormatters: [
@@ -600,6 +659,35 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return "This is required";
+                    }
+                    if (double.parse(value) < 0.0) {
+                      return "Keep positive";
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              SizedBox(height: 10),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 15),
+                child: TextFormField(
+                  controller: _addStockPiece,
+                  autofocus: true,
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                    border: OutlineInputBorder(),
+                    hintText: '0',
+                    labelText: 'Add Piece',
+                    prefixText: '+ ',
+                    suffixText: "PCS",
+                  ),
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "This is required";
+                    }
+                    if (int.parse(value) < 0) {
+                      return "Keep positive";
                     }
                     return null;
                   },
@@ -623,9 +711,10 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
           child: const Text('Approve'),
           onPressed: () async {
             FocusScope.of(context).unfocus();
-            if (_formKey.currentState!.validate()) {
+            if (_formKey1.currentState!.validate()) {
               showLoading(context);
               int uniqueId = DateTime.now().millisecondsSinceEpoch;
+
               Map<String, dynamic> stkTxnMap = {
                 'id': uniqueId,
                 'activity': "Add Stock",
@@ -634,13 +723,21 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                 'itemId': itemMap['id'],
                 'unit': itemMap['unit'],
                 'change': '+ ' +
-                    double.parse(_addStockQuantity.text).toStringAsFixed(3),
-                'finalStock':
-                    itemMap['leftStock'] + double.parse(_addStockQuantity.text),
+                    double.parse(_addStockWeight.text).toStringAsFixed(3) +
+                    ' ' +
+                    itemMap['unit'] +
+                    '#+ ' +
+                    _addStockPiece.text +
+                    ' PCS',
+                'finalStockWeight': itemMap['leftStockWeight'] +
+                    double.parse(_addStockWeight.text),
+                'finalStockPiece':
+                    itemMap['leftStockPiece'] + int.parse(_addStockPiece.text),
                 'date': uniqueId
               };
 
-              itemMap['leftStock'] = stkTxnMap['finalStock'];
+              itemMap['leftStockWeight'] = stkTxnMap['finalStockWeight'];
+              itemMap['leftStockPiece'] = stkTxnMap['finalStockPiece'];
               await FirebaseFirestore.instance
                   .collection('users')
                   .doc(UserData.uid)
@@ -653,8 +750,12 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                     .doc(UserData.uid)
                     .collection('items')
                     .doc(itemMap['id'].toString())
-                    .update({'leftStock': stkTxnMap['finalStock']});
-                _addStockQuantity.clear();
+                    .update({
+                  'leftStockWeight': stkTxnMap['finalStockWeight'],
+                  'leftStockPiece': stkTxnMap['finalStockPiece']
+                });
+                _addStockWeight.clear();
+                _addStockPiece.clear();
                 PageRouteTransition.pop(context);
                 PageRouteTransition.pop(context);
               });
@@ -670,19 +771,19 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
       title: Text('Reduce Stock for ' + itemMap['name']),
       content: SingleChildScrollView(
         child: Form(
-          key: _formKey,
+          key: _formKey2,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 15),
                 child: TextFormField(
-                  controller: _reduceStockQuantity,
+                  controller: _reduceStockWeight,
                   decoration: InputDecoration(
                       contentPadding: EdgeInsets.symmetric(horizontal: 10),
                       border: OutlineInputBorder(),
                       hintText: '0.0',
-                      labelText: 'Stock Qunatity',
+                      labelText: 'Reduce Weight',
                       prefixText: '- ',
                       suffixText: itemMap['unit']),
                   inputFormatters: [
@@ -693,6 +794,34 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return "This is required";
+                    }
+                    if (double.parse(value) < 0.0) {
+                      return 'Keep positive';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              SizedBox(height: 10),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 15),
+                child: TextFormField(
+                  controller: _reduceStockPiece,
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                    border: OutlineInputBorder(),
+                    hintText: '0',
+                    labelText: 'Reduce Piece',
+                    prefixText: '- ',
+                    suffixText: "PCS",
+                  ),
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "This is required";
+                    }
+                    if (int.parse(value) < 0) {
+                      return 'Keep positive';
                     }
                     return null;
                   },
@@ -716,9 +845,10 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
           child: const Text('Approve'),
           onPressed: () async {
             FocusScope.of(context).unfocus();
-            if (_formKey.currentState!.validate()) {
+            if (_formKey2.currentState!.validate()) {
               showLoading(context);
               int uniqueId = DateTime.now().millisecondsSinceEpoch;
+
               Map<String, dynamic> stkTxnMap = {
                 'id': uniqueId,
                 'activity': "Reduce Stock",
@@ -727,13 +857,21 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                 'itemId': itemMap['id'],
                 'unit': itemMap['unit'],
                 'change': '- ' +
-                    double.parse(_reduceStockQuantity.text).toStringAsFixed(3),
-                'finalStock': itemMap['leftStock'] -
-                    double.parse(_reduceStockQuantity.text),
+                    double.parse(_reduceStockWeight.text).toStringAsFixed(3) +
+                    ' ' +
+                    itemMap['unit'] +
+                    '#- ' +
+                    _reduceStockPiece.text +
+                    ' PCS',
+                'finalStockWeight': itemMap['leftStockWeight'] -
+                    double.parse(_reduceStockWeight.text),
+                'finalStockPiece': itemMap['leftStockPiece'] -
+                    int.parse(_reduceStockPiece.text),
                 'date': uniqueId
               };
 
-              itemMap['leftStock'] = stkTxnMap['finalStock'];
+              itemMap['leftStockWeight'] = stkTxnMap['finalStockWeight'];
+              itemMap['leftStockPiece'] = stkTxnMap['finalStockPiece'];
               await FirebaseFirestore.instance
                   .collection('users')
                   .doc(UserData.uid)
@@ -746,8 +884,12 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                     .doc(UserData.uid)
                     .collection('items')
                     .doc(itemMap['id'].toString())
-                    .update({'leftStock': stkTxnMap['finalStock']});
-                _reduceStockQuantity.clear();
+                    .update({
+                  'leftStockWeight': stkTxnMap['finalStockWeight'],
+                  'leftStockPiece': stkTxnMap['finalStockPiece']
+                });
+                _reduceStockWeight.clear();
+                _reduceStockPiece.clear();
                 PageRouteTransition.pop(context);
                 PageRouteTransition.pop(context);
               });

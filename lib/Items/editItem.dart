@@ -1,18 +1,88 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:jeweller_billbook/Services/user.dart';
+import 'package:jeweller_billbook/components.dart';
+import 'package:page_route_transition/page_route_transition.dart';
 
 class EditItemUI extends StatefulWidget {
-  const EditItemUI({Key? key}) : super(key: key);
+  final itemMap;
+  const EditItemUI({Key? key, required this.itemMap}) : super(key: key);
 
   @override
-  State<EditItemUI> createState() => _EditItemUIState();
+  State<EditItemUI> createState() => _EditItemUIState(itemMap: itemMap);
 }
 
 class _EditItemUIState extends State<EditItemUI> {
-  List<String> categoryList = ['No Category', 'Gold', 'Silver'];
-  String _selectedCategory = "No Category";
-  final ValueNotifier<bool> _lowStockToggle = ValueNotifier<bool>(false);
+  final itemMap;
+  _EditItemUIState({required this.itemMap});
 
+  int uniqueId = DateTime.now().millisecondsSinceEpoch;
+  final _formKey1 = GlobalKey<FormState>();
+  final _formKey2 = GlobalKey<FormState>();
+  List<String> categoryList = ['No Category'];
+  String _selectedCategory = "No Category";
+  List<String> unitList = ['PCS', 'KGMS', 'GMS'];
+  String _selectedUnit = "GMS";
+  final ValueNotifier<bool> _lowStockToggle = ValueNotifier<bool>(false);
   String _selectedItemType = "Product";
+  final _itemName = new TextEditingController();
+  final _itemCode = new TextEditingController();
+  final _openingStockWeight = new TextEditingController();
+  final _openingStockPiece = new TextEditingController();
+  final _date = new TextEditingController();
+  final _lowStockWeight = new TextEditingController();
+  final _lowStockPiece = new TextEditingController();
+  DateTime selectedDate = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    fetchCategories();
+    _itemName.text = itemMap['name'];
+    _itemCode.text = itemMap['code'];
+    _selectedItemType = itemMap['type'];
+    _selectedUnit = itemMap['unit'];
+    _openingStockWeight.text = itemMap['openingStockWeight'].toString();
+    _openingStockPiece.text = itemMap['openingStockPiece'].toString();
+    _date.text = itemMap['date'];
+    if (itemMap['lowStockWeight'] > 0.0 || itemMap['lowStockPiece'] > 0) {
+      _lowStockToggle.value = !_lowStockToggle.value;
+    }
+    _lowStockWeight.text = itemMap['lowStockWeight'].toString();
+    _lowStockPiece.text = itemMap['lowStockPiece'].toString();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _itemName.dispose();
+    _itemCode.dispose();
+    _openingStockWeight.dispose();
+    _openingStockPiece.dispose();
+    _date.dispose();
+    _lowStockWeight.dispose();
+    _lowStockPiece.dispose();
+  }
+
+  fetchCategories() async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(UserData.uid)
+        .collection('categories')
+        .orderBy('id')
+        .get()
+        .then((value) {
+      if (value.size > 0) {
+        for (int index = 0; index < value.size; index++)
+          categoryList.add(value.docs[index]['name']);
+      }
+    });
+    setState(() {
+      _selectedCategory = itemMap['category'];
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -20,7 +90,7 @@ class _EditItemUIState extends State<EditItemUI> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            "Create New Item",
+            "Edit",
             style: TextStyle(
               color: Colors.black,
               fontSize: 17,
@@ -41,6 +111,37 @@ class _EditItemUIState extends State<EditItemUI> {
             ],
           ),
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: CustomFABButton(
+          onPressed: () {
+            if (_formKey1.currentState!.validate() &&
+                _formKey2.currentState!.validate()) {
+              showLoading(context);
+              Map<String, dynamic> updatedItemMap = {
+                'name': _itemName.text,
+                'code': _itemCode.text,
+                'type': _selectedItemType,
+                'category': _selectedCategory,
+                'unit': _selectedUnit,
+                'date': _date.text,
+                'lowStockWeight': double.parse(_lowStockWeight.text),
+                'lowStockPiece': int.parse(_lowStockPiece.text)
+              };
+              FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(UserData.uid)
+                  .collection('items')
+                  .doc(itemMap['id'].toString())
+                  .update(updatedItemMap)
+                  .then((value) {
+                PageRouteTransition.pop(context);
+                PageRouteTransition.pop(context);
+              });
+            }
+          },
+          icon: Icons.done,
+          label: 'Save',
+        ),
       ),
     );
   }
@@ -49,92 +150,103 @@ class _EditItemUIState extends State<EditItemUI> {
     return Container(
       width: double.infinity,
       color: Colors.white,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TextField(
-            decoration: InputDecoration(
-              contentPadding: EdgeInsets.symmetric(horizontal: 10),
-              border: OutlineInputBorder(),
-              label: Text("Item Name"),
+      child: Form(
+        key: _formKey1,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextFormField(
+              controller: _itemName,
+              decoration: InputDecoration(
+                contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                border: OutlineInputBorder(),
+                label: Text("Item Name"),
+              ),
+              keyboardType: TextInputType.name,
+              textCapitalization: TextCapitalization.words,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'This is required';
+                }
+                return null;
+              },
             ),
-            keyboardType: TextInputType.name,
-            textCapitalization: TextCapitalization.words,
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          TextField(
-            decoration: InputDecoration(
-              contentPadding: EdgeInsets.symmetric(horizontal: 10),
-              border: OutlineInputBorder(),
-              label: Text("Item Code"),
+            SizedBox(
+              height: 10,
             ),
-            keyboardType: TextInputType.name,
-            textCapitalization: TextCapitalization.characters,
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 10.0),
-            child: Text("Item Type"),
-          ),
-          Row(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _selectedItemType = "Product";
-                  });
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(50),
-                    color: _selectedItemType == "Product"
-                        ? Colors.indigo
-                        : Color.fromARGB(255, 220, 226, 255),
-                  ),
-                  child: Text(
-                    "Product",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
+            TextFormField(
+              controller: _itemCode,
+              decoration: InputDecoration(
+                contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                border: OutlineInputBorder(),
+                label: Text("Item Code"),
+              ),
+              keyboardType: TextInputType.name,
+              textCapitalization: TextCapitalization.characters,
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 10.0),
+              child: Text("Item Type"),
+            ),
+            Row(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedItemType = "Product";
+                    });
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(50),
                       color: _selectedItemType == "Product"
-                          ? Colors.white
-                          : Colors.indigo,
+                          ? Colors.indigo
+                          : Color.fromARGB(255, 220, 226, 255),
+                    ),
+                    child: Text(
+                      "Product",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: _selectedItemType == "Product"
+                            ? Colors.white
+                            : Colors.indigo,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _selectedItemType = "Service";
-                  });
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(50),
-                    color: _selectedItemType == "Service"
-                        ? Colors.indigo
-                        : Color.fromARGB(255, 220, 226, 255),
-                  ),
-                  child: Text(
-                    "Service",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
+                SizedBox(
+                  width: 10,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedItemType = "Service";
+                    });
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(50),
                       color: _selectedItemType == "Service"
-                          ? Colors.white
-                          : Colors.indigo,
+                          ? Colors.indigo
+                          : Color.fromARGB(255, 220, 226, 255),
+                    ),
+                    child: Text(
+                      "Service",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: _selectedItemType == "Service"
+                            ? Colors.white
+                            : Colors.indigo,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          )
-        ],
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
@@ -227,7 +339,7 @@ class _EditItemUIState extends State<EditItemUI> {
                       child: Padding(
                         padding: EdgeInsets.only(right: 8.0),
                         child: Text(
-                          'GMS',
+                          value,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -253,7 +365,7 @@ class _EditItemUIState extends State<EditItemUI> {
                 ),
                 child: DropdownButton<String>(
                   isDense: true,
-                  value: _selectedCategory,
+                  value: _selectedUnit,
                   icon: Icon(
                     Icons.keyboard_arrow_down_rounded,
                     size: 17,
@@ -264,17 +376,16 @@ class _EditItemUIState extends State<EditItemUI> {
                   onChanged: (String? value) {
                     // This is called when the user selects an item.
                     setState(() {
-                      _selectedCategory = value!;
+                      _selectedUnit = value!;
                     });
                   },
-                  items: categoryList
-                      .map<DropdownMenuItem<String>>((String value) {
+                  items: unitList.map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: Padding(
                         padding: EdgeInsets.only(right: 8.0),
                         child: Text(
-                          'GMS',
+                          value,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -293,157 +404,272 @@ class _EditItemUIState extends State<EditItemUI> {
   Widget stockTabBar() {
     return Container(
       color: Colors.white,
-      child: ListView(
-        children: [
-          SizedBox(
-            height: 10,
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  decoration: InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                    suffixText: "GMS",
-                    label: Text("Opening Stock"),
-                    border: OutlineInputBorder(),
-                  ),
-                  keyboardType: TextInputType.number,
-                ),
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              Expanded(
-                child: TextField(
-                  decoration: InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                    label: Text("As of Date"),
-                    border: OutlineInputBorder(),
-                  ),
-                  keyboardType: TextInputType.number,
-                ),
-              )
-            ],
-          ),
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                _lowStockToggle.value = !_lowStockToggle.value;
-              });
-            },
-            child: Container(
-              margin: EdgeInsets.only(top: 10),
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              decoration: BoxDecoration(
-                borderRadius: _lowStockToggle.value
-                    ? BorderRadius.only(
-                        topLeft: Radius.circular(10),
-                        topRight: Radius.circular(10),
-                      )
-                    : BorderRadius.circular(10),
-                color: _lowStockToggle.value
-                    ? Color.fromARGB(255, 230, 233, 253)
-                    : Colors.grey.shade100,
-              ),
-              width: double.infinity,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Low Stock Alert",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 15,
-                      color: _lowStockToggle.value
-                          ? Colors.indigo.shade700
-                          : Colors.black,
+      child: Form(
+        key: _formKey2,
+        child: ListView(
+          children: [
+            SizedBox(
+              height: 10,
+            ),
+            Text("Opening Stock"),
+            SizedBox(
+              height: 7,
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: _openingStockWeight,
+                    readOnly: true,
+                    decoration: InputDecoration(
+                      hintText: '0.0',
+                      contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                      suffixText: _selectedUnit,
+                      label: Text("Weight"),
+                      border: OutlineInputBorder(),
                     ),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                          RegExp(r'^\d+\.?\d{0,3}')),
+                    ],
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: true),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        _openingStockWeight.text = '0.0';
+                        return 'This is required';
+                      }
+                      if (double.parse(value) < 0.0) {
+                        return 'Keep positive value';
+                      }
+                      return null;
+                    },
                   ),
-                  Transform.scale(
-                    scale: 1.1,
-                    child: Switch(
-                      onChanged: (value) {
-                        setState(() {
-                          _lowStockToggle.value = !_lowStockToggle.value;
-                        });
-                      },
-                      value: _lowStockToggle.value,
-                      activeColor: Colors.indigoAccent,
-                      activeTrackColor: Colors.indigo.shade100,
-                      inactiveThumbColor: Colors.grey,
-                      inactiveTrackColor: Colors.grey.shade700,
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Expanded(
+                  child: TextFormField(
+                    controller: _openingStockPiece,
+                    readOnly: true,
+                    decoration: InputDecoration(
+                      hintText: '0',
+                      contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                      suffixText: "PCS",
+                      label: Text("Piece"),
+                      border: OutlineInputBorder(),
                     ),
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        _openingStockPiece.text = '0';
+                        return 'This is required';
+                      }
+                      if (int.parse(value) < 0) {
+                        return 'Keep positive value';
+                      }
+                      return null;
+                    },
                   ),
-                ],
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 15,
+            ),
+            TextFormField(
+              readOnly: true,
+              controller: _date,
+              decoration: InputDecoration(
+                contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                label: Text("As of Date"),
+                border: OutlineInputBorder(),
+              ),
+              keyboardType: TextInputType.number,
+            ),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  _lowStockToggle.value = !_lowStockToggle.value;
+                  _lowStockWeight.text = '0.0';
+                  _lowStockPiece.text = '0';
+                });
+              },
+              child: Container(
+                margin: EdgeInsets.only(top: 10),
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                decoration: BoxDecoration(
+                  borderRadius: _lowStockToggle.value
+                      ? BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(10),
+                        )
+                      : BorderRadius.circular(10),
+                  color: _lowStockToggle.value
+                      ? Color.fromARGB(255, 230, 233, 253)
+                      : Colors.grey.shade100,
+                ),
+                width: double.infinity,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Low Stock Alert",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                        color: _lowStockToggle.value
+                            ? Colors.indigo.shade700
+                            : Colors.black,
+                      ),
+                    ),
+                    Transform.scale(
+                      scale: 1.1,
+                      child: Switch(
+                        onChanged: (value) {
+                          setState(() {
+                            _lowStockToggle.value = !_lowStockToggle.value;
+                            _lowStockWeight.text = '0.0';
+                            _lowStockPiece.text = '0';
+                          });
+                        },
+                        value: _lowStockToggle.value,
+                        activeColor: Colors.indigoAccent,
+                        activeTrackColor: Colors.indigo.shade100,
+                        inactiveThumbColor: Colors.grey,
+                        inactiveTrackColor: Colors.grey.shade700,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          AnimatedSize(
-            duration: Duration(milliseconds: 100),
-            child: ValueListenableBuilder<bool>(
-              valueListenable: _lowStockToggle,
-              builder: ((context, lowStockToggle, child) {
-                return lowStockToggle
-                    ? Container(
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Color.fromARGB(255, 237, 240, 255),
-                          borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(10),
-                            bottomRight: Radius.circular(10),
+            AnimatedSize(
+              duration: Duration(milliseconds: 100),
+              child: ValueListenableBuilder<bool>(
+                valueListenable: _lowStockToggle,
+                builder: ((context, lowStockToggle, child) {
+                  return lowStockToggle
+                      ? Container(
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Color.fromARGB(255, 237, 240, 255),
+                            borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(10),
+                              bottomRight: Radius.circular(10),
+                            ),
                           ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  'Low Stock Quantity',
-                                  style: TextStyle(
-                                    letterSpacing: 0.5,
-                                  ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Low Stock Quantity',
+                                style: TextStyle(
+                                  letterSpacing: 0.5,
                                 ),
-                                SizedBox(
-                                  width: 30,
-                                ),
-                                Expanded(
-                                  child: Container(
-                                    color: Colors.white,
-                                    child: TextField(
-                                      decoration: InputDecoration(
-                                        contentPadding: EdgeInsets.symmetric(
-                                            horizontal: 10),
-                                        suffixText: "GMS",
-                                        border: OutlineInputBorder(),
+                              ),
+                              SizedBox(
+                                height: 7,
+                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      color: Colors.white,
+                                      child: TextFormField(
+                                        controller: _lowStockWeight,
+                                        decoration: InputDecoration(
+                                          label: Text("Alert Weight"),
+                                          hintText: '0.0',
+                                          contentPadding: EdgeInsets.symmetric(
+                                              horizontal: 10),
+                                          suffixText: _selectedUnit,
+                                          border: OutlineInputBorder(),
+                                        ),
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter.allow(
+                                              RegExp(r'^\d+\.?\d{0,3}')),
+                                        ],
+                                        keyboardType:
+                                            TextInputType.numberWithOptions(
+                                                decimal: true),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            _lowStockWeight.text = '0.0';
+                                          }
+                                          if (double.parse(value!) < 0.0) {
+                                            return 'Keep positive value';
+                                          }
+                                          return null;
+                                        },
+                                        onChanged: (value) {
+                                          setState(() {});
+                                        },
                                       ),
-                                      keyboardType: TextInputType.number,
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: 15,
-                            ),
-                            Divider(),
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 10),
-                              child: Text(
-                                'You will be notified when stock goes below 0 GMS',
-                                textAlign: TextAlign.start,
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Expanded(
+                                    child: Container(
+                                      color: Colors.white,
+                                      child: TextFormField(
+                                        controller: _lowStockPiece,
+                                        decoration: InputDecoration(
+                                          hintText: '0',
+                                          label: Text("Alert Piece"),
+                                          contentPadding: EdgeInsets.symmetric(
+                                              horizontal: 10),
+                                          suffixText: "PCS",
+                                          border: OutlineInputBorder(),
+                                        ),
+                                        keyboardType: TextInputType.number,
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            _lowStockPiece.text = '0';
+                                          }
+                                          if (int.parse(value!) < 0) {
+                                            return 'Keep positive value';
+                                          }
+                                          return null;
+                                        },
+                                        onChanged: (value) {
+                                          setState(() {});
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : Container();
-              }),
+                              SizedBox(
+                                height: 15,
+                              ),
+                              Divider(),
+                              Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 10),
+                                child: Text(
+                                  'You will be notified when stock goes below ' +
+                                      _lowStockWeight.text +
+                                      ' ' +
+                                      _selectedUnit +
+                                      ' or ' +
+                                      _lowStockPiece.text +
+                                      ' PCS',
+                                  textAlign: TextAlign.start,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : Container();
+                }),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

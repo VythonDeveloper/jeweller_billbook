@@ -7,7 +7,6 @@ import 'package:jeweller_billbook/Items/itemDetails.dart';
 import 'package:jeweller_billbook/Services/user.dart';
 import 'package:jeweller_billbook/Stock/lowStock.dart';
 import 'package:page_route_transition/page_route_transition.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../components.dart';
 
@@ -269,19 +268,40 @@ class _ItemsUiState extends State<ItemsUi> {
                 SizedBox(
                   height: 5,
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                Row(
                   children: [
-                    Text(
-                      "Stock:",
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Left Weight:",
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          itemMap['leftStockWeight'].toStringAsFixed(3) +
+                              ' ' +
+                              itemMap['unit'],
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                      ],
                     ),
-                    Text(
-                      itemMap['leftStock'].toStringAsFixed(3) +
-                          ' ' +
-                          itemMap['unit'],
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Piece:",
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          itemMap['leftStockPiece'].toString() + ' PCS',
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                      ],
                     ),
                   ],
                 ),

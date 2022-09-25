@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:jeweller_billbook/Services/user.dart';
 import 'package:jeweller_billbook/components.dart';
 import 'package:page_route_transition/page_route_transition.dart';
@@ -23,16 +24,29 @@ class _CreateItemUiState extends State<CreateItemUi> {
   String _selectedItemType = "Product";
   final _itemName = new TextEditingController();
   final _itemCode = new TextEditingController();
-  final _openingStock = new TextEditingController();
+  final _openingStockWeight = new TextEditingController();
+  final _openingStockPiece = new TextEditingController();
   final _date = new TextEditingController();
-  final _lowStock = new TextEditingController();
+  final _lowStockWeight = new TextEditingController();
+  final _lowStockPiece = new TextEditingController();
   DateTime selectedDate = DateTime.now();
+
+  @override
+  void dispose() {
+    super.dispose();
+    _itemName.dispose();
+    _itemCode.dispose();
+    _openingStockWeight.dispose();
+    _openingStockPiece.dispose();
+    _date.dispose();
+    _lowStockWeight.dispose();
+    _lowStockPiece.dispose();
+  }
 
   @override
   void initState() {
     super.initState();
     fetchCategories();
-    _lowStock.text = '0.0';
     _date.text = selectedDate.day.toString() +
         '-' +
         selectedDate.month.toString() +
@@ -72,16 +86,6 @@ class _CreateItemUiState extends State<CreateItemUi> {
             '-' +
             selectedDate.year.toString();
       });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _itemName.dispose();
-    _itemCode.dispose();
-    _openingStock.dispose();
-    _date.dispose();
-    _lowStock.dispose();
   }
 
   @override
@@ -125,10 +129,13 @@ class _CreateItemUiState extends State<CreateItemUi> {
                 'type': _selectedItemType,
                 'category': _selectedCategory,
                 'unit': _selectedUnit,
-                'openingStock': double.parse(_openingStock.text),
-                'leftStock': double.parse(_openingStock.text),
+                'openingStockWeight': double.parse(_openingStockWeight.text),
+                'openingStockPiece': int.parse(_openingStockPiece.text),
+                'leftStockWeight': double.parse(_openingStockWeight.text),
+                'leftStockPiece': int.parse(_openingStockPiece.text),
                 'date': _date.text,
-                'lowStock': double.parse(_lowStock.text)
+                'lowStockWeight': double.parse(_lowStockWeight.text),
+                'lowStockPiece': int.parse(_lowStockPiece.text)
               };
               FirebaseFirestore.instance
                   .collection('users')
@@ -138,6 +145,7 @@ class _CreateItemUiState extends State<CreateItemUi> {
                   .set(itemMap)
                   .then((value) {
                 uniqueId = DateTime.now().millisecondsSinceEpoch;
+
                 Map<String, dynamic> stkTxnMap = {
                   'id': uniqueId,
                   'activity': "Opening Stock",
@@ -145,8 +153,15 @@ class _CreateItemUiState extends State<CreateItemUi> {
                   'itemCategory': itemMap['category'],
                   'itemId': itemMap['id'],
                   'unit': itemMap['unit'],
-                  'change': '+ ' + itemMap['openingStock'].toStringAsFixed(3),
-                  'finalStock': itemMap['openingStock'],
+                  'change': '+ ' +
+                      itemMap['openingStockWeight'].toStringAsFixed(3) +
+                      ' ' +
+                      itemMap['unit'] +
+                      '#+ ' +
+                      itemMap['openingStockPiece'].toString() +
+                      ' PCS',
+                  'finalStockWeight': itemMap['leftStockWeight'],
+                  'finalStockPiece': itemMap['leftStockPiece'],
                   'date': uniqueId
                 };
 
@@ -434,21 +449,31 @@ class _CreateItemUiState extends State<CreateItemUi> {
             SizedBox(
               height: 10,
             ),
+            Text("Opening Stock"),
+            SizedBox(
+              height: 7,
+            ),
             Row(
               children: [
                 Expanded(
                   child: TextFormField(
-                    controller: _openingStock,
+                    controller: _openingStockWeight,
                     decoration: InputDecoration(
+                      hintText: '0.0',
                       contentPadding: EdgeInsets.symmetric(horizontal: 10),
                       suffixText: _selectedUnit,
-                      label: Text("Opening Stock"),
+                      label: Text("Weight"),
                       border: OutlineInputBorder(),
                     ),
-                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                          RegExp(r'^\d+\.?\d{0,3}')),
+                    ],
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: true),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        _openingStock.text = '0.0';
+                        _openingStockWeight.text = '0.0';
                         return 'This is required';
                       }
                       if (double.parse(value) < 0.0) {
@@ -463,20 +488,44 @@ class _CreateItemUiState extends State<CreateItemUi> {
                 ),
                 Expanded(
                   child: TextFormField(
-                    onTap: () {
-                      _selectDate(context);
-                    },
-                    readOnly: true,
-                    controller: _date,
+                    controller: _openingStockPiece,
                     decoration: InputDecoration(
+                      hintText: '0',
                       contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                      label: Text("As of Date"),
+                      suffixText: "PCS",
+                      label: Text("Piece"),
                       border: OutlineInputBorder(),
                     ),
                     keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        _openingStockPiece.text = '0';
+                        return 'This is required';
+                      }
+                      if (int.parse(value) < 0) {
+                        return 'Keep positive value';
+                      }
+                      return null;
+                    },
                   ),
-                )
+                ),
               ],
+            ),
+            SizedBox(
+              height: 15,
+            ),
+            TextFormField(
+              onTap: () {
+                _selectDate(context);
+              },
+              readOnly: true,
+              controller: _date,
+              decoration: InputDecoration(
+                contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                label: Text("As of Date"),
+                border: OutlineInputBorder(),
+              ),
+              keyboardType: TextInputType.number,
             ),
             GestureDetector(
               onTap: () {
@@ -549,37 +598,80 @@ class _CreateItemUiState extends State<CreateItemUi> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
+                              Text(
+                                'Low Stock Quantity',
+                                style: TextStyle(
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 7,
+                              ),
                               Row(
                                 children: [
-                                  Text(
-                                    'Low Stock Quantity',
-                                    style: TextStyle(
-                                      letterSpacing: 0.5,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 30,
-                                  ),
                                   Expanded(
                                     child: Container(
                                       color: Colors.white,
                                       child: TextFormField(
-                                        controller: _lowStock,
+                                        controller: _lowStockWeight,
                                         decoration: InputDecoration(
+                                          label: Text("Alert Weight"),
+                                          hintText: '0.0',
                                           contentPadding: EdgeInsets.symmetric(
                                               horizontal: 10),
                                           suffixText: _selectedUnit,
                                           border: OutlineInputBorder(),
                                         ),
-                                        keyboardType: TextInputType.number,
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter.allow(
+                                              RegExp(r'^\d+\.?\d{0,3}')),
+                                        ],
+                                        keyboardType:
+                                            TextInputType.numberWithOptions(
+                                                decimal: true),
                                         validator: (value) {
                                           if (value == null || value.isEmpty) {
-                                            _lowStock.text = '0.0';
+                                            _lowStockWeight.text = '0.0';
                                           }
                                           if (double.parse(value!) < 0.0) {
                                             return 'Keep positive value';
                                           }
                                           return null;
+                                        },
+                                        onChanged: (value) {
+                                          setState(() {});
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Expanded(
+                                    child: Container(
+                                      color: Colors.white,
+                                      child: TextFormField(
+                                        controller: _lowStockPiece,
+                                        decoration: InputDecoration(
+                                          hintText: '0',
+                                          label: Text("Alert Piece"),
+                                          contentPadding: EdgeInsets.symmetric(
+                                              horizontal: 10),
+                                          suffixText: "PCS",
+                                          border: OutlineInputBorder(),
+                                        ),
+                                        keyboardType: TextInputType.number,
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            _lowStockPiece.text = '0';
+                                          }
+                                          if (int.parse(value!) < 0) {
+                                            return 'Keep positive value';
+                                          }
+                                          return null;
+                                        },
+                                        onChanged: (value) {
+                                          setState(() {});
                                         },
                                       ),
                                     ),
@@ -595,9 +687,12 @@ class _CreateItemUiState extends State<CreateItemUi> {
                                     horizontal: 20, vertical: 10),
                                 child: Text(
                                   'You will be notified when stock goes below ' +
-                                      _lowStock.text +
+                                      _lowStockWeight.text +
                                       ' ' +
-                                      _selectedUnit,
+                                      _selectedUnit +
+                                      ' or ' +
+                                      _lowStockPiece.text +
+                                      ' PCS',
                                   textAlign: TextAlign.start,
                                 ),
                               ),

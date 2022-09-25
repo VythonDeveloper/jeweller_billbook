@@ -97,7 +97,8 @@ class _LowStockUIState extends State<LowStockUI> {
                 itemCount: snapshot.data.docs.length,
                 itemBuilder: (context, index) {
                   var itemMap = snapshot.data.docs[index];
-                  if (itemMap['leftStock'] < itemMap['lowStock']) {
+                  if (itemMap['leftStockPiece'] < itemMap['lowStockPiece'] ||
+                      itemMap['leftStockWeight'] < itemMap['lowStockWeight']) {
                     return itemsCard(itemMap: itemMap);
                   }
                   return SizedBox();
@@ -146,19 +147,40 @@ class _LowStockUIState extends State<LowStockUI> {
                 SizedBox(
                   height: 5,
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                Row(
                   children: [
-                    Text(
-                      "Stock:",
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Left Weight:",
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          itemMap['leftStockWeight'].toStringAsFixed(3) +
+                              ' ' +
+                              itemMap['unit'],
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                      ],
                     ),
-                    Text(
-                      itemMap['leftStock'].toStringAsFixed(3) +
-                          ' ' +
-                          itemMap['unit'],
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Piece:",
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          itemMap['leftStockPiece'].toString() + ' PCS',
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                      ],
                     ),
                   ],
                 ),
