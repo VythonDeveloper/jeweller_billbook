@@ -24,6 +24,7 @@ class _DashboardUiState extends State<DashboardUi> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Row(
           children: [
             Icon(Icons.book),

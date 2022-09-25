@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jeweller_billbook/services/auth.dart';
 
 class MoreUI extends StatefulWidget {
   const MoreUI({super.key});
@@ -13,6 +14,12 @@ class _MoreUIState extends State<MoreUI> {
     return Scaffold(
       appBar: AppBar(
         title: Text('More'),
+      ),
+      body: MaterialButton(
+        onPressed: () {
+          AuthMethods().signOut(context);
+        },
+        child: Text('Logout'),
       ),
     );
   }

@@ -2,7 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jeweller_billbook/Home/home.dart';
-import 'package:jeweller_billbook/Signin/loginUI.dart';
+import 'package:jeweller_billbook/Signin/welcomeUI.dart';
 import 'package:jeweller_billbook/services/auth.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 

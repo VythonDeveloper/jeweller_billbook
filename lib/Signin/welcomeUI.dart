@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:jeweller_billbook/Signin/emailLoginUI.dart';
+import 'package:jeweller_billbook/Signin/emailRegisterUI.dart';
+import 'package:jeweller_billbook/colors.dart';
+import 'package:page_route_transition/page_route_transition.dart';
 
 import '../services/auth.dart';
 
@@ -60,7 +64,7 @@ class _LoginUIState extends State<LoginUI> {
                                   style: TextStyle(
                                     fontSize: 100,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.grey.shade200,
+                                    color: primaryAccentColor,
                                   ),
                                 ),
                                 Text(
@@ -68,7 +72,7 @@ class _LoginUIState extends State<LoginUI> {
                                   style: TextStyle(
                                     fontSize: 50,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.grey.shade600,
+                                    color: primaryColor,
                                   ),
                                 ),
                               ],
@@ -102,21 +106,91 @@ class _LoginUIState extends State<LoginUI> {
                               setState(() => _isLoading = false);
                             }
                           },
-                          color: Colors.grey.shade300,
+                          color: Colors.grey.shade100,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Container(
+                            alignment: Alignment.topLeft,
                             width: double.infinity,
                             padding: EdgeInsets.symmetric(vertical: 20),
-                            child: Text(
-                              'Google',
-                              style: TextStyle(
-                                fontSize: 16,
-                              ),
+                            child: Image.asset(
+                              'lib/assets/icons/google.png',
+                              height: 20,
                             ),
                           ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          'OR Login with',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        MaterialButton(
+                          onPressed: () {
+                            PageRouteTransition.push(context, EmailLoginUI());
+                          },
+                          color: Colors.grey.shade100,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Container(
+                            alignment: Alignment.topLeft,
+                            width: double.infinity,
+                            padding: EdgeInsets.symmetric(vertical: 20),
+                            child: Row(
+                              children: [
+                                Icon(Icons.email),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text('Email / Password'),
+                              ],
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Don\'t have an Account?',
+                            ),
+                            SizedBox(
+                              width: 20,
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                PageRouteTransition.push(
+                                    context, EmailRegisterUI());
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: primaryColor,
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 5),
+                                child: Text(
+                                  'Create Account',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),

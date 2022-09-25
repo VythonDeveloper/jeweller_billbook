@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:jeweller_billbook/Home/home.dart';
-import 'package:jeweller_billbook/Signin/loginUI.dart';
+import 'package:jeweller_billbook/Signin/welcomeUI.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'database.dart';
@@ -88,8 +88,135 @@ class AuthMethods {
     }
   }
 
+  //--------------------------------------->
+  ///  SIGN UP USER
+
+  Future<String> registerWithEmailandPassword(
+    BuildContext context,
+    String email,
+    String password,
+    String name,
+  ) async {
+    String res = 'Some error occurred';
+    try {
+      if (email.isNotEmpty || password.isNotEmpty || name.isNotEmpty) {
+        ///  REGISTER THE USER
+        UserCredential cred = await auth.createUserWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+        final username = email.split('@').first;
+
+        Map<String, dynamic> userInfoMap = {
+          'uid': cred.user!.uid,
+          'email': email,
+          'imgUrl': '',
+          'name': name,
+          'username': username,
+        };
+
+        final SharedPreferences prefs = await _prefs;
+
+        prefs.setString('USERKEY', cred.user!.uid);
+        prefs.setString('USERDISPLAYNAMEKEY', name);
+        prefs.setString('USERNAMEKEY', username);
+        prefs.setString('USEREMAILKEY', email);
+        prefs.setString('USERPROFILEKEY', '');
+
+        // print('UID from preference -----> ' +
+        //     prefs.getString('USERKEY').toString());
+
+        UserData.uid = cred.user!.uid;
+        UserData.email = email;
+        UserData.userDisplayName = name;
+        UserData.username = username;
+        UserData.profileUrl = '';
+
+        ///   ADD USER TO DATABASE
+        await _dbMethods
+            .addUserInfoToDB(cred.user!.uid, userInfoMap)
+            .then((value) {
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => HomePage()));
+        });
+
+        res = 'success';
+
+        ///////////////////////////////////////////////////
+      }
+    } on FirebaseAuthException catch (e) {
+      print(e);
+      if (e.code == 'invalid-email') {
+        res = 'The email is badly formatted';
+      }
+      if (e.code == 'email-already-in-use') {
+        res = 'This email is already in use';
+      }
+    } catch (e) {
+      res = e.toString();
+    }
+    return res;
+  }
+
+  //  LOGGING IN USER
+  Future<String> emailLogInUser({
+    required String email,
+    required String password,
+  }) async {
+    String res = 'Some error occurred';
+    try {
+      if (email.isNotEmpty || password.isNotEmpty) {
+        final cred = await auth.signInWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(cred.user!.uid)
+            .get()
+            .then((value) async {
+          UserData.uid = cred.user!.uid;
+          UserData.email = value.data()!['email'];
+          UserData.userDisplayName = value.data()!['name'];
+          UserData.username = value.data()!['username'];
+          UserData.profileUrl = '';
+
+          final SharedPreferences prefs = await _prefs;
+
+          prefs.setString('USERKEY', cred.user!.uid);
+          prefs.setString('USERDISPLAYNAMEKEY', value.data()!['name']);
+          prefs.setString('USERNAMEKEY', value.data()!['username']);
+          prefs.setString('USEREMAILKEY', value.data()!['email']);
+          prefs.setString('USERPROFILEKEY', '');
+        });
+
+        res = 'Success';
+
+        //----------------------------->
+      } else {
+        res = 'Please fill all the fields';
+      }
+    } on FirebaseAuthException catch (err) {
+      print(err);
+      if (err.code == 'invalid-email') {
+        res = 'Invalid Email Format';
+      } else if (err.code == 'user-not-found') {
+        res = 'User not found';
+      } else if (err.code == 'wrong-password') {
+        res = 'Invalid Password';
+      } else if (err.code == 'user-disabled') {
+        res = 'User Disabled';
+      }
+    } catch (e) {
+      res = e.toString();
+    }
+
+    return res;
+  }
+
+  //------------------------------------------>
   signOut(BuildContext context) async {
-    print('object');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.clear();
     await auth.signOut();
