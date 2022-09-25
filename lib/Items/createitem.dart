@@ -145,7 +145,7 @@ class _CreateItemUiState extends State<CreateItemUi> {
                   'itemCategory': itemMap['category'],
                   'itemId': itemMap['id'],
                   'unit': itemMap['unit'],
-                  'change': '+ ' + itemMap['openingStock'].toStringAsFixed(2),
+                  'change': '+ ' + itemMap['openingStock'].toStringAsFixed(3),
                   'finalStock': itemMap['openingStock'],
                   'date': uniqueId
                 };

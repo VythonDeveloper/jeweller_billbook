@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:jeweller_billbook/Items/editItem.dart';
 import 'package:jeweller_billbook/Services/user.dart';
 import 'package:jeweller_billbook/components.dart';
+import 'package:jeweller_billbook/constants.dart';
 import 'package:page_route_transition/page_route_transition.dart';
+import 'dart:math' as math;
+import 'package:flutter/services.dart';
 
 class ItemDetailsUI extends StatefulWidget {
   final itemId;
@@ -234,7 +237,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                 ),
               ),
               Text(
-                itemMap['leftStock'].toStringAsFixed(2) + ' ' + itemMap['unit'],
+                itemMap['leftStock'].toStringAsFixed(3) + ' ' + itemMap['unit'],
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 15,
@@ -365,9 +368,17 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                         },
                       );
                     }
-                    return Text("No Data");
+                    return Center(
+                      child: Text(
+                        "No Data",
+                        style: TextStyle(
+                            fontSize: 15, fontWeight: FontWeight.w700),
+                      ),
+                    );
                   }
-                  return LinearProgressIndicator();
+                  return LinearProgressIndicator(
+                    minHeight: 3,
+                  );
                 }),
               ),
             ],
@@ -392,7 +403,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                Text(stkTxnMap['date'].toString()),
+                Text(Constants.dateFormat(stkTxnMap['date'])),
               ],
             ),
           ),
@@ -404,7 +415,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
           Expanded(
             child: Align(
               alignment: Alignment.topRight,
-              child: Text(stkTxnMap['finalStock'].toStringAsFixed(2) +
+              child: Text(stkTxnMap['finalStock'].toStringAsFixed(3) +
                   ' ' +
                   stkTxnMap['unit']),
             ),
@@ -484,7 +495,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                       ),
                     ),
                     Text(
-                      itemMap['lowStock'].toStringAsFixed(2) +
+                      itemMap['lowStock'].toStringAsFixed(3) +
                           ' ' +
                           itemMap['unit'],
                       style: TextStyle(
@@ -540,7 +551,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                       ),
                     ),
                     Text(
-                      itemMap['leftStock'].toStringAsFixed(2) +
+                      itemMap['leftStock'].toStringAsFixed(3) +
                           ' ' +
                           itemMap['unit'],
                       style: TextStyle(
@@ -573,14 +584,19 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                 padding: EdgeInsets.symmetric(horizontal: 15),
                 child: TextFormField(
                   controller: _addStockQuantity,
+                  autofocus: true,
                   decoration: InputDecoration(
                       contentPadding: EdgeInsets.symmetric(horizontal: 10),
                       border: OutlineInputBorder(),
                       hintText: '0.0',
                       labelText: 'Stock Qunatity',
-                      prefixText: '+',
+                      prefixText: '+ ',
                       suffixText: itemMap['unit']),
-                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(
+                        RegExp(r'^\d+\.?\d{0,3}')),
+                  ],
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return "This is required";
@@ -618,7 +634,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                 'itemId': itemMap['id'],
                 'unit': itemMap['unit'],
                 'change': '+ ' +
-                    double.parse(_addStockQuantity.text).toStringAsFixed(2),
+                    double.parse(_addStockQuantity.text).toStringAsFixed(3),
                 'finalStock':
                     itemMap['leftStock'] + double.parse(_addStockQuantity.text),
                 'date': uniqueId
@@ -667,9 +683,13 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                       border: OutlineInputBorder(),
                       hintText: '0.0',
                       labelText: 'Stock Qunatity',
-                      prefixText: '-',
+                      prefixText: '- ',
                       suffixText: itemMap['unit']),
-                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(
+                        RegExp(r'^\d+\.?\d{0,3}')),
+                  ],
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return "This is required";
@@ -707,7 +727,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                 'itemId': itemMap['id'],
                 'unit': itemMap['unit'],
                 'change': '- ' +
-                    double.parse(_reduceStockQuantity.text).toStringAsFixed(2),
+                    double.parse(_reduceStockQuantity.text).toStringAsFixed(3),
                 'finalStock': itemMap['leftStock'] -
                     double.parse(_reduceStockQuantity.text),
                 'date': uniqueId

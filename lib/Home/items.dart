@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:jeweller_billbook/Items/createitem.dart';
 import 'package:jeweller_billbook/Category/itemcategory.dart';
@@ -22,43 +23,7 @@ class _ItemsUiState extends State<ItemsUi> {
   List<String> categoryList = ['All Categories'];
   String _selectedCategory = "All Categories";
 
-  @override
-  void initState() {
-    super.initState();
-    _firebaseItems();
-  }
-
-  void userDetails() async {
-    final SharedPreferences prefs = await _prefs;
-
-    UserData.uid = prefs.getString('USERKEY')!;
-    UserData.username = prefs.getString('USERNAMEKEY')!;
-    UserData.userDisplayName = prefs.getString('USERDISPLAYNAMEKEY')!;
-    UserData.email = prefs.getString('USEREMAILKEY')!;
-    UserData.profileUrl = prefs.getString('USERPROFILEKEY')!;
-    setState(() {});
-  }
-
   QuerySnapshot<Map<String, dynamic>>? initData;
-  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-
-  void _firebaseItems() async {
-    final SharedPreferences prefs = await _prefs;
-    UserData.uid == ''
-        ? UserData.uid = prefs.getString('USERKEY')!
-        : await FirebaseFirestore.instance
-            .collection('users')
-            .doc(UserData.uid)
-            .collection("items")
-            .orderBy('id')
-            .get()
-            .then((value) {
-            initData = value;
-            setState(() {});
-          });
-
-    setState(() {});
-  }
 
   @override
   void dispose() {
@@ -237,7 +202,12 @@ class _ItemsUiState extends State<ItemsUi> {
 
   Widget itemsList() {
     return FutureBuilder<dynamic>(
-        future: initData,
+        future: FirebaseFirestore.instance
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .collection("items")
+            .orderBy('id')
+            .get(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             if (snapshot.data.docs.length > 0) {
@@ -258,9 +228,13 @@ class _ItemsUiState extends State<ItemsUi> {
                     }
                     return SizedBox();
                   });
-            } else {
-              return Text("No Category");
             }
+            return Center(
+              child: Text(
+                "No Items",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+              ),
+            );
           }
           return LinearProgressIndicator(
             minHeight: 3,
@@ -304,7 +278,7 @@ class _ItemsUiState extends State<ItemsUi> {
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      itemMap['leftStock'].toStringAsFixed(2) +
+                      itemMap['leftStock'].toStringAsFixed(3) +
                           ' ' +
                           itemMap['unit'],
                       style: TextStyle(fontWeight: FontWeight.w600),
@@ -390,7 +364,7 @@ class _ItemsUiState extends State<ItemsUi> {
                   print(value.toString());
                   setModalState(() {
                     _selectedCategory = value.toString();
-                    print('_selectedCategory - ' + _selectedCategory);
+                    // print('_selectedCategory - ' + _selectedCategory);
                   });
                 },
               ),

@@ -104,9 +104,16 @@ class _LowStockUIState extends State<LowStockUI> {
                 },
               );
             }
-            return Text("No Data");
+            return Center(
+              child: Text(
+                "No Low Stock Items",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+              ),
+            );
           }
-          return LinearProgressIndicator();
+          return LinearProgressIndicator(
+            minHeight: 3,
+          );
         }),
       ),
     );
@@ -148,7 +155,7 @@ class _LowStockUIState extends State<LowStockUI> {
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      itemMap['leftStock'].toStringAsFixed(2) +
+                      itemMap['leftStock'].toStringAsFixed(3) +
                           ' ' +
                           itemMap['unit'],
                       style: TextStyle(fontWeight: FontWeight.w600),
