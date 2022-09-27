@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.futureguard.jeweller.billbook">
+    package="com.futureguard.jeweller.stockbook">
    <application
         android:label="jeweller_billbook"
         android:name="${applicationName}"

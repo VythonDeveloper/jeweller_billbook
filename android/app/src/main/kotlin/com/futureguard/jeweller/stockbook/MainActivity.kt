@@ -1,4 +1,4 @@
-package com.futureguard.jeweller.billbook
+package com.futureguard.jeweller.stockbook
 
 import io.flutter.embedding.android.FlutterActivity
 
