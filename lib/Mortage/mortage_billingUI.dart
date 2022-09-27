@@ -36,6 +36,10 @@ class _MortageBillingUIState extends State<MortageBillingUI> {
   //--------------------------->
 
   _calculateMortage() {
+    _tenureController.text =
+        _tenureController.text.toString().replaceAll('-', '');
+    _principleAmountController.text =
+        _principleAmountController.text.toString().replaceAll('-', '');
     int PA = int.parse(_principleAmountController.text);
     returnAmount = PA + (PA * (_interest * int.parse(_tenureController.text)));
     setState(() {});
@@ -224,7 +228,7 @@ class _MortageBillingUIState extends State<MortageBillingUI> {
                     keyboardType:
                         TextInputType.numberWithOptions(decimal: true),
                     textCapitalization: TextCapitalization.words,
-                    onChanged: (_) {
+                    onChanged: (value) {
                       _calculateMortage();
                     },
                     validator: (value) {
