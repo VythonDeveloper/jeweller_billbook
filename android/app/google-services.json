@@ -7,20 +7,12 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:544489735185:android:effe54275c82662690ddb0",
+        "mobilesdk_app_id": "1:544489735185:android:e88d7488e386e66990ddb0",
         "android_client_info": {
-          "package_name": "com.futureguard.jeweller.billbook"
+          "package_name": "com.futureguard.jeweller.stockbook"
         }
       },
       "oauth_client": [
-        {
-          "client_id": "544489735185-3br02it39052h25v5t1ueiarqrhuj9el.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.futureguard.jeweller.billbook",
-            "certificate_hash": "3bf8a6f3ce7f493db83eb1595ea4145936942d54"
-          }
-        },
         {
           "client_id": "544489735185-ks6fv98m0ktk25q0qenqq4q5ubtshrnb.apps.googleusercontent.com",
           "client_type": 3

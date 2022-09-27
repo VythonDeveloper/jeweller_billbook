@@ -1,4 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:jeweller_stockbook/components.dart';
+import 'package:jeweller_stockbook/constants.dart';
+import 'package:page_route_transition/page_route_transition.dart';
 
 class MortageBillingUI extends StatefulWidget {
   const MortageBillingUI({super.key});
@@ -18,8 +22,9 @@ class _MortageBillingUIState extends State<MortageBillingUI> {
   final _formKey = GlobalKey<FormState>();
   static const _interest = 0.02;
   double returnAmount = 0.0;
+  int uniqueId = DateTime.now().millisecondsSinceEpoch;
 
-  String _selectedWeight = 'GMS';
+  String _selectedWeight = Constants.unitList[0];
   DateTime selectedDate = DateTime.now();
 
   @override
@@ -33,7 +38,17 @@ class _MortageBillingUIState extends State<MortageBillingUI> {
         selectedDate.year.toString();
   }
 
-  //--------------------------->
+  @override
+  void dispose() {
+    super.dispose();
+    _customerNameController.dispose();
+    _customerPhoneController.dispose();
+    _itemDescriptionController.dispose();
+    _itemWeightController.dispose();
+    _principleAmountController.dispose();
+    _tenureController.dispose();
+    _dateController.dispose();
+  }
 
   _calculateMortage() {
     _tenureController.text =
@@ -179,7 +194,7 @@ class _MortageBillingUIState extends State<MortageBillingUI> {
                         _selectedWeight = value!;
                       });
                     },
-                    items: ['GMS', 'KGS', 'TON']
+                    items: Constants.unitList
                         .map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
@@ -285,6 +300,68 @@ class _MortageBillingUIState extends State<MortageBillingUI> {
             ),
           ],
         ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: CustomFABButton(
+        onPressed: () {
+          if (_formKey.currentState!.validate()) {
+            showLoading(context);
+            Map<String, dynamic> itemMap = {
+              'id': uniqueId,
+              'name': _customerNameController.text,
+              'mobile': "+91" + _customerPhoneController.text,
+              'description': _itemDescriptionController.text,
+              'date': _dateController.text,
+              'weight': double.parse(_itemWeightController.text),
+              'unit': _selectedWeight,
+              'principalAmount': double.parse(_principleAmountController.text),
+              'tenure': double.parse(_tenureController.text),
+              'expiryDate': _expiryDate,
+              'returnAmount': returnAmount,
+              'status': "Ongoing",
+            };
+            FirebaseFirestore.instance
+                .collection('users')
+                .doc(UserData.uid)
+                .collection('items')
+                .doc(uniqueId.toString())
+                .set(itemMap)
+                .then((value) {
+              uniqueId = DateTime.now().millisecondsSinceEpoch;
+
+              Map<String, dynamic> stkTxnMap = {
+                'id': uniqueId,
+                'activity': "Opening Stock",
+                'itemName': itemMap['name'],
+                'itemCategory': itemMap['category'],
+                'itemId': itemMap['id'],
+                'unit': itemMap['unit'],
+                'change': '+ ' +
+                    itemMap['openingStockWeight'].toStringAsFixed(3) +
+                    ' ' +
+                    itemMap['unit'] +
+                    '#+ ' +
+                    itemMap['openingStockPiece'].toString() +
+                    ' PCS',
+                'finalStockWeight': itemMap['leftStockWeight'],
+                'finalStockPiece': itemMap['leftStockPiece'],
+                'date': uniqueId
+              };
+
+              FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(UserData.uid)
+                  .collection('stockTransaction')
+                  .doc(uniqueId.toString())
+                  .set(stkTxnMap);
+
+              PageRouteTransition.pop(context);
+              PageRouteTransition.pop(context);
+            });
+          }
+        },
+        icon: Icons.done,
+        label: 'Save',
       ),
     );
   }

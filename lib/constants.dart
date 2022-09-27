@@ -6,4 +6,6 @@ class Constants {
     var date = DateFormat('dd/MM/yyyy').format(dt);
     return date;
   }
+
+  static List<String> unitList = ['GMS', 'KGMS', 'PCS'];
 }

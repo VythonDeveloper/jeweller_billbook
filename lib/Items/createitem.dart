@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jeweller_stockbook/Services/user.dart';
 import 'package:jeweller_stockbook/components.dart';
+import 'package:jeweller_stockbook/constants.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 
 class CreateItemUi extends StatefulWidget {
@@ -18,8 +19,7 @@ class _CreateItemUiState extends State<CreateItemUi> {
   final _formKey2 = GlobalKey<FormState>();
   List<String> categoryList = ['No Category'];
   String _selectedCategory = "No Category";
-  List<String> unitList = ['PCS', 'KGMS', 'GMS'];
-  String _selectedUnit = "GMS";
+  String _selectedUnit = Constants.unitList[0];
   final ValueNotifier<bool> _lowStockToggle = ValueNotifier<bool>(false);
   String _selectedItemType = "Product";
   final _itemName = new TextEditingController();
@@ -417,7 +417,8 @@ class _CreateItemUiState extends State<CreateItemUi> {
                       _selectedUnit = value!;
                     });
                   },
-                  items: unitList.map<DropdownMenuItem<String>>((String value) {
+                  items: Constants.unitList
+                      .map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: Padding(
