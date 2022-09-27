@@ -281,7 +281,10 @@ Widget CustomTextField(
       obscureText: obsecureText,
       decoration: InputDecoration(
         contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-        prefixIcon: icon,
+        prefixIcon: Icon(
+          icon,
+          size: 17,
+        ),
         labelText: label,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),

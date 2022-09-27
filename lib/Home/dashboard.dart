@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jeweller_billbook/Mortage/mortage_billingUI.dart';
 import 'package:jeweller_billbook/Services/user.dart';
 import 'package:jeweller_billbook/Stock/lowStock.dart';
 import 'package:jeweller_billbook/components.dart';
@@ -57,7 +58,7 @@ class _DashboardUiState extends State<DashboardUi> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: CustomFABButton(
         onPressed: () {
-          print(UserData.uid);
+          PageRouteTransition.push(context, MortageBillingUI());
         },
         icon: Icons.receipt,
         label: 'Mortage Billing',
