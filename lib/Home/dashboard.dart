@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:jeweller_billbook/Mortage/mortage_billingUI.dart';
-import 'package:jeweller_billbook/Services/user.dart';
-import 'package:jeweller_billbook/Stock/lowStock.dart';
-import 'package:jeweller_billbook/components.dart';
+import 'package:jeweller_stockbook/Mortage/mortage_billingUI.dart';
+import 'package:jeweller_stockbook/Services/user.dart';
+import 'package:jeweller_stockbook/Stock/lowStock.dart';
+import 'package:jeweller_stockbook/components.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

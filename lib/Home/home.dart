@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:jeweller_billbook/Home/dashboard.dart';
-import 'package:jeweller_billbook/Home/items.dart';
-import 'package:jeweller_billbook/Home/more.dart';
+import 'package:jeweller_stockbook/Home/dashboard.dart';
+import 'package:jeweller_stockbook/Home/items.dart';
+import 'package:jeweller_stockbook/Home/more.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);

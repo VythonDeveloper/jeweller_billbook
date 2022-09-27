@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jeweller_billbook/services/auth.dart';
+import 'package:jeweller_stockbook/services/auth.dart';
 
 class MoreUI extends StatefulWidget {
   const MoreUI({super.key});

@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:jeweller_billbook/Items/createitem.dart';
-import 'package:jeweller_billbook/Category/itemcategory.dart';
-import 'package:jeweller_billbook/Items/itemDetails.dart';
-import 'package:jeweller_billbook/Services/user.dart';
-import 'package:jeweller_billbook/Stock/lowStock.dart';
+import 'package:jeweller_stockbook/Items/createitem.dart';
+import 'package:jeweller_stockbook/Category/itemcategory.dart';
+import 'package:jeweller_stockbook/Items/itemDetails.dart';
+import 'package:jeweller_stockbook/Services/user.dart';
+import 'package:jeweller_stockbook/Stock/lowStock.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 
 import '../components.dart';

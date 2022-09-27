@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:jeweller_billbook/Signin/emailLoginUI.dart';
-import 'package:jeweller_billbook/Signin/emailRegisterUI.dart';
-import 'package:jeweller_billbook/colors.dart';
+import 'package:jeweller_stockbook/Signin/emailLoginUI.dart';
+import 'package:jeweller_stockbook/Signin/emailRegisterUI.dart';
+import 'package:jeweller_stockbook/colors.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 
 import '../services/auth.dart';

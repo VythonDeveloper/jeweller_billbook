@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:jeweller_billbook/Services/user.dart';
-import 'package:jeweller_billbook/components.dart';
+import 'package:jeweller_stockbook/Services/user.dart';
+import 'package:jeweller_stockbook/components.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 
 class ItemCategoryUi extends StatefulWidget {

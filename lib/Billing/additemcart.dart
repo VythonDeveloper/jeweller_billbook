@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jeweller_billbook/components.dart';
+import 'package:jeweller_stockbook/components.dart';
 
 class AddItemCartUi extends StatefulWidget {
   const AddItemCartUi({Key? key}) : super(key: key);
