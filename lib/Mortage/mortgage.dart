@@ -1,25 +1,27 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:jeweller_stockbook/Items/createitem.dart';
 import 'package:jeweller_stockbook/Category/itemcategory.dart';
-import 'package:jeweller_stockbook/Items/itemDetails.dart';
+import 'package:jeweller_stockbook/Mortage/mortage_billingUI.dart';
+import 'package:jeweller_stockbook/Services/user.dart';
 import 'package:jeweller_stockbook/Stock/lowStock.dart';
+import 'package:jeweller_stockbook/colors.dart';
+import 'package:jeweller_stockbook/constants.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 
 import '../components.dart';
 
-class ItemsUi extends StatefulWidget {
-  const ItemsUi({Key? key}) : super(key: key);
+class MortgageUi extends StatefulWidget {
+  const MortgageUi({Key? key}) : super(key: key);
 
   @override
-  State<ItemsUi> createState() => _ItemsUiState();
+  State<MortgageUi> createState() => _MortgageUiState();
 }
 
-class _ItemsUiState extends State<ItemsUi> {
+class _MortgageUiState extends State<MortgageUi> {
   final _searchKey = TextEditingController();
-  List<String> categoryList = ['All Categories'];
-  String _selectedCategory = "All Categories";
+  List<String> categoryList = ['All Status', "Active", "Closed"];
+  String _selectedCategory = "All Status";
 
   QuerySnapshot<Map<String, dynamic>>? initData;
 
@@ -52,7 +54,7 @@ class _ItemsUiState extends State<ItemsUi> {
                   SizedBox(
                     height: 10,
                   ),
-                  itemsList(),
+                  mortgageList(),
                 ],
               ),
             ),
@@ -61,11 +63,11 @@ class _ItemsUiState extends State<ItemsUi> {
       ),
       floatingActionButton: CustomFABButton(
           onPressed: () {
-            PageRouteTransition.push(context, CreateItemUi())
+            PageRouteTransition.push(context, CreateMortgageUi())
                 .then((value) => setState(() {}));
           },
-          icon: Icons.add,
-          label: 'Add Item'),
+          icon: Icons.receipt,
+          label: 'Create Mortgage Bill'),
     );
   }
 
@@ -75,7 +77,7 @@ class _ItemsUiState extends State<ItemsUi> {
       child: Row(
         children: [
           Text(
-            'Items',
+            'Mortgage',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w500,
@@ -175,7 +177,7 @@ class _ItemsUiState extends State<ItemsUi> {
                 child: Row(
                   children: [
                     Icon(
-                      Icons.production_quantity_limits,
+                      Icons.thumb_down,
                       color: Colors.redAccent,
                       size: 15,
                     ),
@@ -183,7 +185,7 @@ class _ItemsUiState extends State<ItemsUi> {
                       child: Align(
                         alignment: Alignment.topRight,
                         child: Text(
-                          'Low Stock',
+                          'In Loss',
                           style: TextStyle(color: Colors.redAccent),
                         ),
                       ),
@@ -198,12 +200,13 @@ class _ItemsUiState extends State<ItemsUi> {
     );
   }
 
-  Widget itemsList() {
+  Widget mortgageList() {
     return FutureBuilder<dynamic>(
         future: FirebaseFirestore.instance
             .collection('users')
-            .doc(FirebaseAuth.instance.currentUser!.uid)
-            .collection("items")
+            .doc(UserData.uid)
+            .collection("transactions")
+            .where('type', isEqualTo: 'MortgageTransaction')
             .orderBy('id', descending: true)
             .get(),
         builder: (context, snapshot) {
@@ -214,21 +217,12 @@ class _ItemsUiState extends State<ItemsUi> {
                   itemCount: snapshot.data.docs.length,
                   itemBuilder: (context, index) {
                     var itemMap = snapshot.data.docs[index];
-                    if (itemMap['category'].toString().toLowerCase() ==
-                        _selectedCategory.toLowerCase()) {
-                      if (_searchKey.text.isEmpty) {
-                        return itemsCard(itemMap: itemMap);
-                      } else {
-                        if (itemMap['name']
-                            .toLowerCase()
-                            .contains(_searchKey.text.toLowerCase())) {
-                          return itemsCard(itemMap: itemMap);
-                        }
-                      }
-                    } else if (_selectedCategory == 'All Categories') {
-                      return itemsCard(itemMap: itemMap);
-                    }
 
+                    if (itemMap['shopName']
+                        .toLowerCase()
+                        .contains(_searchKey.text.toLowerCase())) {
+                      return mortgageCard(txnMap: itemMap);
+                    }
                     return SizedBox();
                   });
             }
@@ -245,96 +239,114 @@ class _ItemsUiState extends State<ItemsUi> {
         });
   }
 
-  Widget itemsCard({required var itemMap}) {
+  Widget mortgageCard({required var txnMap}) {
     return Container(
+      color: Colors.grey.shade100,
       margin: EdgeInsets.only(bottom: 10),
-      padding: EdgeInsets.symmetric(horizontal: 15),
-      child: Row(
+      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CircleAvatar(
-            backgroundColor: Color.fromARGB(255, 222, 240, 255),
-            radius: 18,
-            child: Text(
-              itemMap['name'][0],
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          SizedBox(
-            width: 10,
-          ),
-          Expanded(
-            flex: 5,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  itemMap['name'],
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
-                ),
-                SizedBox(
-                  height: 5,
-                ),
-                Row(
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Left Weight:",
-                          style: TextStyle(fontSize: 12),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Text(
-                          itemMap['leftStockWeight'].toStringAsFixed(3) +
-                              ' ' +
-                              itemMap['unit'],
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
+                    Text(
+                      "Mortgage",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: primaryColor,
+                        fontSize: 13,
+                      ),
                     ),
-                    SizedBox(
-                      width: 10,
+                    Text(
+                      "${txnMap['shopName']}",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Piece:",
-                          maxLines: 2,
-                          style: TextStyle(fontSize: 12),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Text(
-                          itemMap['leftStockPiece'].toString() + ' PCS',
-                          style: TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                      ],
+                    Text(
+                      Constants.dateFormat(txnMap['date']),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                        fontSize: 13,
+                      ),
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
-          Spacer(),
-          IconButton(
-            onPressed: () {
-              FocusScope.of(context).unfocus();
-              PageRouteTransition.push(
-                      context, ItemDetailsUI(itemId: itemMap['id']))
-                  .then((value) => setState(() {}));
-            },
-            icon: Icon(
-              Icons.tune,
-              size: 17,
-              color: Colors.black,
-            ),
-          ),
+              ),
+              Expanded(
+                child: Column(
+                  children: [
+                    Text(
+                      txnMap['status'],
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: txnMap['status'] == "Active"
+                            ? Color.fromARGB(255, 76, 135, 175)
+                            : Color.fromARGB(255, 247, 122, 20),
+                        fontSize: 13,
+                      ),
+                    ),
+                    Text(
+                      "Total Due",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: primaryColor,
+                        fontSize: 13,
+                      ),
+                    ),
+                    Text(
+                      "₹ " + txnMap['amount'].toStringAsFixed(2),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                        fontSize: 13,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      "In Profit",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: txnMap['status'] == "Active"
+                            ? Colors.green
+                            : Colors.red,
+                        fontSize: 13,
+                      ),
+                    ),
+                    Text(
+                      "Valuation",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: primaryColor,
+                        fontSize: 13,
+                      ),
+                    ),
+                    Text(
+                      "20",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          )
         ],
       ),
     );

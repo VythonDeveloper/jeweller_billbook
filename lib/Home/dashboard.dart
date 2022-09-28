@@ -3,10 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:jeweller_stockbook/Mortage/mortage_billingUI.dart';
+import 'package:jeweller_stockbook/Mortage/mortgage.dart';
 import 'package:jeweller_stockbook/Services/user.dart';
 import 'package:jeweller_stockbook/Stock/lowStock.dart';
 import 'package:jeweller_stockbook/colors.dart';
 import 'package:jeweller_stockbook/components.dart';
+import 'package:jeweller_stockbook/constants.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -65,7 +67,7 @@ class _DashboardUiState extends State<DashboardUi> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: CustomFABButton(
         onPressed: () {
-          PageRouteTransition.push(context, CreateMortgageUi())
+          PageRouteTransition.push(context, MortgageUi())
               .then((value) => setState(() {}));
         },
         icon: Icons.receipt,
@@ -227,8 +229,11 @@ class _DashboardUiState extends State<DashboardUi> {
                         physics: NeverScrollableScrollPhysics(),
                         itemCount: snapshot.data.docs.length,
                         itemBuilder: (context, index) {
-                          return transactionCard(
-                              txnMap: snapshot.data.docs[index]);
+                          return snapshot.data.docs[index]['type'] ==
+                                  "StockTransaction"
+                              ? transactionCard(
+                                  txnMap: snapshot.data.docs[index])
+                              : mortgageCard(txnMap: snapshot.data.docs[index]);
                         },
                       ),
                     ],
@@ -285,10 +290,7 @@ class _DashboardUiState extends State<DashboardUi> {
                       ),
                     ),
                     Text(
-                      // DateTime.fromMillisecondsSinceEpoch(txnMap['date'])
-                      //     .toString(),
-                      DateFormat('dd MMM, yyyy').format(
-                          DateTime.fromMillisecondsSinceEpoch(txnMap['date'])),
+                      Constants.dateFormat(txnMap['date']),
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
                         color: Colors.black,
@@ -301,6 +303,14 @@ class _DashboardUiState extends State<DashboardUi> {
               Expanded(
                 child: Column(
                   children: [
+                    Text(
+                      "Change",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: primaryColor,
+                        fontSize: 13,
+                      ),
+                    ),
                     Text(
                       txnMap['change'].toString().replaceAll('#', '\n'),
                       style: TextStyle(
@@ -317,7 +327,15 @@ class _DashboardUiState extends State<DashboardUi> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      "${txnMap['finalStockPiece']} pcs",
+                      "Final",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: primaryColor,
+                        fontSize: 13,
+                      ),
+                    ),
+                    Text(
+                      "${txnMap['finalStockWeight']} ${txnMap['unit']}",
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
                         color: Colors.black,
@@ -325,7 +343,120 @@ class _DashboardUiState extends State<DashboardUi> {
                       ),
                     ),
                     Text(
-                      "${txnMap['finalStockWeight']} ${txnMap['unit']}",
+                      "${txnMap['finalStockPiece']} pcs",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget mortgageCard({required var txnMap}) {
+    return Container(
+      color: Colors.grey.shade100,
+      margin: EdgeInsets.only(bottom: 10),
+      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Mortgage",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: primaryColor,
+                        fontSize: 13,
+                      ),
+                    ),
+                    Text(
+                      "${txnMap['shopName']}",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      Constants.dateFormat(txnMap['date']),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  children: [
+                    Text(
+                      txnMap['status'],
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: txnMap['status'] == "Active"
+                            ? Color.fromARGB(255, 76, 135, 175)
+                            : Color.fromARGB(255, 247, 122, 20),
+                        fontSize: 13,
+                      ),
+                    ),
+                    Text(
+                      "Total Due",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: primaryColor,
+                        fontSize: 13,
+                      ),
+                    ),
+                    Text(
+                      "₹ " + txnMap['amount'].toStringAsFixed(2),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                        fontSize: 13,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      "In Profit",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: txnMap['status'] == "Active"
+                            ? Colors.green
+                            : Colors.red,
+                        fontSize: 13,
+                      ),
+                    ),
+                    Text(
+                      "Valuation",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: primaryColor,
+                        fontSize: 13,
+                      ),
+                    ),
+                    Text(
+                      "20",
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
                         color: Colors.black,

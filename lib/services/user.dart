@@ -4,4 +4,5 @@ class UserData {
   static String userDisplayName = '';
   static String uid = '';
   static String profileUrl = '';
+  static int goldRate = 0;
 }

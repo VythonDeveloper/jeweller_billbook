@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: FutureBuilder(
+      home: FutureBuilder<dynamic>(
         future: AuthMethods().getCurrentuser(),
         builder: ((context, snapshot) {
           if (snapshot.hasData) {

@@ -47,6 +47,7 @@ class AuthMethods {
       prefs.setString('USERDISPLAYNAMEKEY', googleUserData.displayName!);
       prefs.setString('USEREMAILKEY', googleUserData.email!);
       prefs.setString('USERPROFILEKEY', googleUserData.photoURL!);
+      prefs.setInt('GOLDRATE', 0);
 
       UserData.email = googleUserData.email!;
       UserData.userDisplayName = googleUserData.displayName!;
@@ -71,6 +72,7 @@ class AuthMethods {
               "username": googleUserData.email!.split('@').first,
               "name": googleUserData.displayName,
               "imgUrl": googleUserData.photoURL,
+              "goldRate": 0
             };
             await _dbMethods
                 .addUserInfoToDB(googleUserData.uid, userInfoMap)
@@ -113,6 +115,7 @@ class AuthMethods {
           'imgUrl': '',
           'name': name,
           'username': username,
+          "goldRate": 0
         };
 
         final SharedPreferences prefs = await _prefs;
@@ -122,6 +125,7 @@ class AuthMethods {
         prefs.setString('USERNAMEKEY', username);
         prefs.setString('USEREMAILKEY', email);
         prefs.setString('USERPROFILEKEY', '');
+        prefs.setInt("GOLDRATE", 0);
 
         // print('UID from preference -----> ' +
         //     prefs.getString('USERKEY').toString());
@@ -131,6 +135,7 @@ class AuthMethods {
         UserData.userDisplayName = name;
         UserData.username = username;
         UserData.profileUrl = '';
+        UserData.goldRate = 0;
 
         ///   ADD USER TO DATABASE
         await _dbMethods
@@ -181,6 +186,7 @@ class AuthMethods {
           UserData.userDisplayName = value.data()!['name'];
           UserData.username = value.data()!['username'];
           UserData.profileUrl = '';
+          UserData.goldRate = value.data()!['goldRate'];
 
           final SharedPreferences prefs = await _prefs;
 
@@ -189,6 +195,7 @@ class AuthMethods {
           prefs.setString('USERNAMEKEY', value.data()!['username']);
           prefs.setString('USEREMAILKEY', value.data()!['email']);
           prefs.setString('USERPROFILEKEY', '');
+          prefs.setInt("GOLDRATE", value.data()!['goldRate']);
         });
 
         res = 'Success';
