@@ -368,7 +368,7 @@ class _ItemsUiState extends State<ItemsUi> {
               ),
             ),
             Container(
-              margin: EdgeInsets.only(top: 10, left: 10, right: 10),
+              margin: EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 40),
               decoration: BoxDecoration(
                 color: _selectedCategory == 'All Categories'
                     ? Colors.indigo.withOpacity(0.1)
@@ -389,9 +389,6 @@ class _ItemsUiState extends State<ItemsUi> {
               ),
             ),
             categoriesRadioList(setModalState),
-            SizedBox(
-              height: 20,
-            ),
           ],
         ),
       );
@@ -442,6 +439,7 @@ class _ItemsUiState extends State<ItemsUi> {
               }),
             );
           }
+          return SizedBox();
         }
         return Padding(
           padding: EdgeInsets.only(top: 10.0),
