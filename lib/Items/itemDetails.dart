@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:jeweller_stockbook/Items/editItem.dart';
 import 'package:jeweller_stockbook/Services/user.dart';
+import 'package:jeweller_stockbook/colors.dart';
 import 'package:jeweller_stockbook/components.dart';
 import 'package:jeweller_stockbook/constants.dart';
 import 'package:page_route_transition/page_route_transition.dart';
@@ -78,6 +79,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.white,
           actions: [
             IconButton(
               onPressed: () {
@@ -290,28 +292,19 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
             height: 50,
             child: AppBar(
               bottom: TabBar(
+                labelColor: primaryColor,
+                unselectedLabelColor: Colors.grey,
                 automaticIndicatorColorAdjustment: true,
                 indicatorWeight: 2,
+                labelStyle: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontFamily: 'San',
+                ),
+                indicatorSize: TabBarIndicatorSize.label,
                 indicatorColor: Colors.indigo,
                 tabs: [
-                  Tab(
-                    child: Text(
-                      "Timeline",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                  Tab(
-                    child: Text(
-                      "Details",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
+                  Tab(text: "Timeline"),
+                  Tab(text: "Details"),
                 ],
               ),
             ),
@@ -344,9 +337,10 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                       child: Text(
                         'Activity',
                         style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.grey.shade700),
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: primaryColor,
+                        ),
                       ),
                     ),
                     Expanded(
@@ -355,9 +349,10 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                         child: Text(
                           'Change',
                           style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey.shade700),
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: primaryColor,
+                          ),
                         ),
                       ),
                     ),
@@ -367,9 +362,10 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                         child: Text(
                           'Final Stock',
                           style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey.shade700),
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: primaryColor,
+                          ),
                         ),
                       ),
                     ),
@@ -430,6 +426,8 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
         '\n' +
         stkTxnMap['finalStockPiece'].toString() +
         " PCS";
+
+    bool _isProfit = stkTxnMap['change'].toString().contains('+');
     return Container(
       padding: EdgeInsets.all(12),
       child: Row(
@@ -441,7 +439,8 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                 Text(
                   stkTxnMap['activity'],
                   style: TextStyle(
-                    fontWeight: FontWeight.w600,
+                    color: _isProfit ? profitColor : lossColor,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(Constants.dateFormat(stkTxnMap['date'])),
@@ -454,7 +453,10 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
           Expanded(
             child: Align(
               alignment: Alignment.topRight,
-              child: Text(finalStock),
+              child: Text(
+                finalStock,
+                textAlign: TextAlign.end,
+              ),
             ),
           ),
         ],
@@ -634,66 +636,79 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
 
   AlertDialog AddStockAlertBox() {
     return AlertDialog(
-      title: Text('Add Stock for ' + itemMap['name']),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Add Stock for',
+            style: TextStyle(
+              fontSize: 12,
+            ),
+          ),
+          Text(
+            itemMap['name'],
+            style: TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
       content: SingleChildScrollView(
         child: Form(
           key: _formKey1,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 15),
-                child: TextFormField(
-                  controller: _addStockWeight,
-                  autofocus: true,
-                  decoration: InputDecoration(
-                      contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                      border: OutlineInputBorder(),
-                      hintText: '0.0',
-                      labelText: 'Add Weight',
-                      prefixText: '+ ',
-                      suffixText: itemMap['unit']),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(
-                        RegExp(r'^\d+\.?\d{0,3}')),
-                  ],
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "This is required";
-                    }
-                    if (double.parse(value) < 0.0) {
-                      return "Keep positive";
-                    }
-                    return null;
-                  },
-                ),
-              ),
-              SizedBox(height: 10),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 15),
-                child: TextFormField(
-                  controller: _addStockPiece,
-                  autofocus: true,
-                  decoration: InputDecoration(
+              TextFormField(
+                controller: _addStockWeight,
+                autofocus: true,
+                decoration: InputDecoration(
                     contentPadding: EdgeInsets.symmetric(horizontal: 10),
                     border: OutlineInputBorder(),
-                    hintText: '0',
-                    labelText: 'Add Piece',
+                    hintText: '0.0',
+                    labelText: 'Add Weight',
                     prefixText: '+ ',
-                    suffixText: "PCS",
-                  ),
-                  keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "This is required";
-                    }
-                    if (int.parse(value) < 0) {
-                      return "Keep positive";
-                    }
-                    return null;
-                  },
+                    suffixText: itemMap['unit']),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,3}')),
+                ],
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "This is required";
+                  }
+                  if (double.parse(value) < 0.0) {
+                    return "Keep positive";
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 10),
+              TextFormField(
+                controller: _addStockPiece,
+                autofocus: true,
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                  border: OutlineInputBorder(),
+                  hintText: '0',
+                  labelText: 'Add Piece',
+                  prefixText: '+ ',
+                  suffixText: "PCS",
                 ),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "This is required";
+                  }
+                  if (int.parse(value) < 0) {
+                    return "Keep positive";
+                  }
+                  return null;
+                },
               ),
             ],
           ),

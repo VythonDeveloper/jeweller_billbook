@@ -29,8 +29,8 @@ class _CreateItemUiState extends State<CreateItemUi> {
   final _openingStockWeight = new TextEditingController();
   final _openingStockPiece = new TextEditingController();
   final _date = new TextEditingController();
-  final _lowStockWeight = new TextEditingController();
-  final _lowStockPiece = new TextEditingController();
+  final _lowStockWeight = new TextEditingController(text: '0');
+  final _lowStockPiece = new TextEditingController(text: '0');
   DateTime selectedDate = DateTime.now();
 
   @override
@@ -288,26 +288,21 @@ class _CreateItemUiState extends State<CreateItemUi> {
         children: [
           Container(
             child: TabBar(
+              labelStyle: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+                letterSpacing: 0.5,
+              ),
+              unselectedLabelColor: Colors.grey,
+              labelColor: primaryColor,
               indicatorColor: primaryColor,
               indicatorSize: TabBarIndicatorSize.label,
               tabs: [
                 Tab(
-                  child: Text(
-                    "Category",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 14,
-                    ),
-                  ),
+                  text: "Category",
                 ),
                 Tab(
-                  child: Text(
-                    "Stock",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 14,
-                    ),
-                  ),
+                  text: "Stock",
                 ),
               ],
             ),

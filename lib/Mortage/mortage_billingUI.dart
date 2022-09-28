@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jeweller_stockbook/components.dart';
 import 'package:jeweller_stockbook/constants.dart';
+
+import '../colors.dart';
 
 class CreateMortgageUi extends StatefulWidget {
   const CreateMortgageUi({Key? key}) : super(key: key);
@@ -105,52 +108,65 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "Create Mortgage",
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 17,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.5,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Create Mortgage",
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 17,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
+          ),
+        ),
+      ),
+      body: ListView(
+        padding: EdgeInsets.all(12),
+        children: <Widget>[
+          basicItemDetails(),
+          SizedBox(
+            height: 10,
+          ),
+          otherDetailsTabBar(),
+          Visibility(
+            visible: _profit_loss != 'NA',
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Yor\'re in'),
+                Text(
+                  _profit_loss,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: _profit_loss == 'Profit' ? profitColor : lossColor,
+                    letterSpacing: 0.7,
+                  ),
+                ),
+              ],
             ),
           ),
-        ),
-        body: Padding(
-          padding: EdgeInsets.all(12),
-          child: Column(
-            children: <Widget>[
-              basicItemDetails(),
-              SizedBox(
-                height: 10,
-              ),
-              otherDetailsTabBar(),
-              Divider(),
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                "Calculations",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-              ),
-              calculationsPart(),
-              SizedBox(
-                height: 200,
-              )
-            ],
+          Divider(),
+          SizedBox(
+            height: 10,
           ),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: CustomFABButton(
-          onPressed: () {
-            calculateMortgage();
-          },
-          icon: Icons.done,
-          label: 'Save',
-        ),
+          Text(
+            "Calculations",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          ),
+          calculationsPart(),
+          SizedBox(
+            height: 200,
+          )
+        ],
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: CustomFABButton(
+        onPressed: () {
+          calculateMortgage();
+        },
+        icon: Icons.done,
+        label: 'Save',
       ),
     );
   }
@@ -208,8 +224,9 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
                 contentPadding: EdgeInsets.symmetric(horizontal: 10),
                 border: OutlineInputBorder(),
                 label: Text("Customer Mobile"),
+                prefixText: '+91 ',
               ),
-              keyboardType: TextInputType.name,
+              keyboardType: TextInputType.phone,
               textCapitalization: TextCapitalization.characters,
             ),
           ],
@@ -219,40 +236,34 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
   }
 
   Widget otherDetailsTabBar() {
-    return Expanded(
+    return DefaultTabController(
+      length: 2,
+      initialIndex: 0,
       child: Column(
         children: [
-          SizedBox(
-            height: 50,
-            child: AppBar(
-              bottom: TabBar(
-                automaticIndicatorColorAdjustment: true,
-                indicatorWeight: 2,
-                indicatorColor: Colors.indigo,
-                tabs: [
-                  Tab(
-                    child: Text(
-                      "Item",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                  Tab(
-                    child: Text(
-                      "Interest",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                ],
+          Container(
+            child: TabBar(
+              labelStyle: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+                letterSpacing: 0.5,
               ),
+              unselectedLabelColor: Colors.grey,
+              labelColor: primaryColor,
+              indicatorColor: primaryColor,
+              indicatorSize: TabBarIndicatorSize.label,
+              tabs: [
+                Tab(
+                  text: 'Item',
+                ),
+                Tab(
+                  text: 'Interest',
+                ),
+              ],
             ),
           ),
-          Expanded(
+          Container(
+            height: MediaQuery.of(context).size.height * 0.17,
             child: TabBarView(
               children: [
                 itemTabBar(),
@@ -267,8 +278,8 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
 
   Widget itemTabBar() {
     return Container(
-      color: Colors.white,
-      child: ListView(
+      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+      child: Column(
         children: [
           SizedBox(
             height: 10,
@@ -531,8 +542,9 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
 
   Widget calculationsPart() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 25),
+      margin: EdgeInsets.only(top: 10),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -607,7 +619,6 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
               ),
             ],
           ),
-          Text(_profit_loss)
         ],
       ),
     );

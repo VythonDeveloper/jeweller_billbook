@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
 
-const primaryColor = Colors.indigo;
-const primaryAccentColor = Color.fromARGB(255, 226, 230, 250);
+Color primaryColor = Colors.indigo;
+Color primaryAccentColor = Color.fromARGB(255, 226, 230, 250);
+Color profitColor = Colors.green.shade700;
+Color lossColor = Colors.red;

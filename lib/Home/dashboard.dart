@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:jeweller_stockbook/Mortage/mortage_billingUI.dart';
 import 'package:jeweller_stockbook/Services/user.dart';
 import 'package:jeweller_stockbook/Stock/lowStock.dart';
+import 'package:jeweller_stockbook/colors.dart';
 import 'package:jeweller_stockbook/components.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -182,16 +184,6 @@ class _DashboardUiState extends State<DashboardUi> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0),
-            child: Text(
-              "Timeline",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
           SizedBox(
             height: 10,
           ),
@@ -205,73 +197,147 @@ class _DashboardUiState extends State<DashboardUi> {
             builder: ((context, snapshot) {
               if (snapshot.hasData) {
                 if (snapshot.data.docs.length > 0) {
-                  return ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: snapshot.data.docs.length,
-                    itemBuilder: (context, index) {
-                      return transactionCard(txnMap: snapshot.data.docs[index]);
-                    },
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 15, left: 15),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.timeline,
+                              size: 15,
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              "Timeline",
+                              style: TextStyle(
+                                fontSize: 15,
+                                letterSpacing: 0.7,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: snapshot.data.docs.length,
+                        itemBuilder: (context, index) {
+                          return transactionCard(
+                              txnMap: snapshot.data.docs[index]);
+                        },
+                      ),
+                    ],
                   );
                 }
                 return Padding(
-                  padding: EdgeInsets.only(top: 40),
-                  child: Center(
-                    child: Text(
-                      "No\nTransactions",
-                      style: TextStyle(
-                        fontSize: 30,
-                        color: Colors.grey.shade400,
-                      ),
+                  padding: EdgeInsets.only(top: 40, left: 15),
+                  child: Text(
+                    "No\nTransactions",
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey.shade300,
                     ),
                   ),
                 );
               }
               return LinearProgressIndicator();
             }),
-          )
+          ),
         ],
       ),
     );
   }
 
   Widget transactionCard({required var txnMap}) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(txnMap['id'].toString()),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
+    return Container(
+      color: Colors.grey.shade100,
+      margin: EdgeInsets.only(bottom: 10),
+      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Expanded(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Invoice #",
+                      "${txnMap['itemCategory']}",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: primaryColor,
+                        fontSize: 13,
+                      ),
                     ),
                     Text(
-                      '29 sep 2022',
+                      "${txnMap['itemName']}",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      // DateTime.fromMillisecondsSinceEpoch(txnMap['date'])
+                      //     .toString(),
+                      DateFormat('dd MMM, yyyy').format(
+                          DateTime.fromMillisecondsSinceEpoch(txnMap['date'])),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                        fontSize: 13,
+                      ),
                     ),
                   ],
                 ),
-                Column(
+              ),
+              Expanded(
+                child: Column(
                   children: [
                     Text(
-                      "₹ ",
+                      txnMap['change'].toString().replaceAll('#', '\n'),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                        fontSize: 13,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      "${txnMap['finalStockPiece']} pcs",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                        fontSize: 13,
+                      ),
                     ),
                     Text(
-                      "Due ₹ ",
+                      "${txnMap['finalStockWeight']} ${txnMap['unit']}",
                       style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.red),
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                        fontSize: 13,
+                      ),
                     ),
                   ],
-                )
-              ],
-            )
-          ],
-        ),
+                ),
+              ),
+            ],
+          )
+        ],
       ),
     );
   }

@@ -214,16 +214,21 @@ class _ItemsUiState extends State<ItemsUi> {
                   itemCount: snapshot.data.docs.length,
                   itemBuilder: (context, index) {
                     var itemMap = snapshot.data.docs[index];
-
-                    if (_searchKey.text.isEmpty) {
-                      return itemsCard(itemMap: itemMap);
-                    } else {
-                      if (itemMap['name']
-                          .toLowerCase()
-                          .contains(_searchKey.text.toLowerCase())) {
+                    if (itemMap['category'].toString().toLowerCase() ==
+                        _selectedCategory.toLowerCase()) {
+                      if (_searchKey.text.isEmpty) {
                         return itemsCard(itemMap: itemMap);
+                      } else {
+                        if (itemMap['name']
+                            .toLowerCase()
+                            .contains(_searchKey.text.toLowerCase())) {
+                          return itemsCard(itemMap: itemMap);
+                        }
                       }
+                    } else if (_selectedCategory == 'All Categories') {
+                      return itemsCard(itemMap: itemMap);
                     }
+
                     return SizedBox();
                   });
             }
@@ -248,9 +253,14 @@ class _ItemsUiState extends State<ItemsUi> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CircleAvatar(
-            backgroundColor: Colors.blue.shade100,
+            backgroundColor: Color.fromARGB(255, 222, 240, 255),
             radius: 18,
-            child: Text(itemMap['name'][0]),
+            child: Text(
+              itemMap['name'][0],
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
           SizedBox(
             width: 10,
@@ -262,7 +272,7 @@ class _ItemsUiState extends State<ItemsUi> {
               children: [
                 Text(
                   itemMap['name'],
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
                 ),
                 SizedBox(
                   height: 5,
@@ -274,6 +284,7 @@ class _ItemsUiState extends State<ItemsUi> {
                       children: [
                         Text(
                           "Left Weight:",
+                          style: TextStyle(fontSize: 12),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -281,7 +292,9 @@ class _ItemsUiState extends State<ItemsUi> {
                           itemMap['leftStockWeight'].toStringAsFixed(3) +
                               ' ' +
                               itemMap['unit'],
-                          style: TextStyle(fontWeight: FontWeight.w600),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ],
                     ),
@@ -294,6 +307,7 @@ class _ItemsUiState extends State<ItemsUi> {
                         Text(
                           "Piece:",
                           maxLines: 2,
+                          style: TextStyle(fontSize: 12),
                           overflow: TextOverflow.ellipsis,
                         ),
                         Text(
@@ -349,46 +363,59 @@ class _ItemsUiState extends State<ItemsUi> {
               ),
             ),
             Divider(),
-            MaterialButton(
-              onPressed: () {
-                PageRouteTransition.push(context, ItemCategoryUi())
-                    .then((value) => setModalState(() {}));
-              },
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              color: Colors.indigo,
-              elevation: 0,
-              padding: EdgeInsets.symmetric(vertical: 12, horizontal: 15),
-              child: Text(
-                "Manage Categories",
-                style: TextStyle(
-                  color: Colors.white,
-                ),
+            Padding(
+              padding: EdgeInsets.only(bottom: 15, left: 15, right: 15),
+              child: Column(
+                children: [
+                  MaterialButton(
+                    onPressed: () {
+                      PageRouteTransition.push(context, ItemCategoryUi())
+                          .then((value) => setModalState(() {}));
+                    },
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    color: Colors.indigo,
+                    elevation: 0,
+                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 15),
+                    child: Text(
+                      "Manage Categories",
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(bottom: 10),
+                    decoration: BoxDecoration(
+                      color: _selectedCategory == 'All Categories'
+                          ? Colors.indigo.withOpacity(0.1)
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: RadioListTile(
+                      title: Text("All Categories"),
+                      value: "All Categories",
+                      groupValue: _selectedCategory,
+                      onChanged: (value) {
+                        print(value.toString());
+                        setModalState(() {
+                          _selectedCategory = value.toString();
+                          // print('_selectedCategory - ' + _selectedCategory);
+                        });
+                      },
+                    ),
+                  ),
+                  categoriesRadioList(setModalState),
+                ],
               ),
             ),
-            Container(
-              margin: EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 40),
-              decoration: BoxDecoration(
-                color: _selectedCategory == 'All Categories'
-                    ? Colors.indigo.withOpacity(0.1)
-                    : Colors.transparent,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: RadioListTile(
-                title: Text("All Categories"),
-                value: "All Categories",
-                groupValue: _selectedCategory,
-                onChanged: (value) {
-                  print(value.toString());
-                  setModalState(() {
-                    _selectedCategory = value.toString();
-                    // print('_selectedCategory - ' + _selectedCategory);
-                  });
-                },
-              ),
+            SizedBox(
+              height: 20,
             ),
-            categoriesRadioList(setModalState),
           ],
         ),
       );
@@ -414,7 +441,7 @@ class _ItemsUiState extends State<ItemsUi> {
                 return Column(
                   children: [
                     Container(
-                      margin: EdgeInsets.only(top: 10, left: 10, right: 10),
+                      margin: EdgeInsets.only(bottom: 10),
                       decoration: BoxDecoration(
                         color: _selectedCategory == categoryName
                             ? Colors.indigo.withOpacity(0.1)

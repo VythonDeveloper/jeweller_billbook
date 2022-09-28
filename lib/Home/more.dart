@@ -15,11 +15,24 @@ class _MoreUIState extends State<MoreUI> {
       appBar: AppBar(
         title: Text('More'),
       ),
-      body: MaterialButton(
-        onPressed: () {
-          AuthMethods().signOut(context);
-        },
-        child: Text('Logout'),
+      body: ListView(
+        padding: EdgeInsets.all(20),
+        children: [
+          MaterialButton(
+            onPressed: () {
+              AuthMethods().signOut(context);
+            },
+            color: Color.fromARGB(255, 255, 239, 241),
+            elevation: 0,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            padding: EdgeInsets.all(20),
+            child: Text(
+              'Logout',
+              style: TextStyle(fontSize: 25, color: Colors.red),
+            ),
+          ),
+        ],
       ),
     );
   }
