@@ -169,57 +169,6 @@ class _EmailRegisterUIState extends State<EmailRegisterUI> {
                     ],
                   ),
                 ),
-
-                // Row(
-                //   crossAxisAlignment: CrossAxisAlignment.center,
-                //   mainAxisAlignment: MainAxisAlignment.center,
-                //   children: [
-                //     Container(
-                //       padding:
-                //           EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                //       decoration: BoxDecoration(
-                //         color: Colors.grey.shade200,
-                //         borderRadius: BorderRadius.only(
-                //           bottomLeft: Radius.circular(6),
-                //           topLeft: Radius.circular(6),
-                //         ),
-                //       ),
-                //       child: Text(
-                //         'Already have an account?',
-                //         style: TextStyle(
-                //           color: Colors.grey.shade600,
-                //           fontWeight: FontWeight.w900,
-                //           fontSize: 12,
-                //         ),
-                //       ),
-                //     ),
-                //     InkWell(
-                //       splashColor: Colors.blue.shade100,
-                //       onTap: () {},
-                //       child: Container(
-                //         padding:
-                //             EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                //         decoration: BoxDecoration(
-                //           color: primaryColor,
-                //           borderRadius: BorderRadius.only(
-                //             topRight: Radius.circular(6),
-                //             bottomRight: Radius.circular(6),
-                //           ),
-                //         ),
-                //         child: Text(
-                //           'Log In',
-                //           style: TextStyle(
-                //             color: Colors.white,
-                //             letterSpacing: 1.6,
-                //             fontSize: 12,
-                //             fontWeight: FontWeight.w500,
-                //             // fontFamily: 'default',
-                //           ),
-                //         ),
-                //       ),
-                //     ),
-                //   ],
-                // ),
               ],
             ),
           ),
@@ -281,10 +230,7 @@ Widget CustomTextField(
       obscureText: obsecureText,
       decoration: InputDecoration(
         contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-        prefixIcon: Icon(
-          icon,
-          size: 17,
-        ),
+        prefixIcon: icon,
         labelText: label,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),

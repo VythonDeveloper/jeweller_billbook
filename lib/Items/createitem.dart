@@ -73,7 +73,7 @@ class _CreateItemUiState extends State<CreateItemUi> {
     final DateTime? picked = await showDatePicker(
         context: context,
         initialDate: selectedDate,
-        firstDate: DateTime(2015, 6, 29),
+        firstDate: DateTime(2000, 6, 29),
         lastDate: DateTime(
             DateTime.now().year, DateTime.now().month, DateTime.now().day));
     if (picked != null && picked != selectedDate)

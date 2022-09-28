@@ -61,7 +61,7 @@ class _DashboardUiState extends State<DashboardUi> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: CustomFABButton(
         onPressed: () {
-          PageRouteTransition.push(context, MortageBillingUI())
+          PageRouteTransition.push(context, CreateMortgageUi())
               .then((value) => setState(() {}));
         },
         icon: Icons.receipt,
