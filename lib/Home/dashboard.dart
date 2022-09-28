@@ -26,13 +26,15 @@ class _DashboardUiState extends State<DashboardUi> {
   }
 
   void userDetails() async {
-    final SharedPreferences prefs = await _prefs;
-    UserData.uid = prefs.getString('USERKEY')!;
-    UserData.username = prefs.getString('USERNAMEKEY')!;
-    UserData.userDisplayName = prefs.getString('USERDISPLAYNAMEKEY')!;
-    UserData.email = prefs.getString('USEREMAILKEY')!;
-    UserData.profileUrl = prefs.getString('USERPROFILEKEY')!;
-    setState(() {});
+    if (UserData.uid == '') {
+      final SharedPreferences prefs = await _prefs;
+      UserData.uid = prefs.getString('USERKEY')!;
+      UserData.username = prefs.getString('USERNAMEKEY')!;
+      UserData.userDisplayName = prefs.getString('USERDISPLAYNAMEKEY')!;
+      UserData.email = prefs.getString('USEREMAILKEY')!;
+      UserData.profileUrl = prefs.getString('USERPROFILEKEY')!;
+      setState(() {});
+    }
   }
 
   @override
@@ -211,10 +213,16 @@ class _DashboardUiState extends State<DashboardUi> {
                     },
                   );
                 }
-                return Center(
-                  child: Text(
-                    "No Transactions",
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                return Padding(
+                  padding: EdgeInsets.only(top: 40),
+                  child: Center(
+                    child: Text(
+                      "No\nTransactions",
+                      style: TextStyle(
+                        fontSize: 30,
+                        color: Colors.grey.shade400,
+                      ),
+                    ),
                   ),
                 );
               }

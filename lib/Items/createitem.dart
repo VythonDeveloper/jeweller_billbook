@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jeweller_stockbook/Services/user.dart';
+import 'package:jeweller_stockbook/colors.dart';
 import 'package:jeweller_stockbook/components.dart';
 import 'package:jeweller_stockbook/constants.dart';
 import 'package:page_route_transition/page_route_transition.dart';
@@ -87,34 +88,24 @@ class _CreateItemUiState extends State<CreateItemUi> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "Create New Item",
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 17,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.5,
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Create Item'),
+      ),
+      body: ListView(
+        padding: EdgeInsets.all(12),
+        children: [
+          basicItemDetails(),
+          SizedBox(
+            height: 20,
           ),
-        ),
-        body: Padding(
-          padding: EdgeInsets.all(12),
-          child: Column(
-            children: <Widget>[
-              basicItemDetails(),
-              SizedBox(
-                height: 10,
-              ),
-              otherDetailsTabBar(),
-            ],
-          ),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: CustomFABButton(
+          otherDetailsTabBar(),
+        ],
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: Visibility(
+        visible: MediaQuery.of(context).viewInsets.bottom == 0,
+        child: CustomFABButton(
           onPressed: () {
             if (_formKey1.currentState!.validate() &&
                 _formKey2.currentState!.validate()) {
@@ -124,7 +115,9 @@ class _CreateItemUiState extends State<CreateItemUi> {
                 'name': _itemName.text,
                 'code': _itemCode.text,
                 'type': _selectedItemType,
-                'category': _selectedCategory,
+                'category': _selectedCategory == 'No Category'
+                    ? 'NA'
+                    : _selectedCategory,
                 'unit': _selectedUnit,
                 'openingStockWeight': double.parse(_openingStockWeight.text),
                 'openingStockPiece': int.parse(_openingStockPiece.text),
@@ -288,42 +281,41 @@ class _CreateItemUiState extends State<CreateItemUi> {
   }
 
   Widget otherDetailsTabBar() {
-    return Expanded(
+    return DefaultTabController(
+      length: 2,
+      initialIndex: 0,
       child: Column(
         children: [
-          SizedBox(
-            height: 50,
-            child: AppBar(
-              bottom: TabBar(
-                automaticIndicatorColorAdjustment: true,
-                indicatorWeight: 2,
-                indicatorColor: Colors.indigo,
-                tabs: [
-                  Tab(
-                    child: Text(
-                      "Category",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 14,
-                      ),
+          Container(
+            child: TabBar(
+              indicatorColor: primaryColor,
+              indicatorSize: TabBarIndicatorSize.label,
+              tabs: [
+                Tab(
+                  child: Text(
+                    "Category",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 14,
                     ),
                   ),
-                  Tab(
-                    child: Text(
-                      "Stock",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 14,
-                      ),
+                ),
+                Tab(
+                  child: Text(
+                    "Stock",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 14,
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-          Expanded(
+          Container(
+            height: MediaQuery.of(context).size.height * 0.51,
             child: TabBarView(
-              children: [
+              children: <Widget>[
                 categoryTabBar(),
                 stockTabBar(),
               ],
@@ -336,8 +328,8 @@ class _CreateItemUiState extends State<CreateItemUi> {
 
   Widget categoryTabBar() {
     return Container(
-      color: Colors.white,
-      child: ListView(
+      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+      child: Column(
         children: [
           SizedBox(
             height: 10,
@@ -440,10 +432,11 @@ class _CreateItemUiState extends State<CreateItemUi> {
 
   Widget stockTabBar() {
     return Container(
-      color: Colors.white,
+      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
       child: Form(
         key: _formKey2,
-        child: ListView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
               height: 10,
@@ -701,6 +694,9 @@ class _CreateItemUiState extends State<CreateItemUi> {
                       : Container();
                 }),
               ),
+            ),
+            SizedBox(
+              height: 10,
             ),
           ],
         ),
