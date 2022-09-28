@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:jeweller_stockbook/Services/user.dart';
 import 'package:jeweller_stockbook/components.dart';
 import 'package:jeweller_stockbook/constants.dart';
 import 'package:page_route_transition/page_route_transition.dart';
@@ -20,8 +21,10 @@ class _MortageBillingUIState extends State<MortageBillingUI> {
   final _tenureController = TextEditingController();
   final _dateController = new TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final _transactionType = "MortgageTransaction";
+  String _expiryDate = '';
   static const _interest = 0.02;
-  double returnAmount = 0.0;
+  double _returnAmount = 0.0;
   int uniqueId = DateTime.now().millisecondsSinceEpoch;
 
   String _selectedWeight = Constants.unitList[0];
@@ -30,12 +33,9 @@ class _MortageBillingUIState extends State<MortageBillingUI> {
   @override
   void initState() {
     super.initState();
-
-    _dateController.text = selectedDate.day.toString() +
-        '-' +
-        selectedDate.month.toString() +
-        '-' +
-        selectedDate.year.toString();
+    _dateController.text = Constants.dateFormat(
+        DateTime(selectedDate.year, selectedDate.month, selectedDate.day)
+            .millisecondsSinceEpoch);
   }
 
   @override
@@ -51,13 +51,23 @@ class _MortageBillingUIState extends State<MortageBillingUI> {
   }
 
   _calculateMortage() {
-    _tenureController.text =
-        _tenureController.text.toString().replaceAll('-', '');
-    _principleAmountController.text =
-        _principleAmountController.text.toString().replaceAll('-', '');
-    int PA = int.parse(_principleAmountController.text);
-    returnAmount = PA + (PA * (_interest * int.parse(_tenureController.text)));
+    int tenure =
+        _tenureController.text.isEmpty ? 0 : int.parse(_tenureController.text);
+    double PA = _principleAmountController.text.isEmpty
+        ? 0
+        : double.parse(_principleAmountController.text);
+    _returnAmount = PA + (PA * (_interest * tenure));
+    _expiryDate = Constants.dateFormat(DateTime(
+            selectedDate.year, selectedDate.month + tenure, selectedDate.day)
+        .millisecondsSinceEpoch);
     setState(() {});
+
+    var last7thday = Constants.dateFormat(DateTime(
+            DateTime.now().year, DateTime.now().month, DateTime.now().day - 84)
+        .millisecondsSinceEpoch);
+    print(DateTime(
+            DateTime.now().year, DateTime.now().month, DateTime.now().day - 84)
+        .millisecondsSinceEpoch);
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -70,12 +80,11 @@ class _MortageBillingUIState extends State<MortageBillingUI> {
     if (picked != null && picked != selectedDate)
       setState(() {
         selectedDate = picked;
-        _dateController.text = selectedDate.day.toString() +
-            '-' +
-            selectedDate.month.toString() +
-            '-' +
-            selectedDate.year.toString();
+        _dateController.text = Constants.dateFormat(
+            DateTime(selectedDate.year, selectedDate.month, selectedDate.day)
+                .millisecondsSinceEpoch);
       });
+    _calculateMortage();
   }
 
   @override
@@ -275,9 +284,9 @@ class _MortageBillingUIState extends State<MortageBillingUI> {
                           TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                     ),
                     Text(
-                      _dateController.text,
+                      _expiryDate,
                       style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -290,9 +299,9 @@ class _MortageBillingUIState extends State<MortageBillingUI> {
                           TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                     ),
                     Text(
-                      '₹ $returnAmount',
+                      '₹ ' + _returnAmount.toStringAsFixed(2),
                       style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -306,8 +315,9 @@ class _MortageBillingUIState extends State<MortageBillingUI> {
         onPressed: () {
           if (_formKey.currentState!.validate()) {
             showLoading(context);
-            Map<String, dynamic> itemMap = {
+            Map<String, dynamic> mortgageMap = {
               'id': uniqueId,
+              'type': _transactionType,
               'name': _customerNameController.text,
               'mobile': "+91" + _customerPhoneController.text,
               'description': _itemDescriptionController.text,
@@ -317,44 +327,16 @@ class _MortageBillingUIState extends State<MortageBillingUI> {
               'principalAmount': double.parse(_principleAmountController.text),
               'tenure': double.parse(_tenureController.text),
               'expiryDate': _expiryDate,
-              'returnAmount': returnAmount,
+              'returnAmount': _returnAmount,
               'status': "Ongoing",
             };
             FirebaseFirestore.instance
                 .collection('users')
                 .doc(UserData.uid)
-                .collection('items')
+                .collection('transactions')
                 .doc(uniqueId.toString())
-                .set(itemMap)
+                .set(mortgageMap)
                 .then((value) {
-              uniqueId = DateTime.now().millisecondsSinceEpoch;
-
-              Map<String, dynamic> stkTxnMap = {
-                'id': uniqueId,
-                'activity': "Opening Stock",
-                'itemName': itemMap['name'],
-                'itemCategory': itemMap['category'],
-                'itemId': itemMap['id'],
-                'unit': itemMap['unit'],
-                'change': '+ ' +
-                    itemMap['openingStockWeight'].toStringAsFixed(3) +
-                    ' ' +
-                    itemMap['unit'] +
-                    '#+ ' +
-                    itemMap['openingStockPiece'].toString() +
-                    ' PCS',
-                'finalStockWeight': itemMap['leftStockWeight'],
-                'finalStockPiece': itemMap['leftStockPiece'],
-                'date': uniqueId
-              };
-
-              FirebaseFirestore.instance
-                  .collection('users')
-                  .doc(UserData.uid)
-                  .collection('stockTransaction')
-                  .doc(uniqueId.toString())
-                  .set(stkTxnMap);
-
               PageRouteTransition.pop(context);
               PageRouteTransition.pop(context);
             });

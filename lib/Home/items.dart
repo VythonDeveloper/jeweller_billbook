@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:jeweller_stockbook/Items/createitem.dart';
 import 'package:jeweller_stockbook/Category/itemcategory.dart';
 import 'package:jeweller_stockbook/Items/itemDetails.dart';
-import 'package:jeweller_stockbook/Services/user.dart';
 import 'package:jeweller_stockbook/Stock/lowStock.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 
@@ -403,7 +402,7 @@ class _ItemsUiState extends State<ItemsUi> {
     return FutureBuilder<dynamic>(
       future: FirebaseFirestore.instance
           .collection('users')
-          .doc(UserData.uid)
+          .doc(FirebaseAuth.instance.currentUser!.uid)
           .collection('categories')
           .orderBy('id')
           .get(),

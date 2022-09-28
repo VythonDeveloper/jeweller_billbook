@@ -24,6 +24,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
   final _addStockPiece = TextEditingController();
   final _reduceStockWeight = TextEditingController();
   final _reduceStockPiece = TextEditingController();
+  final _transactionType = "StockTransaction";
 
   @override
   void dispose() {
@@ -382,8 +383,9 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                 future: FirebaseFirestore.instance
                     .collection('users')
                     .doc(UserData.uid)
-                    .collection('stockTransaction')
+                    .collection('transactions')
                     .where('itemId', isEqualTo: itemMap['id'])
+                    .where('type', isEqualTo: _transactionType)
                     .orderBy('id', descending: true)
                     .get(),
                 builder: ((context, snapshot) {
@@ -741,7 +743,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
               await FirebaseFirestore.instance
                   .collection('users')
                   .doc(UserData.uid)
-                  .collection('stockTransaction')
+                  .collection('transactions')
                   .doc(uniqueId.toString())
                   .set(stkTxnMap)
                   .then((value) {
@@ -851,6 +853,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
 
               Map<String, dynamic> stkTxnMap = {
                 'id': uniqueId,
+                'type': 'StockTransaction',
                 'activity': "Reduce Stock",
                 'itemName': itemMap['name'],
                 'itemCategory': itemMap['category'],
@@ -875,7 +878,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
               await FirebaseFirestore.instance
                   .collection('users')
                   .doc(UserData.uid)
-                  .collection('stockTransaction')
+                  .collection('transactions')
                   .doc(uniqueId.toString())
                   .set(stkTxnMap)
                   .then((value) {

@@ -22,6 +22,7 @@ class _CreateItemUiState extends State<CreateItemUi> {
   String _selectedUnit = Constants.unitList[0];
   final ValueNotifier<bool> _lowStockToggle = ValueNotifier<bool>(false);
   String _selectedItemType = "Product";
+  final _transactionType = "StockTransaction";
   final _itemName = new TextEditingController();
   final _itemCode = new TextEditingController();
   final _openingStockWeight = new TextEditingController();
@@ -47,11 +48,9 @@ class _CreateItemUiState extends State<CreateItemUi> {
   void initState() {
     super.initState();
     fetchCategories();
-    _date.text = selectedDate.day.toString() +
-        '-' +
-        selectedDate.month.toString() +
-        '-' +
-        selectedDate.year.toString();
+    _date.text = Constants.dateFormat(
+        DateTime(selectedDate.year, selectedDate.month, selectedDate.day)
+            .millisecondsSinceEpoch);
   }
 
   fetchCategories() async {
@@ -80,11 +79,9 @@ class _CreateItemUiState extends State<CreateItemUi> {
     if (picked != null && picked != selectedDate)
       setState(() {
         selectedDate = picked;
-        _date.text = selectedDate.day.toString() +
-            '-' +
-            selectedDate.month.toString() +
-            '-' +
-            selectedDate.year.toString();
+        _date.text = Constants.dateFormat(
+            DateTime(selectedDate.year, selectedDate.month, selectedDate.day)
+                .millisecondsSinceEpoch);
       });
   }
 
@@ -148,6 +145,7 @@ class _CreateItemUiState extends State<CreateItemUi> {
 
                 Map<String, dynamic> stkTxnMap = {
                   'id': uniqueId,
+                  'type': _transactionType,
                   'activity': "Opening Stock",
                   'itemName': itemMap['name'],
                   'itemCategory': itemMap['category'],
@@ -168,7 +166,7 @@ class _CreateItemUiState extends State<CreateItemUi> {
                 FirebaseFirestore.instance
                     .collection('users')
                     .doc(UserData.uid)
-                    .collection('stockTransaction')
+                    .collection('transactions')
                     .doc(uniqueId.toString())
                     .set(stkTxnMap);
 

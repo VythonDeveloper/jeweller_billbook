@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:jeweller_stockbook/Mortage/mortage_billingUI.dart';
 import 'package:jeweller_stockbook/Services/user.dart';
@@ -15,6 +17,8 @@ class DashboardUi extends StatefulWidget {
 
 class _DashboardUiState extends State<DashboardUi> {
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  List<dynamic> transactionsMap = [];
+
   @override
   void initState() {
     super.initState();
@@ -23,7 +27,6 @@ class _DashboardUiState extends State<DashboardUi> {
 
   void userDetails() async {
     final SharedPreferences prefs = await _prefs;
-
     UserData.uid = prefs.getString('USERKEY')!;
     UserData.username = prefs.getString('USERNAMEKEY')!;
     UserData.userDisplayName = prefs.getString('USERDISPLAYNAMEKEY')!;
@@ -58,7 +61,8 @@ class _DashboardUiState extends State<DashboardUi> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: CustomFABButton(
         onPressed: () {
-          PageRouteTransition.push(context, MortageBillingUI());
+          PageRouteTransition.push(context, MortageBillingUI())
+              .then((value) => setState(() {}));
         },
         icon: Icons.receipt,
         label: 'Mortage Billing',
@@ -189,108 +193,47 @@ class _DashboardUiState extends State<DashboardUi> {
           SizedBox(
             height: 10,
           ),
-          Column(
-            children: [
-              Container(
-                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-                color: Colors.grey.shade100,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'Activity',
-                        style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.grey.shade700),
-                      ),
-                    ),
-                    Expanded(
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          'Change',
-                          style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey.shade700),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Align(
-                        alignment: Alignment.topRight,
-                        child: Text(
-                          'Final Stock',
-                          style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey.shade700),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              TimelineCard(),
-              TimelineCard(),
-              TimelineCard(),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Container TimelineCard() {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Mangtika',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
+          FutureBuilder<dynamic>(
+            future: FirebaseFirestore.instance
+                .collection('users')
+                .doc(FirebaseAuth.instance.currentUser!.uid)
+                .collection('transactions')
+                .orderBy('id', descending: true)
+                .get(),
+            builder: ((context, snapshot) {
+              if (snapshot.hasData) {
+                if (snapshot.data.docs.length > 0) {
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: snapshot.data.docs.length,
+                    itemBuilder: (context, index) {
+                      return transactionCard(txnMap: snapshot.data.docs[index]);
+                    },
+                  );
+                }
+                return Center(
+                  child: Text(
+                    "No Transactions",
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
                   ),
-                ),
-                Text('date'),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Align(alignment: Alignment.center, child: Text('+ 1 Gms')),
-          ),
-          Expanded(
-            child: Align(
-              alignment: Alignment.topRight,
-              child: Text('50 gms'),
-            ),
-          ),
+                );
+              }
+              return LinearProgressIndicator();
+            }),
+          )
         ],
       ),
     );
   }
 
-  Widget transactionCard(
-      {required String customerName,
-      required int invoiceNo,
-      required String date,
-      required double billAmt,
-      required double dueAmt}) {
+  Widget transactionCard({required var txnMap}) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(customerName),
+            Text(txnMap['id'].toString()),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -298,20 +241,20 @@ class _DashboardUiState extends State<DashboardUi> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Invoice #" + invoiceNo.toString(),
+                      "Invoice #",
                     ),
                     Text(
-                      date,
+                      '29 sep 2022',
                     ),
                   ],
                 ),
                 Column(
                   children: [
                     Text(
-                      "₹ " + billAmt.toStringAsFixed(2),
+                      "₹ ",
                     ),
                     Text(
-                      "Due ₹ " + dueAmt.toStringAsFixed(2),
+                      "Due ₹ ",
                       style: TextStyle(
                           fontWeight: FontWeight.bold, color: Colors.red),
                     ),

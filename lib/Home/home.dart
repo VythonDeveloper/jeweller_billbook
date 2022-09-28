@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jeweller_stockbook/Home/dashboard.dart';
 import 'package:jeweller_stockbook/Home/items.dart';
 import 'package:jeweller_stockbook/Home/more.dart';
+import 'package:jeweller_stockbook/components.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -12,13 +13,28 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedbottomNavIndex = 0;
+  DateTime? currentBackPressTime;
+
+  Future<bool> onWillPop() {
+    DateTime now = DateTime.now();
+    if (currentBackPressTime == null ||
+        now.difference(currentBackPressTime!) > Duration(seconds: 2)) {
+      currentBackPressTime = now;
+      showSnackBar(context, 'Press back again to exit!');
+      return Future.value(false);
+    }
+    return Future.value(true);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color.fromARGB(255, 233, 233, 233),
-      body: Body(),
-      bottomNavigationBar: BottomNavNew(),
+    return WillPopScope(
+      onWillPop: onWillPop,
+      child: Scaffold(
+        backgroundColor: Color.fromARGB(255, 233, 233, 233),
+        body: Body(),
+        bottomNavigationBar: BottomNavNew(),
+      ),
     );
   }
 
