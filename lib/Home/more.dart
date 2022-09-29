@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:jeweller_stockbook/Services/user.dart';
+import 'package:jeweller_stockbook/colors.dart';
 import 'package:jeweller_stockbook/components.dart';
-import 'package:jeweller_stockbook/services/auth.dart';
+import 'package:jeweller_stockbook/Helper/auth.dart';
+import 'package:jeweller_stockbook/constants.dart';
 import 'package:page_route_transition/page_route_transition.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
+import '../Helper/user.dart';
 
 class MoreUI extends StatefulWidget {
   const MoreUI({super.key});
@@ -17,6 +19,7 @@ class MoreUI extends StatefulWidget {
 class _MoreUIState extends State<MoreUI> {
   final _formKey = GlobalKey<FormState>();
   final _goldRate = new TextEditingController();
+  int _updatedOn = 0;
 
   @override
   void initState() {
@@ -31,7 +34,9 @@ class _MoreUIState extends State<MoreUI> {
         .get()
         .then((value) {
       setState(() {
-        _goldRate.text = value.data()!['goldRate'].toString();
+        _goldRate.text = value.data()!['goldDetails']['rate'].toString();
+        UserData.goldRate = int.parse(_goldRate.text);
+        _updatedOn = value.data()!['goldDetails']['updatedOn'];
       });
     });
   }
@@ -58,14 +63,11 @@ class _MoreUIState extends State<MoreUI> {
           Container(
             padding: EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Color.fromARGB(255, 237, 240, 255),
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(10),
-                bottomRight: Radius.circular(10),
-              ),
+              color: primaryAccentColor,
+              borderRadius: BorderRadius.circular(10),
             ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
@@ -116,6 +118,7 @@ class _MoreUIState extends State<MoreUI> {
                 SizedBox(
                   height: 15,
                 ),
+                Text(Constants.timeAgo(_updatedOn)),
                 Divider(),
                 Align(
                   alignment: Alignment.topRight,
@@ -131,15 +134,21 @@ class _MoreUIState extends State<MoreUI> {
                         FirebaseFirestore.instance
                             .collection('users')
                             .doc(UserData.uid)
-                            .update({'goldRate': goldRateValue}).then(
-                                (value) async {
+                            .update({
+                          'goldDetails': {
+                            'rate': int.parse(_goldRate.text),
+                            'updatedOn': DateTime.now().millisecondsSinceEpoch,
+                          },
+                        }).then((value) async {
                           UserData.goldRate = goldRateValue;
+                          _updatedOn = DateTime.now().millisecondsSinceEpoch;
+                          setState(() {});
                           PageRouteTransition.pop(context);
                           showSnackBar(context, "Gold Rate updated!");
                         });
                       }
                     },
-                    color: Color.fromARGB(255, 185, 184, 236),
+                    color: primaryColor,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
@@ -147,13 +156,20 @@ class _MoreUIState extends State<MoreUI> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.edit),
+                        Icon(
+                          Icons.file_upload_outlined,
+                          color: Colors.white,
+                          size: 17,
+                        ),
                         SizedBox(
                           width: 10,
                         ),
                         Text(
                           'Update',
-                          style: TextStyle(fontSize: 15, color: Colors.indigo),
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.white,
+                          ),
                         ),
                       ],
                     ),

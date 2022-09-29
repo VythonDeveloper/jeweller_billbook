@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:jeweller_stockbook/Items/itemDetails.dart';
-import 'package:jeweller_stockbook/Services/user.dart';
+import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 
 class LowStockUI extends StatefulWidget {

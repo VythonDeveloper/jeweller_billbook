@@ -72,7 +72,10 @@ class AuthMethods {
               "username": googleUserData.email!.split('@').first,
               "name": googleUserData.displayName,
               "imgUrl": googleUserData.photoURL,
-              "goldRate": 0
+              "goldDetails": {
+                'rate': 0,
+                'updatedOn': DateTime.now().millisecondsSinceEpoch
+              }
             };
             await _dbMethods
                 .addUserInfoToDB(googleUserData.uid, userInfoMap)
@@ -115,7 +118,10 @@ class AuthMethods {
           'imgUrl': '',
           'name': name,
           'username': username,
-          "goldRate": 0
+          "goldDetails": {
+            'rate': 0,
+            'updatedOn': DateTime.now().millisecondsSinceEpoch
+          }
         };
 
         final SharedPreferences prefs = await _prefs;
@@ -186,7 +192,7 @@ class AuthMethods {
           UserData.userDisplayName = value.data()!['name'];
           UserData.username = value.data()!['username'];
           UserData.profileUrl = '';
-          UserData.goldRate = value.data()!['goldRate'];
+          UserData.goldRate = value.data()!['goldDetails']['rate'];
 
           final SharedPreferences prefs = await _prefs;
 
@@ -195,7 +201,7 @@ class AuthMethods {
           prefs.setString('USERNAMEKEY', value.data()!['username']);
           prefs.setString('USEREMAILKEY', value.data()!['email']);
           prefs.setString('USERPROFILEKEY', '');
-          prefs.setInt("GOLDRATE", value.data()!['goldRate']);
+          prefs.setInt("GOLDRATE", value.data()!['goldDetails']['rate']);
         });
 
         res = 'Success';

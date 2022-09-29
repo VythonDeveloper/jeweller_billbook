@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:jeweller_stockbook/Signin/emailLoginUI.dart';
+import 'package:jeweller_stockbook/Login/emailLoginUI.dart';
 import 'package:jeweller_stockbook/Signin/emailRegisterUI.dart';
 import 'package:jeweller_stockbook/colors.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 
-import '../services/auth.dart';
+import '../Helper/auth.dart';
 
 class LoginUI extends StatefulWidget {
   const LoginUI({super.key});

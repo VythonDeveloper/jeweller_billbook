@@ -1,10 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:jeweller_stockbook/Mortage/mortage_billingUI.dart';
 import 'package:jeweller_stockbook/Mortage/mortgage.dart';
-import 'package:jeweller_stockbook/Services/user.dart';
+import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:jeweller_stockbook/Stock/lowStock.dart';
 import 'package:jeweller_stockbook/colors.dart';
 import 'package:jeweller_stockbook/components.dart';
@@ -63,15 +61,6 @@ class _DashboardUiState extends State<DashboardUi> {
             ItemTimeline(),
           ],
         ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: CustomFABButton(
-        onPressed: () {
-          PageRouteTransition.push(context, MortgageUi())
-              .then((value) => setState(() {}));
-        },
-        icon: Icons.receipt,
-        label: 'Mortage Billing',
       ),
     );
   }
@@ -360,116 +349,116 @@ class _DashboardUiState extends State<DashboardUi> {
     );
   }
 
-  Widget mortgageCard({required var txnMap}) {
-    return Container(
-      color: Colors.grey.shade100,
-      margin: EdgeInsets.only(bottom: 10),
-      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Mortgage",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: primaryColor,
-                        fontSize: 13,
-                      ),
-                    ),
-                    Text(
-                      "${txnMap['shopName']}",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      Constants.dateFormat(txnMap['date']),
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black,
-                        fontSize: 13,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Column(
-                  children: [
-                    Text(
-                      txnMap['status'],
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: txnMap['status'] == "Active"
-                            ? Color.fromARGB(255, 76, 135, 175)
-                            : Color.fromARGB(255, 247, 122, 20),
-                        fontSize: 13,
-                      ),
-                    ),
-                    Text(
-                      "Total Due",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: primaryColor,
-                        fontSize: 13,
-                      ),
-                    ),
-                    Text(
-                      "₹ " + txnMap['amount'].toStringAsFixed(2),
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black,
-                        fontSize: 13,
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      "In Profit",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: txnMap['status'] == "Active"
-                            ? Colors.green
-                            : Colors.red,
-                        fontSize: 13,
-                      ),
-                    ),
-                    Text(
-                      "Valuation",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: primaryColor,
-                        fontSize: 13,
-                      ),
-                    ),
-                    Text(
-                      "20",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black,
-                        fontSize: 13,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          )
-        ],
-      ),
-    );
-  }
+  // Widget mortgageCard({required var txnMap}) {
+  //   return Container(
+  //     color: Colors.grey.shade100,
+  //     margin: EdgeInsets.only(bottom: 10),
+  //     padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         Row(
+  //           crossAxisAlignment: CrossAxisAlignment.end,
+  //           children: [
+  //             Expanded(
+  //               child: Column(
+  //                 crossAxisAlignment: CrossAxisAlignment.start,
+  //                 children: [
+  //                   Text(
+  //                     "Mortgage",
+  //                     style: TextStyle(
+  //                       fontWeight: FontWeight.w600,
+  //                       color: primaryColor,
+  //                       fontSize: 13,
+  //                     ),
+  //                   ),
+  //                   Text(
+  //                     "${txnMap['shopName']}",
+  //                     style: TextStyle(
+  //                       fontSize: 16,
+  //                       fontWeight: FontWeight.bold,
+  //                     ),
+  //                   ),
+  //                   Text(
+  //                     Constants.dateFormat(txnMap['date']),
+  //                     style: TextStyle(
+  //                       fontWeight: FontWeight.w500,
+  //                       color: Colors.black,
+  //                       fontSize: 13,
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //             Expanded(
+  //               child: Column(
+  //                 children: [
+  //                   Text(
+  //                     txnMap['status'],
+  //                     style: TextStyle(
+  //                       fontWeight: FontWeight.w600,
+  //                       color: txnMap['status'] == "Active"
+  //                           ? Color.fromARGB(255, 76, 135, 175)
+  //                           : Color.fromARGB(255, 247, 122, 20),
+  //                       fontSize: 13,
+  //                     ),
+  //                   ),
+  //                   Text(
+  //                     "Total Due",
+  //                     style: TextStyle(
+  //                       fontWeight: FontWeight.w600,
+  //                       color: primaryColor,
+  //                       fontSize: 13,
+  //                     ),
+  //                   ),
+  //                   Text(
+  //                     "₹ " + txnMap['amount'].toStringAsFixed(2),
+  //                     style: TextStyle(
+  //                       fontWeight: FontWeight.w500,
+  //                       color: Colors.black,
+  //                       fontSize: 13,
+  //                     ),
+  //                   )
+  //                 ],
+  //               ),
+  //             ),
+  //             Expanded(
+  //               child: Column(
+  //                 crossAxisAlignment: CrossAxisAlignment.end,
+  //                 children: [
+  //                   Text(
+  //                     "In Profit",
+  //                     style: TextStyle(
+  //                       fontWeight: FontWeight.w600,
+  //                       color: txnMap['status'] == "Active"
+  //                           ? Colors.green
+  //                           : Colors.red,
+  //                       fontSize: 13,
+  //                     ),
+  //                   ),
+  //                   Text(
+  //                     "Valuation",
+  //                     style: TextStyle(
+  //                       fontWeight: FontWeight.w600,
+  //                       color: primaryColor,
+  //                       fontSize: 13,
+  //                     ),
+  //                   ),
+  //                   Text(
+  //                     "20",
+  //                     style: TextStyle(
+  //                       fontWeight: FontWeight.w500,
+  //                       color: Colors.black,
+  //                       fontSize: 13,
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           ],
+  //         )
+  //       ],
+  //     ),
+  //   );
+  // }
 }

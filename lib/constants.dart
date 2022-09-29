@@ -16,9 +16,27 @@ class Constants {
     "22K": 22 / 24
   };
   static List<String> purity = ['14K', '18K', '22K'];
+
+  static String timeAgo(int millisec) {
+    final timeDiff = DateTime.now()
+        .difference(DateTime.fromMillisecondsSinceEpoch(millisec));
+
+    if (timeDiff.inDays != 0) {
+      return 'updated ' + timeDiff.inDays.toString() + ' days ago';
+    }
+    if (timeDiff.inHours != 0) {
+      return 'updated ' + timeDiff.inHours.toString() + ' hours ago';
+    }
+    if (timeDiff.inMinutes != 0) {
+      return 'updated ' + timeDiff.inMinutes.toString() + ' minutes ago';
+    }
+    return 'updated ' + timeDiff.inSeconds.toString() + ' seconds ago';
+  }
 }
 
 // 14/24
 
 // ₹
+
+
 

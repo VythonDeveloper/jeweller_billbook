@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jeweller_stockbook/Home/dashboard.dart';
 import 'package:jeweller_stockbook/Home/items.dart';
 import 'package:jeweller_stockbook/Home/more.dart';
+import 'package:jeweller_stockbook/Mortage/mortgage.dart';
 import 'package:jeweller_stockbook/components.dart';
 
 class HomePage extends StatefulWidget {
@@ -44,6 +45,7 @@ class _HomePageState extends State<HomePage> {
       children: [
         DashboardUi(),
         ItemsUi(),
+        MortgageUi(),
         MoreUI(),
       ],
     );
@@ -53,17 +55,17 @@ class _HomePageState extends State<HomePage> {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
       currentIndex: _selectedbottomNavIndex,
-      selectedItemColor: Colors.black,
+      selectedItemColor: Colors.indigo.shade900,
       unselectedItemColor: Colors.grey.withOpacity(0.5),
       unselectedIconTheme: IconThemeData(
         color: Colors.grey.withOpacity(0.5),
       ),
       selectedLabelStyle: TextStyle(
-        fontWeight: FontWeight.w700,
+        fontWeight: FontWeight.w500,
         fontSize: 12,
       ),
       unselectedLabelStyle: TextStyle(
-        fontWeight: FontWeight.w700,
+        fontWeight: FontWeight.w500,
         fontSize: 12,
       ),
       selectedIconTheme: IconThemeData(size: 28),
@@ -78,6 +80,10 @@ class _HomePageState extends State<HomePage> {
         BottomNavigationBarItem(
           label: 'Items',
           icon: Icon(Icons.inventory_2),
+        ),
+        BottomNavigationBarItem(
+          label: 'Mortgage',
+          icon: Icon(Icons.receipt_long),
         ),
         BottomNavigationBarItem(
           label: 'More',

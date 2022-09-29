@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jeweller_stockbook/Home/home.dart';
 import 'package:jeweller_stockbook/Signin/welcomeUI.dart';
-import 'package:jeweller_stockbook/services/auth.dart';
+import 'package:jeweller_stockbook/Helper/auth.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 
 void main() async {
