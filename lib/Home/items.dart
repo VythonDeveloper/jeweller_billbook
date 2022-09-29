@@ -219,7 +219,9 @@ class _ItemsUiState extends State<ItemsUi> {
                       if (_searchKey.text.isEmpty) {
                         return itemsCard(itemMap: itemMap);
                       } else {
+                        print(_searchKey.text);
                         if (itemMap['name']
+                            .toString()
                             .toLowerCase()
                             .contains(_searchKey.text.toLowerCase())) {
                           return itemsCard(itemMap: itemMap);

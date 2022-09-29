@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jeweller_stockbook/Home/dashboard.dart';
 import 'package:jeweller_stockbook/Home/items.dart';
 import 'package:jeweller_stockbook/Home/more.dart';
-import 'package:jeweller_stockbook/Mortage/mortgage.dart';
+import 'package:jeweller_stockbook/Home/mortgage.dart';
 import 'package:jeweller_stockbook/components.dart';
 
 class HomePage extends StatefulWidget {
