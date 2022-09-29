@@ -216,31 +216,58 @@ class _MortgageUiState extends State<MortgageUi> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             if (snapshot.data.docs.length > 0) {
+              int dataCounter = 0;
+              int loopCounter = 0;
               return ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: snapshot.data.docs.length,
-                  itemBuilder: (context, index) {
-                    var txnMap = snapshot.data.docs[index];
-                    if (txnMap['status'].toString().toLowerCase() ==
-                        _selectedStatus.toLowerCase()) {
-                      if (_searchKey.text.isEmpty) {
-                        return mortgageCard(txnMap: txnMap);
-                      } else {
-                        if (txnMap['shopName']
-                            .toLowerCase()
-                            .contains(_searchKey.text.toLowerCase())) {
-                          return mortgageCard(txnMap: txnMap);
-                        }
-                      }
-                    } else if (_selectedStatus == 'All Status') {
-                      return mortgageCard(txnMap: txnMap);
+                shrinkWrap: true,
+                itemCount: snapshot.data.docs.length,
+                itemBuilder: (context, index) {
+                  loopCounter += 1;
+                  DocumentSnapshot _txnMap = snapshot.data.docs[index];
+                  if (_selectedStatus == 'All Status') {
+                    if (_searchKey.text.isEmpty) {
+                      dataCounter++;
+                      return mortgageCard(txnMap: _txnMap);
+                    } else if (_txnMap['shopName']
+                        .toLowerCase()
+                        .contains(_searchKey.text.toLowerCase())) {
+                      dataCounter++;
+                      return mortgageCard(txnMap: _txnMap);
                     }
-                    return SizedBox();
-                  });
+                  } else if (_txnMap['status'].toLowerCase() ==
+                      _selectedStatus.toLowerCase()) {
+                    if (_searchKey.text.isEmpty) {
+                      dataCounter++;
+
+                      return mortgageCard(txnMap: _txnMap);
+                    } else if (_txnMap['shopName']
+                        .toLowerCase()
+                        .contains(_searchKey.text.toLowerCase())) {
+                      dataCounter++;
+                      return mortgageCard(txnMap: _txnMap);
+                    }
+                  }
+
+                  if (dataCounter == 0 &&
+                      loopCounter == snapshot.data.docs.length) {
+                    return Center(
+                      child: Text(
+                        "No mortgage found",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey.shade400,
+                        ),
+                      ),
+                    );
+                  }
+                  return SizedBox();
+                },
+              );
             }
             return Center(
               child: Text(
-                "No Mortgage Bills",
+                "No Mortgage. Create...",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
               ),
             );

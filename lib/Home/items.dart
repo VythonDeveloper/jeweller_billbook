@@ -209,34 +209,58 @@ class _ItemsUiState extends State<ItemsUi> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             if (snapshot.data.docs.length > 0) {
+              int dataCounter = 0;
+              int loopCounter = 0;
               return ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: snapshot.data.docs.length,
-                  itemBuilder: (context, index) {
-                    var itemMap = snapshot.data.docs[index];
-                    if (itemMap['category'].toString().toLowerCase() ==
-                        _selectedCategory.toLowerCase()) {
-                      if (_searchKey.text.isEmpty) {
-                        return itemsCard(itemMap: itemMap);
-                      } else {
-                        print(_searchKey.text);
-                        if (itemMap['name']
-                            .toString()
-                            .toLowerCase()
-                            .contains(_searchKey.text.toLowerCase())) {
-                          return itemsCard(itemMap: itemMap);
-                        }
-                      }
-                    } else if (_selectedCategory == 'All Categories') {
-                      return itemsCard(itemMap: itemMap);
+                shrinkWrap: true,
+                itemCount: snapshot.data.docs.length,
+                itemBuilder: (context, index) {
+                  loopCounter += 1;
+                  DocumentSnapshot _txnMap = snapshot.data.docs[index];
+                  if (_selectedCategory == 'All Categories') {
+                    if (_searchKey.text.isEmpty) {
+                      dataCounter++;
+                      return itemsCard(itemMap: _txnMap);
+                    } else if (_txnMap['name']
+                        .toLowerCase()
+                        .contains(_searchKey.text.toLowerCase())) {
+                      dataCounter++;
+                      return itemsCard(itemMap: _txnMap);
                     }
+                  } else if (_txnMap['category'].toLowerCase() ==
+                      _selectedCategory.toLowerCase()) {
+                    if (_searchKey.text.isEmpty) {
+                      dataCounter++;
 
-                    return SizedBox();
-                  });
+                      return itemsCard(itemMap: _txnMap);
+                    } else if (_txnMap['name']
+                        .toLowerCase()
+                        .contains(_searchKey.text.toLowerCase())) {
+                      dataCounter++;
+                      return itemsCard(itemMap: _txnMap);
+                    }
+                  }
+
+                  if (dataCounter == 0 &&
+                      loopCounter == snapshot.data.docs.length) {
+                    return Center(
+                      child: Text(
+                        "No item found",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey.shade400,
+                        ),
+                      ),
+                    );
+                  }
+                  return SizedBox();
+                },
+              );
             }
             return Center(
               child: Text(
-                "No Items",
+                "No Items. Create...",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
               ),
             );
@@ -406,7 +430,7 @@ class _ItemsUiState extends State<ItemsUi> {
                         print(value.toString());
                         setModalState(() {
                           _selectedCategory = value.toString();
-                          // print('_selectedCategory - ' + _selectedCategory);
+                          Navigator.pop(context);
                         });
                       },
                     ),
@@ -458,7 +482,7 @@ class _ItemsUiState extends State<ItemsUi> {
                           print(value.toString());
                           setModalState(() {
                             _selectedCategory = value.toString();
-                            print('_selectedCategory - ' + _selectedCategory);
+                            Navigator.pop(context);
                           });
                         },
                       ),
