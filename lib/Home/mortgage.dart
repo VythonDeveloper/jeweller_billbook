@@ -208,7 +208,7 @@ class _MortgageUiState extends State<MortgageUi> {
     return FutureBuilder<dynamic>(
         future: FirebaseFirestore.instance
             .collection('users')
-            .doc(UserData.uid)
+            .doc(FirebaseAuth.instance.currentUser!.uid)
             .collection("transactions")
             .where('type', isEqualTo: 'MortgageTransaction')
             .orderBy('id', descending: true)
