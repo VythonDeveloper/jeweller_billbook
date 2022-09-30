@@ -56,7 +56,6 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
   @override
   void initState() {
     super.initState();
-    print(itemId);
     fetchitemDetails();
   }
 
@@ -102,7 +101,15 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
               icon: Icon(Icons.edit),
             ),
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                showDialog<void>(
+                  context: context,
+                  barrierDismissible: false, // user must tap button!
+                  builder: (BuildContext context) {
+                    return DeleteItemAlertBox();
+                  },
+                );
+              },
               icon: Icon(Icons.delete),
             ),
           ],
@@ -913,6 +920,74 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                 PageRouteTransition.pop(context);
               });
             }
+          },
+        ),
+      ],
+    );
+  }
+
+  AlertDialog DeleteItemAlertBox() {
+    return AlertDialog(
+      title: Text('Delete ' + itemMap['name'] + ' and all transactions?'),
+      content: SingleChildScrollView(
+        child:
+            Text("Deleting will lose all details and transactions till now."),
+      ),
+      actions: <Widget>[
+        TextButton(
+          child: const Text(
+            'Cancel',
+            style: TextStyle(color: Colors.red),
+          ),
+          onPressed: () {
+            PageRouteTransition.pop(context);
+          },
+        ),
+        TextButton(
+          child: const Text('Approve'),
+          onPressed: () async {
+            showLoading(context);
+
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(UserData.uid)
+                .collection('items')
+                .doc(itemMap['id'].toString())
+                .delete()
+                .then((value) {
+              FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(UserData.uid)
+                  .collection('transactions')
+                  .where('type', isEqualTo: "StockTransaction")
+                  .where('itemId', isEqualTo: itemMap['id'])
+                  .get()
+                  .then((value) {
+                if (value.size > 0) {
+                  FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(UserData.uid)
+                      .collection('transactions')
+                      .where('itemId', isEqualTo: itemMap['id'])
+                      .get()
+                      .then((value) {
+                    if (value.size > 0) {
+                      value.docs.forEach((element) {
+                        FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(UserData.uid)
+                            .collection('transactions')
+                            .doc(element['id'].toString())
+                            .delete();
+                      });
+                    }
+                  });
+                }
+              });
+              PageRouteTransition.pop(context);
+              PageRouteTransition.pop(context);
+              PageRouteTransition.pop(context);
+            });
           },
         ),
       ],

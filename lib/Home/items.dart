@@ -298,7 +298,6 @@ class _ItemsUiState extends State<ItemsUi> {
                       _selectedCategory.toLowerCase()) {
                     if (_searchKey.text.isEmpty) {
                       dataCounter++;
-
                       return itemsCard(itemMap: _txnMap);
                     } else if (_txnMap['name']
                         .toLowerCase()

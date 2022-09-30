@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:jeweller_stockbook/Mortage/mortage_billingUI.dart';
+import 'package:jeweller_stockbook/Mortage/createmortgage.dart';
 import 'package:jeweller_stockbook/Stock/lowStock.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 
@@ -220,24 +220,24 @@ class _MortgageUiState extends State<MortgageUi> {
                   if (_selectedStatus == 'All Status') {
                     if (_searchKey.text.isEmpty) {
                       dataCounter++;
-                      return mortgageCard(txnMap: _txnMap);
+                      return mortgageCard(txnMap: _txnMap, context: context);
                     } else if (_txnMap['shopName']
                         .toLowerCase()
                         .contains(_searchKey.text.toLowerCase())) {
                       dataCounter++;
-                      return mortgageCard(txnMap: _txnMap);
+                      return mortgageCard(txnMap: _txnMap, context: context);
                     }
                   } else if (_txnMap['status'].toLowerCase() ==
                       _selectedStatus.toLowerCase()) {
                     if (_searchKey.text.isEmpty) {
                       dataCounter++;
 
-                      return mortgageCard(txnMap: _txnMap);
+                      return mortgageCard(txnMap: _txnMap, context: context);
                     } else if (_txnMap['shopName']
                         .toLowerCase()
                         .contains(_searchKey.text.toLowerCase())) {
                       dataCounter++;
-                      return mortgageCard(txnMap: _txnMap);
+                      return mortgageCard(txnMap: _txnMap, context: context);
                     }
                   }
 

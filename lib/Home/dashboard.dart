@@ -19,6 +19,8 @@ class DashboardUi extends StatefulWidget {
 class _DashboardUiState extends State<DashboardUi> {
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   List<dynamic> transactionsMap = [];
+  String timelineDateTitle = '';
+  bool showDateWidget = false;
 
   @override
   void initState() {
@@ -187,12 +189,13 @@ class _DashboardUiState extends State<DashboardUi> {
             builder: ((context, snapshot) {
               if (snapshot.hasData) {
                 if (snapshot.data.docs.length > 0) {
+                  timelineDateTitle = '';
                   return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
                         padding: EdgeInsets.only(bottom: 15, left: 15),
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
                               Icons.timeline,
@@ -206,7 +209,7 @@ class _DashboardUiState extends State<DashboardUi> {
                               style: TextStyle(
                                 fontSize: 15,
                                 letterSpacing: 0.7,
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
                           ],
@@ -217,11 +220,62 @@ class _DashboardUiState extends State<DashboardUi> {
                         physics: NeverScrollableScrollPhysics(),
                         itemCount: snapshot.data.docs.length,
                         itemBuilder: (context, index) {
+                          var txnMap = snapshot.data.docs[index];
+                          var todayDate = Constants.dateFormat(
+                              DateTime.now().millisecondsSinceEpoch);
+                          if (timelineDateTitle ==
+                              Constants.dateFormat(txnMap['date'])) {
+                            showDateWidget = false;
+                          } else {
+                            timelineDateTitle =
+                                Constants.dateFormat(txnMap['date']);
+                            showDateWidget = true;
+                          }
                           return snapshot.data.docs[index]['type'] ==
                                   "StockTransaction"
-                              ? transactionCard(
-                                  txnMap: snapshot.data.docs[index])
-                              : mortgageCard(txnMap: snapshot.data.docs[index]);
+                              ? Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Visibility(
+                                      visible: showDateWidget,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            bottom: 10, top: 5, left: 10),
+                                        child: Text(
+                                          timelineDateTitle == todayDate
+                                              ? "Today"
+                                              : timelineDateTitle,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 14),
+                                        ),
+                                      ),
+                                    ),
+                                    transactionCard(txnMap: txnMap),
+                                  ],
+                                )
+                              : Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Visibility(
+                                      visible: showDateWidget,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            bottom: 10, top: 5, left: 10),
+                                        child: Text(
+                                          timelineDateTitle == todayDate
+                                              ? "Today"
+                                              : timelineDateTitle,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 14),
+                                        ),
+                                      ),
+                                    ),
+                                    mortgageCard(
+                                        txnMap: txnMap, context: context)
+                                  ],
+                                );
                         },
                       ),
                     ],
@@ -347,117 +401,4 @@ class _DashboardUiState extends State<DashboardUi> {
       ),
     );
   }
-
-  // Widget mortgageCard({required var txnMap}) {
-  //   return Container(
-  //     color: Colors.grey.shade100,
-  //     margin: EdgeInsets.only(bottom: 10),
-  //     padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-  //     child: Column(
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         Row(
-  //           crossAxisAlignment: CrossAxisAlignment.end,
-  //           children: [
-  //             Expanded(
-  //               child: Column(
-  //                 crossAxisAlignment: CrossAxisAlignment.start,
-  //                 children: [
-  //                   Text(
-  //                     "Mortgage",
-  //                     style: TextStyle(
-  //                       fontWeight: FontWeight.w600,
-  //                       color: primaryColor,
-  //                       fontSize: 13,
-  //                     ),
-  //                   ),
-  //                   Text(
-  //                     "${txnMap['shopName']}",
-  //                     style: TextStyle(
-  //                       fontSize: 16,
-  //                       fontWeight: FontWeight.bold,
-  //                     ),
-  //                   ),
-  //                   Text(
-  //                     Constants.dateFormat(txnMap['date']),
-  //                     style: TextStyle(
-  //                       fontWeight: FontWeight.w500,
-  //                       color: Colors.black,
-  //                       fontSize: 13,
-  //                     ),
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //             Expanded(
-  //               child: Column(
-  //                 children: [
-  //                   Text(
-  //                     txnMap['status'],
-  //                     style: TextStyle(
-  //                       fontWeight: FontWeight.w600,
-  //                       color: txnMap['status'] == "Active"
-  //                           ? Color.fromARGB(255, 76, 135, 175)
-  //                           : Color.fromARGB(255, 247, 122, 20),
-  //                       fontSize: 13,
-  //                     ),
-  //                   ),
-  //                   Text(
-  //                     "Total Due",
-  //                     style: TextStyle(
-  //                       fontWeight: FontWeight.w600,
-  //                       color: primaryColor,
-  //                       fontSize: 13,
-  //                     ),
-  //                   ),
-  //                   Text(
-  //                     "₹ " + txnMap['amount'].toStringAsFixed(2),
-  //                     style: TextStyle(
-  //                       fontWeight: FontWeight.w500,
-  //                       color: Colors.black,
-  //                       fontSize: 13,
-  //                     ),
-  //                   )
-  //                 ],
-  //               ),
-  //             ),
-  //             Expanded(
-  //               child: Column(
-  //                 crossAxisAlignment: CrossAxisAlignment.end,
-  //                 children: [
-  //                   Text(
-  //                     "In Profit",
-  //                     style: TextStyle(
-  //                       fontWeight: FontWeight.w600,
-  //                       color: txnMap['status'] == "Active"
-  //                           ? Colors.green
-  //                           : Colors.red,
-  //                       fontSize: 13,
-  //                     ),
-  //                   ),
-  //                   Text(
-  //                     "Valuation",
-  //                     style: TextStyle(
-  //                       fontWeight: FontWeight.w600,
-  //                       color: primaryColor,
-  //                       fontSize: 13,
-  //                     ),
-  //                   ),
-  //                   Text(
-  //                     "20",
-  //                     style: TextStyle(
-  //                       fontWeight: FontWeight.w500,
-  //                       color: Colors.black,
-  //                       fontSize: 13,
-  //                     ),
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //           ],
-  //         )
-  //       ],
-  //     ),
-  //   );
-  // }
 }

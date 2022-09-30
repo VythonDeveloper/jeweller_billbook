@@ -40,11 +40,14 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
   String _selectedMortgageStatus = 'Active';
 
   DateTime selectedDate = DateTime.now();
-  int _daysSince = 0;
-  double _interestAmount = 0.0;
-  double _totalDue = 0.0;
-  double _valuation = 0.0;
-  String _profit_loss = "NA";
+
+  Map<String, dynamic> _calculatedResult = {
+    "daysSince": 0,
+    "interestAmount": 0.0,
+    "totalDue": 0.0,
+    "valuation": 0.0,
+    "profitLoss": 'NA'
+  };
 
   @override
   void dispose() {
@@ -81,29 +84,26 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
             DateTime(selectedDate.year, selectedDate.month, selectedDate.day)
                 .millisecondsSinceEpoch);
       });
-    calculateMortgage();
+    requestCalculation();
   }
 
-  void calculateMortgage() {
+  void requestCalculation() {
     double weightValue =
         _weight.text.isEmpty ? 0.0 : double.parse(_weight.text);
-    double purityValue =
-        double.parse(Constants.purityMap[_selectedPurity].toStringAsFixed(3));
     int amountValue = _amount.text.isEmpty ? 0 : int.parse(_amount.text);
-    double interestValue = _interestPerMonth.text.isEmpty
-        ? 0.0 / 100
-        : double.parse(_interestPerMonth.text) / 100;
+    double interestPerMonth = _interestPerMonth.text.isEmpty
+        ? 0.0
+        : double.parse(_interestPerMonth.text);
 
-    _daysSince = DateTime.now().difference(selectedDate).inDays;
-    _interestAmount = ((amountValue * interestValue) / 30) * _daysSince;
-    _totalDue = _interestAmount + amountValue;
+    _calculatedResult = Constants.calculateMortgage(
+        weightValue,
+        _selectedPurity,
+        amountValue,
+        interestPerMonth,
+        selectedDate.millisecondsSinceEpoch);
 
-    _valuation = UserData.goldRate * weightValue * purityValue;
-    if (_valuation > _totalDue) {
-      _profit_loss = "Profit";
-    } else {
-      _profit_loss = "Loss";
-    }
+    // print(_calculatedResult);
+
     setState(() {});
   }
 
@@ -132,17 +132,19 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
             ),
             otherDetailsTabBar(),
             Visibility(
-              visible: _profit_loss != 'NA',
+              visible: _calculatedResult['profitLoss'] != 'NA',
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Yor\'re in'),
                   Text(
-                    _profit_loss,
+                    _calculatedResult['profitLoss'],
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: _profit_loss == 'Profit' ? profitColor : lossColor,
+                      color: _calculatedResult['profitLoss'] == 'Profit'
+                          ? profitColor
+                          : lossColor,
                       letterSpacing: 0.7,
                     ),
                   ),
@@ -349,7 +351,7 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
                   ],
                   keyboardType: TextInputType.numberWithOptions(decimal: true),
                   onChanged: (value) {
-                    calculateMortgage();
+                    requestCalculation();
                   },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -396,7 +398,7 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
                           setState(() {
                             _selectedPurity = value!;
                           });
-                          calculateMortgage();
+                          requestCalculation();
                         },
                         items: _purityMap['purityList']
                             .map<DropdownMenuItem<String>>((String value) {
@@ -450,7 +452,7 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
                   ],
                   keyboardType: TextInputType.number,
                   onChanged: (value) {
-                    calculateMortgage();
+                    requestCalculation();
                   },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -505,7 +507,7 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
                   ],
                   keyboardType: TextInputType.numberWithOptions(decimal: true),
                   onChanged: (value) {
-                    calculateMortgage();
+                    requestCalculation();
                   },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -598,7 +600,7 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
                     ),
                   ),
                   Text(
-                    _daysSince.toString(),
+                    Constants.cFInt.format(_calculatedResult['daysSince']),
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -613,7 +615,9 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
                     ),
                   ),
                   Text(
-                    "₹ " + _interestAmount.toStringAsFixed(2),
+                    "₹ " +
+                        Constants.cFDecimal
+                            .format(_calculatedResult['interestAmount']),
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -636,7 +640,9 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
                     ),
                   ),
                   Text(
-                    "₹ " + _totalDue.toStringAsFixed(2),
+                    "₹ " +
+                        Constants.cFDecimal
+                            .format(_calculatedResult['totalDue']),
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -651,7 +657,9 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
                     ),
                   ),
                   Text(
-                    "₹ " + _valuation.toStringAsFixed(2),
+                    "₹ " +
+                        Constants.cFDecimal
+                            .format(_calculatedResult['valuation']),
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ],
