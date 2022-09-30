@@ -1,12 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:jeweller_stockbook/Category/itemcategory.dart';
 import 'package:jeweller_stockbook/Mortage/mortage_billingUI.dart';
-import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:jeweller_stockbook/Stock/lowStock.dart';
-import 'package:jeweller_stockbook/colors.dart';
-import 'package:jeweller_stockbook/constants.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 
 import '../components.dart';
