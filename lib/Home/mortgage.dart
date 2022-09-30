@@ -33,16 +33,13 @@ class _MortgageUiState extends State<MortgageUi> {
       body: SafeArea(
         child: Column(
           children: [
-            SizedBox(
-              height: 10,
-            ),
             MortgageAppbar(),
             SizedBox(
               height: 3,
             ),
             mortgageSortingBar(),
             SizedBox(
-              height: 10,
+              height: 3,
             ),
             Expanded(
               child: ListView(

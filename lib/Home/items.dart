@@ -35,16 +35,17 @@ class _ItemsUiState extends State<ItemsUi> {
       body: SafeArea(
         child: Column(
           children: [
-            SizedBox(
-              height: 10,
-            ),
             ItemsAppbar(),
             SizedBox(
               height: 3,
             ),
             itemsSortingBar(),
             SizedBox(
-              height: 10,
+              height: 3,
+            ),
+            totalWeightCards(),
+            SizedBox(
+              height: 3,
             ),
             Expanded(
               child: ListView(
@@ -192,6 +193,72 @@ class _ItemsUiState extends State<ItemsUi> {
                 ),
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget totalWeightCards() {
+    return FutureBuilder<dynamic>(
+      future: FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection('items')
+          .orderBy('id', descending: true)
+          .get(),
+      builder: ((context, snapshot) {
+        if (snapshot.hasData) {
+          if (snapshot.data.docs.length > 0) {
+            Map<String, dynamic> totalWeightMap = {};
+            for (int i = 0; i < snapshot.data.docs.length; i++) {
+              var itemMap = snapshot.data.docs[i];
+              if (totalWeightMap[itemMap['category']] != null) {
+                totalWeightMap[itemMap['category']] +=
+                    itemMap['leftStockWeight'];
+              } else {
+                totalWeightMap[itemMap['category']] =
+                    itemMap['leftStockWeight'];
+              }
+            }
+
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: List.generate(totalWeightMap.keys.length, (index) {
+                    String key = totalWeightMap.keys.elementAt(index);
+                    return totalWeightCard(
+                        key: key, totalWeight: totalWeightMap[key]);
+                  }),
+                ),
+              ),
+            );
+          }
+        }
+        return LinearProgressIndicator();
+      }),
+    );
+  }
+
+  Widget totalWeightCard({required String key, required double totalWeight}) {
+    return Container(
+      margin: EdgeInsets.only(right: 10),
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+          color: Color.fromARGB(255, 231, 231, 231),
+          borderRadius: BorderRadius.circular(12)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            key,
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+          ),
+          Text(
+            "Wt. " + totalWeight.toStringAsFixed(3) + " GMS",
+            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
           ),
         ],
       ),
