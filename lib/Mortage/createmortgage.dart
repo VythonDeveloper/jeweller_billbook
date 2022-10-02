@@ -18,7 +18,6 @@ class CreateMortgageUi extends StatefulWidget {
 class _CreateMortgageUiState extends State<CreateMortgageUi> {
   int uniqueId = DateTime.now().millisecondsSinceEpoch;
   final _formKey = GlobalKey<FormState>();
-  final _transactionType = "MortgageTransaction";
   final _shopName = new TextEditingController();
   final _customerName = new TextEditingController();
   final _mobile = new TextEditingController();
@@ -173,7 +172,6 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
             showLoading(context);
             Map<String, dynamic> mortgageMap = {
               "id": uniqueId,
-              "type": _transactionType,
               "shopName": _shopName.text,
               "customerName": _customerName.text,
               "mobile": "+91" + _mobile.text,
@@ -182,7 +180,9 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
               "unit": "GMS",
               "purity": _selectedPurity,
               "amount": int.parse(_amount.text),
-              "date": uniqueId,
+              "date": selectedDate.millisecondsSinceEpoch,
+              "lastPaymentDate": selectedDate.millisecondsSinceEpoch,
+              "closingDate": 0,
               "interestPerMonth": double.parse(_interestPerMonth.text),
               "status": _selectedMortgageStatus
             };
@@ -190,7 +190,7 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
             FirebaseFirestore.instance
                 .collection('users')
                 .doc(UserData.uid)
-                .collection('transactions')
+                .collection('mortgage')
                 .doc(uniqueId.toString())
                 .set(mortgageMap)
                 .then((value) {

@@ -2,7 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:jeweller_stockbook/Mortage/createmortgage.dart';
+import 'package:jeweller_stockbook/Mortage/mortgageDetails.dart';
 import 'package:jeweller_stockbook/Stock/lowStock.dart';
+import 'package:jeweller_stockbook/colors.dart';
+import 'package:jeweller_stockbook/constants.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 
 import '../components.dart';
@@ -202,8 +205,7 @@ class _MortgageUiState extends State<MortgageUi> {
         future: FirebaseFirestore.instance
             .collection('users')
             .doc(FirebaseAuth.instance.currentUser!.uid)
-            .collection("transactions")
-            .where('type', isEqualTo: 'MortgageTransaction')
+            .collection("mortgage")
             .orderBy('id', descending: true)
             .get(),
         builder: (context, snapshot) {
@@ -216,28 +218,28 @@ class _MortgageUiState extends State<MortgageUi> {
                 itemCount: snapshot.data.docs.length,
                 itemBuilder: (context, index) {
                   loopCounter += 1;
-                  DocumentSnapshot _txnMap = snapshot.data.docs[index];
+                  DocumentSnapshot _mrtgMap = snapshot.data.docs[index];
                   if (_selectedStatus == 'All Status') {
                     if (_searchKey.text.isEmpty) {
                       dataCounter++;
-                      return mortgageCard(txnMap: _txnMap, context: context);
-                    } else if (_txnMap['shopName']
+                      return mortgageCard(mrtgMap: _mrtgMap);
+                    } else if (_mrtgMap['shopName']
                         .toLowerCase()
                         .contains(_searchKey.text.toLowerCase())) {
                       dataCounter++;
-                      return mortgageCard(txnMap: _txnMap, context: context);
+                      return mortgageCard(mrtgMap: _mrtgMap);
                     }
-                  } else if (_txnMap['status'].toLowerCase() ==
+                  } else if (_mrtgMap['status'].toLowerCase() ==
                       _selectedStatus.toLowerCase()) {
                     if (_searchKey.text.isEmpty) {
                       dataCounter++;
 
-                      return mortgageCard(txnMap: _txnMap, context: context);
-                    } else if (_txnMap['shopName']
+                      return mortgageCard(mrtgMap: _mrtgMap);
+                    } else if (_mrtgMap['shopName']
                         .toLowerCase()
                         .contains(_searchKey.text.toLowerCase())) {
                       dataCounter++;
-                      return mortgageCard(txnMap: _txnMap, context: context);
+                      return mortgageCard(mrtgMap: _mrtgMap);
                     }
                   }
 
@@ -269,5 +271,144 @@ class _MortgageUiState extends State<MortgageUi> {
             minHeight: 3,
           );
         });
+  }
+
+  Widget mortgageCard({required var mrtgMap}) {
+    var _calculatedResult = Constants.calculateMortgage(
+        mrtgMap['weight'],
+        mrtgMap['purity'],
+        mrtgMap['amount'],
+        mrtgMap['interestPerMonth'],
+        mrtgMap['lastPaymentDate']);
+    return GestureDetector(
+      onTap: () {
+        PageRouteTransition.push(
+                context, MortgageDetailsUi(mrtgId: mrtgMap['id']))
+            .then((value) => setState(() {}));
+      },
+      child: Container(
+        color: Colors.grey.shade100,
+        margin: EdgeInsets.only(bottom: 10),
+        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Mortgage",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.purple,
+                          fontSize: 13,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      Text(
+                        "${mrtgMap['shopName']}",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        Constants.dateFormat(mrtgMap['date']),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    children: [
+                      Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 1),
+                        decoration: BoxDecoration(
+                          color: mrtgMap['status'] == 'Active'
+                              ? Colors.blue.shade700
+                              : Colors.black,
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                        child: Text(
+                          mrtgMap['status'],
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white,
+                            fontFamily: 'default',
+                            fontSize: 12,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        "Total Due",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: primaryColor,
+                          fontSize: 13,
+                        ),
+                      ),
+                      Text(
+                        "₹ " + Constants.cFDecimal.format(mrtgMap['amount']),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
+                          fontSize: 13,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        _calculatedResult['profitLoss'],
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: _calculatedResult['profitLoss'] == "Profit"
+                              ? profitColor
+                              : lossColor,
+                          fontSize: 14,
+                        ),
+                      ),
+                      Text(
+                        "Valuation",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: primaryColor,
+                          fontSize: 13,
+                        ),
+                      ),
+                      Text(
+                        "₹ " +
+                            Constants.cFDecimal
+                                .format(_calculatedResult['valuation']),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
   }
 }

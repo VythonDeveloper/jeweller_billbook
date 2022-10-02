@@ -8,17 +8,20 @@ import 'package:page_route_transition/page_route_transition.dart';
 import '../Helper/user.dart';
 import '../colors.dart';
 
-class CreateMortgageUi extends StatefulWidget {
-  const CreateMortgageUi({Key? key}) : super(key: key);
+class EditMortgageUi extends StatefulWidget {
+  final mrtgMap;
+  const EditMortgageUi({Key? key, required this.mrtgMap}) : super(key: key);
 
   @override
-  State<CreateMortgageUi> createState() => _CreateMortgageUiState();
+  State<EditMortgageUi> createState() => _EditMortgageUiState(mrtgMap: mrtgMap);
 }
 
-class _CreateMortgageUiState extends State<CreateMortgageUi> {
+class _EditMortgageUiState extends State<EditMortgageUi> {
+  final mrtgMap;
+  _EditMortgageUiState({required this.mrtgMap});
   int uniqueId = DateTime.now().millisecondsSinceEpoch;
   final _formKey = GlobalKey<FormState>();
-  final _transactionType = "MortgageTransaction";
+  // final _transactionType = "MortgageTransaction";
   final _shopName = new TextEditingController();
   final _customerName = new TextEditingController();
   final _mobile = new TextEditingController();
@@ -65,9 +68,20 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
   @override
   void initState() {
     super.initState();
+    _shopName.text = mrtgMap['shopName'];
+    _customerName.text = mrtgMap['customerName'];
+    _mobile.text = mrtgMap['mobile'].split("+91")[1];
+    _description.text = mrtgMap['description'];
+    _weight.text = mrtgMap['weight'].toString();
+    _selectedPurity = mrtgMap['purity'];
+    _amount.text = mrtgMap['amount'].toString();
+    _interestPerMonth.text = mrtgMap['interestPerMonth'].toString();
+    _selectedMortgageStatus = mrtgMap['status'];
+    selectedDate = DateTime.fromMillisecondsSinceEpoch(mrtgMap['date']);
     _date.text = Constants.dateFormat(
         DateTime(selectedDate.year, selectedDate.month, selectedDate.day)
             .millisecondsSinceEpoch);
+    requestCalculation();
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -112,7 +126,7 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Create Mortgage",
+          "Edit Mortgage",
           style: TextStyle(
             color: Colors.black,
             fontSize: 17,
@@ -171,18 +185,18 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
         onPressed: () {
           if (_formKey.currentState!.validate()) {
             showLoading(context);
-            Map<String, dynamic> mortgageMap = {
-              "id": uniqueId,
-              "type": _transactionType,
+            FocusScope.of(context).unfocus();
+
+            Map<String, dynamic> updatedMortgageMap = {
               "shopName": _shopName.text,
               "customerName": _customerName.text,
               "mobile": "+91" + _mobile.text,
               "description": _description.text,
               "weight": double.parse(_weight.text),
-              "unit": "GMS",
               "purity": _selectedPurity,
               "amount": int.parse(_amount.text),
-              "date": uniqueId,
+              "date": selectedDate.millisecondsSinceEpoch,
+              "closingDate": 0,
               "interestPerMonth": double.parse(_interestPerMonth.text),
               "status": _selectedMortgageStatus
             };
@@ -190,9 +204,9 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
             FirebaseFirestore.instance
                 .collection('users')
                 .doc(UserData.uid)
-                .collection('transactions')
-                .doc(uniqueId.toString())
-                .set(mortgageMap)
+                .collection('mortgage')
+                .doc(mrtgMap['id'].toString())
+                .update(updatedMortgageMap)
                 .then((value) {
               PageRouteTransition.pop(context);
               PageRouteTransition.pop(context);
@@ -200,7 +214,7 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
           }
         },
         icon: Icons.done,
-        label: 'Save',
+        label: 'Update Changes',
       ),
     );
   }

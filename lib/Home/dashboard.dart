@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
+import 'package:jeweller_stockbook/Mortage/mortgageDetails.dart';
 import 'package:jeweller_stockbook/Stock/lowStock.dart';
 import 'package:jeweller_stockbook/colors.dart';
-import 'package:jeweller_stockbook/components.dart';
 import 'package:jeweller_stockbook/constants.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -251,7 +251,7 @@ class _DashboardUiState extends State<DashboardUi> {
                                         ),
                                       ),
                                     ),
-                                    transactionCard(txnMap: txnMap),
+                                    stockTxnCard(txnMap: txnMap),
                                   ],
                                 )
                               : Column(
@@ -272,8 +272,7 @@ class _DashboardUiState extends State<DashboardUi> {
                                         ),
                                       ),
                                     ),
-                                    mortgageCard(
-                                        txnMap: txnMap, context: context)
+                                    mrtgTxnCard(txnMap: txnMap)
                                   ],
                                 );
                         },
@@ -301,7 +300,7 @@ class _DashboardUiState extends State<DashboardUi> {
     );
   }
 
-  Widget transactionCard({required var txnMap}) {
+  Widget stockTxnCard({required var txnMap}) {
     return Container(
       color: Colors.grey.shade100,
       margin: EdgeInsets.only(bottom: 10),
@@ -398,6 +397,83 @@ class _DashboardUiState extends State<DashboardUi> {
             ],
           )
         ],
+      ),
+    );
+  }
+
+  Widget mrtgTxnCard({required var txnMap}) {
+    return GestureDetector(
+      onTap: () {
+        PageRouteTransition.push(
+            context, MortgageDetailsUi(mrtgId: txnMap['mortgageId']));
+      },
+      child: Container(
+        color: Colors.grey.shade100,
+        margin: EdgeInsets.only(bottom: 10),
+        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Mortgage",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.purple,
+                          fontSize: 13,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      Text(
+                        "${txnMap['description']}",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        Constants.dateFormat(txnMap['date']),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    children: [
+                      Text(
+                        "Amount Paid",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: primaryColor,
+                          fontSize: 13,
+                        ),
+                      ),
+                      Text(
+                        "₹ " + Constants.cFDecimal.format(txnMap['paidAmount']),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
+                          fontSize: 13,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }

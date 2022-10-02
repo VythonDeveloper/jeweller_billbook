@@ -5,9 +5,8 @@ import 'package:jeweller_stockbook/Items/createitem.dart';
 import 'package:jeweller_stockbook/Category/itemcategory.dart';
 import 'package:jeweller_stockbook/Items/itemDetails.dart';
 import 'package:jeweller_stockbook/Stock/lowStock.dart';
+import 'package:jeweller_stockbook/components.dart';
 import 'package:page_route_transition/page_route_transition.dart';
-
-import '../components.dart';
 
 class ItemsUi extends StatefulWidget {
   const ItemsUi({Key? key}) : super(key: key);
@@ -493,7 +492,7 @@ class _ItemsUiState extends State<ItemsUi> {
                       value: "All Categories",
                       groupValue: _selectedCategory,
                       onChanged: (value) {
-                        print(value.toString());
+                        // print(value.toString());
                         setModalState(() {
                           _selectedCategory = value.toString();
                           Navigator.pop(context);
@@ -545,7 +544,7 @@ class _ItemsUiState extends State<ItemsUi> {
                         value: categoryName,
                         groupValue: _selectedCategory,
                         onChanged: (value) {
-                          print(value.toString());
+                          // print(value.toString());
                           setModalState(() {
                             _selectedCategory = value.toString();
                             Navigator.pop(context);

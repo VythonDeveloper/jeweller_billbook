@@ -85,17 +85,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
               onPressed: () {
                 PageRouteTransition.push(context, EditItemUI(itemMap: itemMap))
                     .then((value) {
-                  FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(UserData.uid)
-                      .collection('items')
-                      .doc(itemMap['id'].toString())
-                      .get()
-                      .then((value) {
-                    setState(() {
-                      itemMap = value.data()!;
-                    });
-                  });
+                  fetchitemDetails();
                 });
               },
               icon: Icon(Icons.edit),
@@ -959,28 +949,18 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                   .collection('users')
                   .doc(UserData.uid)
                   .collection('transactions')
-                  .where('type', isEqualTo: "StockTransaction")
+                  .where('type', isEqualTo: _transactionType)
                   .where('itemId', isEqualTo: itemMap['id'])
                   .get()
                   .then((value) {
                 if (value.size > 0) {
-                  FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(UserData.uid)
-                      .collection('transactions')
-                      .where('itemId', isEqualTo: itemMap['id'])
-                      .get()
-                      .then((value) {
-                    if (value.size > 0) {
-                      value.docs.forEach((element) {
-                        FirebaseFirestore.instance
-                            .collection('users')
-                            .doc(UserData.uid)
-                            .collection('transactions')
-                            .doc(element['id'].toString())
-                            .delete();
-                      });
-                    }
+                  value.docs.forEach((element) {
+                    FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(UserData.uid)
+                        .collection('transactions')
+                        .doc(element['id'].toString())
+                        .delete();
                   });
                 }
               });
