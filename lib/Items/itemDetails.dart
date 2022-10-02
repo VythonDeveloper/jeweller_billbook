@@ -415,6 +415,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
   }
 
   Container TimelineCard({required var stkTxnMap}) {
+    // print(stkTxnMap['activity']);
     String change = stkTxnMap['change'].split("#")[0] +
         '\n' +
         stkTxnMap['change'].split("#")[1];
@@ -748,6 +749,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                     double.parse(_addStockWeight.text),
                 'finalStockPiece':
                     itemMap['leftStockPiece'] + int.parse(_addStockPiece.text),
+                'type': _transactionType,
                 'date': uniqueId
               };
 
