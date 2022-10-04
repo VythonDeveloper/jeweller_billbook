@@ -21,18 +21,21 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
   final mrtgId;
   _MortgageDetailsUiState({this.mrtgId});
   final _formKey = GlobalKey<FormState>();
-  final _paidAmount = TextEditingController();
+  final _paidAmount = new TextEditingController();
+  final _mrtgTxnDate = new TextEditingController();
   final _transactionType = "MortgageTransaction";
+  DateTime selectedMrtgTxnDate = DateTime.now();
+  int totalPaid = 0;
 
   @override
   void dispose() {
     super.dispose();
     _paidAmount.dispose();
+    _mrtgTxnDate.dispose();
   }
 
   Map<String, dynamic> mrtgMap = {
     "id": 0,
-    "shopName": '',
     "customerName": '',
     "mobile": '',
     "description": '',
@@ -40,6 +43,7 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
     "unit": '',
     "purity": '',
     "amount": 0,
+    "totalPaid": 0,
     "date": 0,
     "closingDate": 0,
     "interestPerMonth": 0.0,
@@ -57,6 +61,9 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
   @override
   void initState() {
     super.initState();
+    _mrtgTxnDate.text = Constants.dateFormat(DateTime(selectedMrtgTxnDate.year,
+            selectedMrtgTxnDate.month, selectedMrtgTxnDate.day)
+        .millisecondsSinceEpoch);
     fetchMortgageDetails();
   }
 
@@ -80,38 +87,22 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
     });
   }
 
-  Future<void> addPayment() async {
-    FocusScope.of(context).unfocus();
-    try {
-      if (_formKey.currentState!.validate()) {
-        showLoading(context);
-        int uniqueId = DateTime.now().millisecondsSinceEpoch;
-        Map<String, dynamic> categoryMap = {
-          'id': uniqueId,
-          'date': uniqueId,
-          'description': mrtgMap['shopName'] + mrtgMap['customerName'] == ''
-              ? ''
-              : '(${mrtgMap['customerName']})',
-          'mortgageId': mrtgId,
-          'paidAmount': int.parse(_paidAmount.text),
-          'type': _transactionType
-        };
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(UserData.uid)
-            .collection('categories')
-            .doc(uniqueId.toString())
-            .set(categoryMap)
-            .then((value) {
-          _paidAmount.clear();
-          PageRouteTransition.pop(context);
-          PageRouteTransition.pop(context);
-        });
-      }
-      setState(() {});
-    } catch (e) {
-      print(e);
-    }
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: selectedMrtgTxnDate,
+        firstDate: DateTime(2000, 6, 29),
+        lastDate: DateTime(
+            DateTime.now().year, DateTime.now().month, DateTime.now().day));
+    if (picked != null && picked != selectedMrtgTxnDate)
+      setState(() {
+        selectedMrtgTxnDate = picked;
+        _mrtgTxnDate.text = Constants.dateFormat(DateTime(
+                selectedMrtgTxnDate.year,
+                selectedMrtgTxnDate.month,
+                selectedMrtgTxnDate.day)
+            .millisecondsSinceEpoch);
+      });
   }
 
   @override
@@ -158,13 +149,13 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
           heroTag: 'btn3',
           extendedPadding: EdgeInsets.symmetric(horizontal: 50),
           onPressed: () {
-            // showDialog<void>(
-            //   context: context,
-            //   barrierDismissible: false, // user must tap button!
-            //   builder: (BuildContext context) {
-            //     return AddStockAlertBox();
-            //   },
-            // );
+            showModalBottomSheet<void>(
+              context: context,
+              isScrollControlled: true,
+              builder: (BuildContext context) {
+                return addMrtgPaymentModal();
+              },
+            );
           },
           elevation: 0,
           shape: RoundedRectangleBorder(
@@ -198,7 +189,7 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                mrtgMap['shopName'],
+                mrtgMap['customerName'],
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 16,
@@ -206,7 +197,7 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
                 ),
               ),
               Text(
-                mrtgMap['customerName'] + ', \n' + mrtgMap['mobile'],
+                mrtgMap['mobile'],
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                   color: Colors.grey.shade600,
@@ -245,14 +236,14 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Amount',
+                'Amount Paid',
                 style: TextStyle(
                   color: Colors.grey.shade600,
                   fontSize: 14,
                 ),
               ),
               Text(
-                "₹ " + Constants.cFInt.format(mrtgMap['amount']),
+                "₹ " + Constants.cFInt.format(mrtgMap['totalPaid']),
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 15,
@@ -342,7 +333,7 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
                       child: Align(
                         alignment: Alignment.topRight,
                         child: Text(
-                          'Final Due',
+                          'Total Paid',
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
@@ -364,17 +355,22 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
                     .collection('transactions')
                     .where('mortgageId', isEqualTo: mrtgMap['id'])
                     .where('type', isEqualTo: _transactionType)
-                    .orderBy('id', descending: true)
+                    .orderBy('date', descending: true)
                     .get(),
                 builder: ((context, snapshot) {
                   if (snapshot.hasData) {
                     if (snapshot.data.docs.length > 0) {
+                      totalPaid = 0;
                       return ListView.builder(
                         shrinkWrap: true,
                         itemCount: snapshot.data.docs.length,
                         itemBuilder: (context, index) {
                           var mrtgTxnMap = snapshot.data.docs[index];
-                          return TimelineCard(mrtgTxnMap: mrtgTxnMap);
+                          totalPaid +=
+                              int.parse(mrtgTxnMap['paidAmount'].toString());
+
+                          return TimelineCard(
+                              mrtgTxnMap: mrtgTxnMap, totalPaid: totalPaid);
                         },
                       );
                     }
@@ -398,7 +394,7 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
     );
   }
 
-  Container TimelineCard({required var mrtgTxnMap}) {
+  Container TimelineCard({required var mrtgTxnMap, required int totalPaid}) {
     return Container(
       padding: EdgeInsets.all(12),
       child: Row(
@@ -423,8 +419,10 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
             child: Align(
               alignment: Alignment.topRight,
               child: Text(
-                '0',
-                textAlign: TextAlign.end,
+                '₹ ' + Constants.cFInt.format(totalPaid),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
@@ -793,7 +791,7 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
     );
   }
 
-  Widget addPaymentModal() {
+  Widget addMrtgPaymentModal() {
     return StatefulBuilder(
         builder: (BuildContext context, StateSetter setModalState) {
       return Container(
@@ -813,7 +811,7 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Create Item Category',
+                      'Add Paid Amount for Mortgage',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
@@ -831,27 +829,94 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
               Divider(),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                child: TextFormField(
-                  controller: _paidAmount,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: 'Ex: Gold, Silver',
-                    labelText: 'Category Name',
-                  ),
-                  keyboardType: TextInputType.name,
-                  textCapitalization: TextCapitalization.words,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "This is required";
-                    }
-                    return null;
-                  },
+                child: Row(
+                  children: [
+                    Flexible(
+                      child: TextFormField(
+                        controller: _paidAmount,
+                        decoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                          border: OutlineInputBorder(),
+                          hintText: '0',
+                          prefixText: "₹ ",
+                          labelText: 'Amount',
+                        ),
+                        keyboardType: TextInputType.number,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "This is required";
+                          }
+                          if (int.parse(value) <= 0) {
+                            return "Keep positive";
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Flexible(
+                      child: TextFormField(
+                        onTap: () {
+                          _selectDate(context);
+                        },
+                        readOnly: true,
+                        controller: _mrtgTxnDate,
+                        decoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                          label: Text("As of Date"),
+                          border: OutlineInputBorder(),
+                        ),
+                        keyboardType: TextInputType.number,
+                      ),
+                    ),
+                  ],
                 ),
+              ),
+              SizedBox(
+                width: 10,
               ),
               Center(
                 child: MaterialButton(
                   onPressed: () async {
-                    addPayment();
+                    FocusScope.of(context).unfocus();
+
+                    if (_formKey.currentState!.validate()) {
+                      showLoading(context);
+                      int uniqueId = DateTime.now().millisecondsSinceEpoch;
+
+                      Map<String, dynamic> mrtgTxnMap = {
+                        'id': uniqueId,
+                        'date': selectedMrtgTxnDate.millisecondsSinceEpoch,
+                        'description': mrtgMap['customerName'] + " paid due",
+                        'mortgageId': mrtgId,
+                        'paidAmount': int.parse(_paidAmount.text),
+                        'type': _transactionType
+                      };
+                      await FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(UserData.uid)
+                          .collection('transactions')
+                          .doc(uniqueId.toString())
+                          .set(mrtgTxnMap)
+                          .then((value) {
+                        FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(UserData.uid)
+                            .collection('mortgage')
+                            .doc(mrtgMap['id'].toString())
+                            .update({
+                          "totalPaid":
+                              FieldValue.increment(int.parse(_paidAmount.text))
+                        });
+                        mrtgMap['totalPaid'] += int.parse(_paidAmount.text);
+                        _paidAmount.clear();
+                        PageRouteTransition.pop(context);
+                        PageRouteTransition.pop(context);
+                      });
+                      setState(() {});
+                    }
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: 15, horizontal: 25),

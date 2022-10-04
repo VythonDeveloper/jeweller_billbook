@@ -206,7 +206,7 @@ class _MortgageUiState extends State<MortgageUi> {
             .collection('users')
             .doc(FirebaseAuth.instance.currentUser!.uid)
             .collection("mortgage")
-            .orderBy('id', descending: true)
+            .orderBy('date', descending: true)
             .get(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
@@ -223,7 +223,7 @@ class _MortgageUiState extends State<MortgageUi> {
                     if (_searchKey.text.isEmpty) {
                       dataCounter++;
                       return mortgageCard(mrtgMap: _mrtgMap);
-                    } else if (_mrtgMap['shopName']
+                    } else if (_mrtgMap['customerName']
                         .toLowerCase()
                         .contains(_searchKey.text.toLowerCase())) {
                       dataCounter++;
@@ -235,7 +235,7 @@ class _MortgageUiState extends State<MortgageUi> {
                       dataCounter++;
 
                       return mortgageCard(mrtgMap: _mrtgMap);
-                    } else if (_mrtgMap['shopName']
+                    } else if (_mrtgMap['customerName']
                         .toLowerCase()
                         .contains(_searchKey.text.toLowerCase())) {
                       dataCounter++;
@@ -310,7 +310,7 @@ class _MortgageUiState extends State<MortgageUi> {
                         ),
                       ),
                       Text(
-                        "${mrtgMap['shopName']}",
+                        "${mrtgMap['customerName']}",
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,

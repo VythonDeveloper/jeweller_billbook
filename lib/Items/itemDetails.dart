@@ -744,8 +744,9 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                     '#+ ' +
                     _addStockPiece.text +
                     ' PCS',
-                'finalStockWeight': itemMap['leftStockWeight'] +
-                    double.parse(_addStockWeight.text),
+                'finalStockWeight': double.parse((itemMap['leftStockWeight'] +
+                        double.parse(_addStockWeight.text))
+                    .toStringAsFixed(3)),
                 'finalStockPiece':
                     itemMap['leftStockPiece'] + int.parse(_addStockPiece.text),
                 'type': _transactionType,
@@ -880,8 +881,9 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                     '#- ' +
                     _reduceStockPiece.text +
                     ' PCS',
-                'finalStockWeight': itemMap['leftStockWeight'] -
-                    double.parse(_reduceStockWeight.text),
+                'finalStockWeight': double.parse((itemMap['leftStockWeight'] -
+                        double.parse(_reduceStockWeight.text))
+                    .toStringAsFixed(3)),
                 'finalStockPiece': itemMap['leftStockPiece'] -
                     int.parse(_reduceStockPiece.text),
                 'date': uniqueId
