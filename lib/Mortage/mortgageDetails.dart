@@ -109,7 +109,6 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
         });
       }
       setState(() {});
-      print('success');
     } catch (e) {
       print(e);
     }

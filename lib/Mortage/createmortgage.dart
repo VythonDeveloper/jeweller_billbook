@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:jeweller_stockbook/Helper/select_Contacts.dart';
+import 'package:jeweller_stockbook/Mortage/contactCrud.dart';
 import 'package:jeweller_stockbook/components.dart';
 import 'package:jeweller_stockbook/constants.dart';
 import 'package:page_route_transition/page_route_transition.dart';
@@ -100,8 +102,6 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
         amountValue,
         interestPerMonth,
         selectedDate.millisecondsSinceEpoch);
-
-    // print(_calculatedResult);
 
     setState(() {});
   }
@@ -212,28 +212,41 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextFormField(
-            controller: _shopName,
-            decoration: InputDecoration(
-              contentPadding: EdgeInsets.symmetric(horizontal: 10),
-              border: OutlineInputBorder(),
-              label: Text("Shop Name"),
-            ),
-            keyboardType: TextInputType.name,
-            textCapitalization: TextCapitalization.words,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'This is required';
-              }
-              return null;
-            },
-          ),
-          SizedBox(
-            height: 10,
-          ),
+          // TextFormField(
+          //   controller: _shopName,
+          //   decoration: InputDecoration(
+          //     contentPadding: EdgeInsets.symmetric(horizontal: 10),
+          //     border: OutlineInputBorder(),
+          //     label: Text("Shop Name"),
+          //   ),
+          //   keyboardType: TextInputType.name,
+          //   textCapitalization: TextCapitalization.words,
+          //   validator: (value) {
+          //     if (value == null || value.isEmpty) {
+          //       return 'This is required';
+          //     }
+          //     return null;
+          //   },
+          // ),
+          // SizedBox(
+          //   height: 10,
+          // ),
           TextFormField(
             controller: _customerName,
             decoration: InputDecoration(
+              suffixIcon: IconButton(
+                onPressed: () async {
+                  final contactDetails = await Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => ContactCrudUI()));
+                  _customerName.text = contactDetails['displayName'];
+                  _mobile.text = contactDetails['phone'];
+                  setState(() {});
+                },
+                icon: Icon(
+                  Icons.contact_phone_rounded,
+                  color: primaryColor,
+                ),
+              ),
               contentPadding: EdgeInsets.symmetric(horizontal: 10),
               border: OutlineInputBorder(),
               label: Text("Customer Name"),

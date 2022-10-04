@@ -33,6 +33,7 @@ class _ItemsUiState extends State<ItemsUi> {
     return Scaffold(
       body: SafeArea(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ItemsAppbar(),
             SizedBox(
@@ -226,11 +227,16 @@ class _ItemsUiState extends State<ItemsUi> {
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  children: List.generate(totalWeightMap.keys.length, (index) {
-                    String key = totalWeightMap.keys.elementAt(index);
-                    return totalWeightCard(
-                        key: key, totalWeight: totalWeightMap[key]);
-                  }),
+                  children: List.generate(
+                    totalWeightMap.keys.length,
+                    (index) {
+                      String key = totalWeightMap.keys.elementAt(index);
+                      return totalWeightCard(
+                        key: key,
+                        totalWeight: totalWeightMap[key],
+                      );
+                    },
+                  ),
                 ),
               ),
             );
@@ -243,21 +249,30 @@ class _ItemsUiState extends State<ItemsUi> {
 
   Widget totalWeightCard({required String key, required double totalWeight}) {
     return Container(
-      margin: EdgeInsets.only(right: 10),
+      margin: EdgeInsets.only(right: 5),
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-          color: Color.fromARGB(255, 231, 231, 231),
-          borderRadius: BorderRadius.circular(12)),
+        color: Colors.indigo,
+        borderRadius: BorderRadius.circular(8),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             key,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 17,
+              color: Colors.white,
+            ),
           ),
           Text(
             "Wt. " + totalWeight.toStringAsFixed(3) + " GMS",
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: Colors.white,
+            ),
           ),
         ],
       ),
@@ -492,7 +507,6 @@ class _ItemsUiState extends State<ItemsUi> {
                       value: "All Categories",
                       groupValue: _selectedCategory,
                       onChanged: (value) {
-                        // print(value.toString());
                         setModalState(() {
                           _selectedCategory = value.toString();
                           Navigator.pop(context);

@@ -50,7 +50,6 @@ class _EmailRegisterUIState extends State<EmailRegisterUI> {
         Navigator.popUntil(context, (route) => false);
         PageRouteTransition.push(context, HomePage());
       } else {
-        print(res);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(

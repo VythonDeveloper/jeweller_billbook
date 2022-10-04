@@ -466,7 +466,7 @@ class _DashboardUiState extends State<DashboardUi> {
                           color: Colors.black,
                           fontSize: 13,
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),

@@ -133,9 +133,6 @@ class AuthMethods {
         prefs.setString('USERPROFILEKEY', '');
         prefs.setInt("GOLDRATE", 0);
 
-        // print('UID from preference -----> ' +
-        //     prefs.getString('USERKEY').toString());
-
         UserData.uid = cred.user!.uid;
         UserData.email = email;
         UserData.userDisplayName = name;

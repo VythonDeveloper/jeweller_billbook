@@ -39,7 +39,6 @@ class _ItemCategoryUiState extends State<ItemCategoryUi> {
         });
       }
       setState(() {});
-      print('success');
     } catch (e) {
       print(e);
     }

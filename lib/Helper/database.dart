@@ -40,10 +40,8 @@ class DatabaseMethods {
           .get()
           .then((value) async {
         if (value.docs.isEmpty) {
-          print('No collection ahead');
           _deleteBook(bookId);
         } else {
-          print('Collection ahead');
           await _firestore
               .collection('users')
               .doc(UserData.uid)

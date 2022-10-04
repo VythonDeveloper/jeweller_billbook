@@ -8,20 +8,16 @@ import 'package:page_route_transition/page_route_transition.dart';
 import '../Helper/user.dart';
 import '../colors.dart';
 
-class EditMortgageUi extends StatefulWidget {
-  final mrtgMap;
-  const EditMortgageUi({Key? key, required this.mrtgMap}) : super(key: key);
+class CreateMortgageUi extends StatefulWidget {
+  const CreateMortgageUi({Key? key}) : super(key: key);
 
   @override
-  State<EditMortgageUi> createState() => _EditMortgageUiState(mrtgMap: mrtgMap);
+  State<CreateMortgageUi> createState() => _CreateMortgageUiState();
 }
 
-class _EditMortgageUiState extends State<EditMortgageUi> {
-  final mrtgMap;
-  _EditMortgageUiState({required this.mrtgMap});
+class _CreateMortgageUiState extends State<CreateMortgageUi> {
   int uniqueId = DateTime.now().millisecondsSinceEpoch;
   final _formKey = GlobalKey<FormState>();
-  // final _transactionType = "MortgageTransaction";
   final _shopName = new TextEditingController();
   final _customerName = new TextEditingController();
   final _mobile = new TextEditingController();
@@ -68,20 +64,9 @@ class _EditMortgageUiState extends State<EditMortgageUi> {
   @override
   void initState() {
     super.initState();
-    _shopName.text = mrtgMap['shopName'];
-    _customerName.text = mrtgMap['customerName'];
-    _mobile.text = mrtgMap['mobile'].split("+91")[1];
-    _description.text = mrtgMap['description'];
-    _weight.text = mrtgMap['weight'].toString();
-    _selectedPurity = mrtgMap['purity'];
-    _amount.text = mrtgMap['amount'].toString();
-    _interestPerMonth.text = mrtgMap['interestPerMonth'].toString();
-    _selectedMortgageStatus = mrtgMap['status'];
-    selectedDate = DateTime.fromMillisecondsSinceEpoch(mrtgMap['date']);
     _date.text = Constants.dateFormat(
         DateTime(selectedDate.year, selectedDate.month, selectedDate.day)
             .millisecondsSinceEpoch);
-    requestCalculation();
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -116,6 +101,8 @@ class _EditMortgageUiState extends State<EditMortgageUi> {
         interestPerMonth,
         selectedDate.millisecondsSinceEpoch);
 
+    // print(_calculatedResult);
+
     setState(() {});
   }
 
@@ -124,7 +111,7 @@ class _EditMortgageUiState extends State<EditMortgageUi> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Edit Mortgage",
+          "Create Mortgage",
           style: TextStyle(
             color: Colors.black,
             fontSize: 17,
@@ -183,17 +170,18 @@ class _EditMortgageUiState extends State<EditMortgageUi> {
         onPressed: () {
           if (_formKey.currentState!.validate()) {
             showLoading(context);
-            FocusScope.of(context).unfocus();
-
-            Map<String, dynamic> updatedMortgageMap = {
+            Map<String, dynamic> mortgageMap = {
+              "id": uniqueId,
               "shopName": _shopName.text,
               "customerName": _customerName.text,
               "mobile": "+91" + _mobile.text,
               "description": _description.text,
               "weight": double.parse(_weight.text),
+              "unit": "GMS",
               "purity": _selectedPurity,
               "amount": int.parse(_amount.text),
               "date": selectedDate.millisecondsSinceEpoch,
+              "lastPaymentDate": selectedDate.millisecondsSinceEpoch,
               "closingDate": 0,
               "interestPerMonth": double.parse(_interestPerMonth.text),
               "status": _selectedMortgageStatus
@@ -203,8 +191,8 @@ class _EditMortgageUiState extends State<EditMortgageUi> {
                 .collection('users')
                 .doc(UserData.uid)
                 .collection('mortgage')
-                .doc(mrtgMap['id'].toString())
-                .update(updatedMortgageMap)
+                .doc(uniqueId.toString())
+                .set(mortgageMap)
                 .then((value) {
               PageRouteTransition.pop(context);
               PageRouteTransition.pop(context);
@@ -212,7 +200,7 @@ class _EditMortgageUiState extends State<EditMortgageUi> {
           }
         },
         icon: Icons.done,
-        label: 'Update Changes',
+        label: 'Save',
       ),
     );
   }
