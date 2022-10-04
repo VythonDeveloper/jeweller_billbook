@@ -3,6 +3,7 @@ import 'package:jeweller_stockbook/Home/dashboard.dart';
 import 'package:jeweller_stockbook/Home/items.dart';
 import 'package:jeweller_stockbook/Home/more.dart';
 import 'package:jeweller_stockbook/Home/mortgage.dart';
+import 'package:jeweller_stockbook/colors.dart';
 import 'package:jeweller_stockbook/components.dart';
 
 class HomePage extends StatefulWidget {
@@ -55,7 +56,7 @@ class _HomePageState extends State<HomePage> {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
       currentIndex: _selectedbottomNavIndex,
-      selectedItemColor: Colors.indigo.shade900,
+      selectedItemColor: primaryColor,
       unselectedItemColor: Colors.grey.withOpacity(0.5),
       unselectedIconTheme: IconThemeData(
         color: Colors.grey.withOpacity(0.5),

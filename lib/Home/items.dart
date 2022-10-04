@@ -5,6 +5,7 @@ import 'package:jeweller_stockbook/Items/createitem.dart';
 import 'package:jeweller_stockbook/Category/itemcategory.dart';
 import 'package:jeweller_stockbook/Items/itemDetails.dart';
 import 'package:jeweller_stockbook/Stock/lowStock.dart';
+import 'package:jeweller_stockbook/colors.dart';
 import 'package:jeweller_stockbook/components.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 
@@ -31,34 +32,35 @@ class _ItemsUiState extends State<ItemsUi> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ItemsAppbar(),
-            SizedBox(
-              height: 3,
+      appBar: AppBar(
+        title: Text('Items'),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ItemsAppbar(),
+          SizedBox(
+            height: 3,
+          ),
+          itemsSortingBar(),
+          SizedBox(
+            height: 3,
+          ),
+          totalWeightList(),
+          SizedBox(
+            height: 3,
+          ),
+          Expanded(
+            child: ListView(
+              children: [
+                SizedBox(
+                  height: 10,
+                ),
+                itemsList(),
+              ],
             ),
-            itemsSortingBar(),
-            SizedBox(
-              height: 3,
-            ),
-            totalWeightCards(),
-            SizedBox(
-              height: 3,
-            ),
-            Expanded(
-              child: ListView(
-                children: [
-                  SizedBox(
-                    height: 10,
-                  ),
-                  itemsList(),
-                ],
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
       floatingActionButton: CustomFABButton(
           onPressed: () {
@@ -73,46 +75,26 @@ class _ItemsUiState extends State<ItemsUi> {
   Widget ItemsAppbar() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 15),
-      child: Row(
-        children: [
-          Text(
-            'Items',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w500,
-              letterSpacing: 0.5,
-            ),
+      child: TextField(
+        controller: _searchKey,
+        decoration: InputDecoration(
+          prefixIcon: Icon(
+            Icons.search,
+            color: primaryColor,
           ),
-          SizedBox(
-            width: 30,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
           ),
-          Flexible(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: TextField(
-                controller: _searchKey,
-                decoration: InputDecoration(
-                  prefixIcon: Icon(
-                    Icons.search,
-                    color: Colors.blue.shade700,
-                  ),
-                  border: InputBorder.none,
-                  hintText: 'Search by name',
-                  hintStyle: TextStyle(
-                    color: Colors.grey.shade500,
-                    fontSize: 16,
-                  ),
-                ),
-                onChanged: (value) {
-                  setState(() {});
-                },
-              ),
-            ),
+          contentPadding: EdgeInsets.symmetric(horizontal: 10),
+          hintText: 'Search by Name',
+          hintStyle: TextStyle(
+            color: Colors.grey.shade500,
+            fontSize: 16,
           ),
-        ],
+        ),
+        onChanged: (value) {
+          setState(() {});
+        },
       ),
     );
   }
@@ -199,7 +181,7 @@ class _ItemsUiState extends State<ItemsUi> {
     );
   }
 
-  Widget totalWeightCards() {
+  Widget totalWeightList() {
     return FutureBuilder<dynamic>(
       future: FirebaseFirestore.instance
           .collection('users')
@@ -227,16 +209,33 @@ class _ItemsUiState extends State<ItemsUi> {
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  children: List.generate(
-                    totalWeightMap.keys.length,
-                    (index) {
-                      String key = totalWeightMap.keys.elementAt(index);
-                      return totalWeightCard(
-                        key: key,
-                        totalWeight: totalWeightMap[key],
-                      );
-                    },
-                  ),
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: primaryAccentColor,
+                      child: IconButton(
+                        onPressed: () {
+                          PageRouteTransition.push(context, ItemCategoryUi())
+                              .then((value) => setState(() {}));
+                        },
+                        icon: Icon(Icons.add),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Row(
+                      children: List.generate(
+                        totalWeightMap.keys.length,
+                        (index) {
+                          String key = totalWeightMap.keys.elementAt(index);
+                          return totalWeightCard(
+                            key: key,
+                            totalWeight: totalWeightMap[key],
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
             );
@@ -352,96 +351,103 @@ class _ItemsUiState extends State<ItemsUi> {
   }
 
   Widget itemsCard({required var itemMap}) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 10),
-      padding: EdgeInsets.symmetric(horizontal: 15),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CircleAvatar(
-            backgroundColor: Color.fromARGB(255, 222, 240, 255),
-            radius: 18,
-            child: Text(
-              itemMap['name'][0],
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+        PageRouteTransition.push(context, ItemDetailsUI(itemId: itemMap['id']))
+            .then((value) => setState(() {}));
+      },
+      child: Container(
+        margin: EdgeInsets.only(bottom: 10),
+        padding: EdgeInsets.symmetric(horizontal: 15),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CircleAvatar(
+              backgroundColor: Color.fromARGB(255, 222, 240, 255),
+              radius: 18,
+              child: Text(
+                itemMap['name'][0],
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          ),
-          SizedBox(
-            width: 10,
-          ),
-          Expanded(
-            flex: 5,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  itemMap['name'],
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
-                ),
-                SizedBox(
-                  height: 5,
-                ),
-                Row(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Left Weight:",
-                          style: TextStyle(fontSize: 12),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Text(
-                          itemMap['leftStockWeight'].toStringAsFixed(3) +
-                              ' ' +
-                              itemMap['unit'],
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
+            SizedBox(
+              width: 10,
+            ),
+            Expanded(
+              flex: 5,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    itemMap['name'],
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Row(
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Left Weight:",
+                            style: TextStyle(fontSize: 12),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Piece:",
-                          maxLines: 2,
-                          style: TextStyle(fontSize: 12),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Text(
-                          itemMap['leftStockPiece'].toString() + ' PCS',
-                          style: TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
+                          Text(
+                            itemMap['leftStockWeight'].toStringAsFixed(3) +
+                                ' ' +
+                                itemMap['unit'],
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Piece:",
+                            maxLines: 2,
+                            style: TextStyle(fontSize: 12),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            itemMap['leftStockPiece'].toString() + ' PCS',
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-          Spacer(),
-          IconButton(
-            onPressed: () {
-              FocusScope.of(context).unfocus();
-              PageRouteTransition.push(
-                      context, ItemDetailsUI(itemId: itemMap['id']))
-                  .then((value) => setState(() {}));
-            },
-            icon: Icon(
-              Icons.tune,
-              size: 17,
-              color: Colors.black,
+            Spacer(),
+            IconButton(
+              onPressed: () {
+                FocusScope.of(context).unfocus();
+                PageRouteTransition.push(
+                        context, ItemDetailsUI(itemId: itemMap['id']))
+                    .then((value) => setState(() {}));
+              },
+              icon: Icon(
+                Icons.tune,
+                size: 17,
+                color: Colors.black,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
