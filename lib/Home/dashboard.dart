@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:jeweller_stockbook/Mortage/mortgageDetails.dart';
@@ -172,131 +173,127 @@ class _DashboardUiState extends State<DashboardUi> {
   }
 
   Widget ItemTimeline() {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: 10,
-          ),
-          FutureBuilder<dynamic>(
-            future: FirebaseFirestore.instance
-                .collection('users')
-                .doc(FirebaseAuth.instance.currentUser!.uid)
-                .collection('transactions')
-                .orderBy('id', descending: true)
-                .get(),
-            builder: ((context, snapshot) {
-              if (snapshot.hasData) {
-                if (snapshot.data.docs.length > 0) {
-                  timelineDateTitle = '';
-                  return Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 15, left: 15),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.timeline,
-                              size: 15,
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Text(
-                              "Timeline",
-                              style: TextStyle(
-                                fontSize: 15,
-                                letterSpacing: 0.7,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
+    return FutureBuilder<dynamic>(
+      future: FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection('transactions')
+          .orderBy('id', descending: true)
+          .get(),
+      builder: ((context, snapshot) {
+        if (snapshot.hasData) {
+          if (snapshot.data.docs.length > 0) {
+            timelineDateTitle = '';
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(bottom: 15, left: 0, top: 15),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    color: primaryColor,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.timeline,
+                          color: Colors.white,
+                          size: 15,
                         ),
-                      ),
-                      ListView.builder(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemCount: snapshot.data.docs.length,
-                        itemBuilder: (context, index) {
-                          var txnMap = snapshot.data.docs[index];
-                          var todayDate = Constants.dateFormat(
-                              DateTime.now().millisecondsSinceEpoch);
-                          if (timelineDateTitle ==
-                              Constants.dateFormat(txnMap['date'])) {
-                            showDateWidget = false;
-                          } else {
-                            timelineDateTitle =
-                                Constants.dateFormat(txnMap['date']);
-                            showDateWidget = true;
-                          }
-                          return snapshot.data.docs[index]['type'] ==
-                                  "StockTransaction"
-                              ? Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Visibility(
-                                      visible: showDateWidget,
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(
-                                            bottom: 10, top: 5, left: 10),
-                                        child: Text(
-                                          timelineDateTitle == todayDate
-                                              ? "Today"
-                                              : timelineDateTitle,
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 14),
-                                        ),
-                                      ),
-                                    ),
-                                    stockTxnCard(txnMap: txnMap),
-                                  ],
-                                )
-                              : Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Visibility(
-                                      visible: showDateWidget,
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(
-                                            bottom: 10, top: 5, left: 10),
-                                        child: Text(
-                                          timelineDateTitle == todayDate
-                                              ? "Today"
-                                              : timelineDateTitle,
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 14),
-                                        ),
-                                      ),
-                                    ),
-                                    mrtgTxnCard(txnMap: txnMap)
-                                  ],
-                                );
-                        },
-                      ),
-                    ],
-                  );
-                }
-                return Padding(
-                  padding: EdgeInsets.only(top: 40, left: 15),
-                  child: Text(
-                    "No\nTransactions",
-                    style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey.shade300,
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text(
+                          "Timeline",
+                          style: TextStyle(
+                            fontSize: 15,
+                            letterSpacing: 0.7,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                );
-              }
-              return LinearProgressIndicator();
-            }),
-          ),
-        ],
-      ),
+                ),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: snapshot.data.docs.length,
+                  itemBuilder: (context, index) {
+                    var txnMap = snapshot.data.docs[index];
+                    var todayDate = Constants.dateFormat(
+                        DateTime.now().millisecondsSinceEpoch);
+                    if (timelineDateTitle ==
+                        Constants.dateFormat(txnMap['date'])) {
+                      showDateWidget = false;
+                    } else {
+                      timelineDateTitle = Constants.dateFormat(txnMap['date']);
+                      showDateWidget = true;
+                    }
+                    return snapshot.data.docs[index]['type'] ==
+                            "StockTransaction"
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Visibility(
+                                visible: showDateWidget,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      bottom: 10, top: 5, left: 10),
+                                  child: Text(
+                                    timelineDateTitle == todayDate
+                                        ? "Today"
+                                        : timelineDateTitle,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14),
+                                  ),
+                                ),
+                              ),
+                              stockTxnCard(txnMap: txnMap),
+                            ],
+                          )
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Visibility(
+                                visible: showDateWidget,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      bottom: 10, top: 5, left: 10),
+                                  child: Text(
+                                    timelineDateTitle == todayDate
+                                        ? "Today"
+                                        : timelineDateTitle,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14),
+                                  ),
+                                ),
+                              ),
+                              mrtgTxnCard(txnMap: txnMap)
+                            ],
+                          );
+                  },
+                ),
+              ],
+            );
+          }
+          return Padding(
+            padding: EdgeInsets.only(top: 40, left: 15),
+            child: Text(
+              "No\nTransactions",
+              style: TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey.shade300,
+              ),
+            ),
+          );
+        }
+        return LinearProgressIndicator();
+      }),
     );
   }
 

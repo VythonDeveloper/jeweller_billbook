@@ -576,7 +576,7 @@ class _CreateItemUiState extends State<CreateItemUi> {
                       ? Container(
                           padding: EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: Color.fromARGB(255, 237, 240, 255),
+                            color: primaryAccentColor,
                             borderRadius: BorderRadius.only(
                               bottomLeft: Radius.circular(10),
                               bottomRight: Radius.circular(10),

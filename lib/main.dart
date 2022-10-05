@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:jeweller_stockbook/Home/home.dart';
 import 'package:jeweller_stockbook/Signin/welcomeUI.dart';
 import 'package:jeweller_stockbook/Helper/auth.dart';
+import 'package:jeweller_stockbook/colors.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 
 void main() async {
@@ -36,7 +37,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'StockBook',
       theme: ThemeData(
-        colorSchemeSeed: Colors.blue.shade900,
+        colorSchemeSeed: primaryColor,
         scaffoldBackgroundColor: Colors.white,
         fontFamily: 'San',
         bottomNavigationBarTheme: BottomNavigationBarThemeData(
@@ -47,6 +48,13 @@ class MyApp extends StatelessWidget {
       home: FutureBuilder<dynamic>(
         future: AuthMethods().getCurrentuser(),
         builder: ((context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
           if (snapshot.hasData) {
             return HomePage();
           } else {
