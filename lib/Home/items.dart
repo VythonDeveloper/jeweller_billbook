@@ -40,15 +40,15 @@ class _ItemsUiState extends State<ItemsUi> {
         children: [
           ItemsAppbar(),
           SizedBox(
-            height: 3,
+            height: 10,
           ),
           itemsSortingBar(),
           SizedBox(
-            height: 3,
+            height: 10,
           ),
           totalWeightList(),
           SizedBox(
-            height: 3,
+            height: 10,
           ),
           Expanded(
             child: ListView(
@@ -293,6 +293,7 @@ class _ItemsUiState extends State<ItemsUi> {
               int loopCounter = 0;
               return ListView.builder(
                 shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
                 itemCount: snapshot.data.docs.length,
                 itemBuilder: (context, index) {
                   loopCounter += 1;
@@ -358,13 +359,17 @@ class _ItemsUiState extends State<ItemsUi> {
             .then((value) => setState(() {}));
       },
       child: Container(
-        margin: EdgeInsets.only(bottom: 10),
-        padding: EdgeInsets.symmetric(horizontal: 15),
+        margin: EdgeInsets.only(bottom: 10, left: 10, right: 10),
+        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        decoration: BoxDecoration(
+          color: primaryAlternateAccentColor,
+          borderRadius: BorderRadius.circular(10),
+        ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CircleAvatar(
-              backgroundColor: Color.fromARGB(255, 222, 240, 255),
+              backgroundColor: primaryAlternateAccentColor,
               radius: 18,
               child: Text(
                 itemMap['name'][0],
