@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:jeweller_stockbook/Items/itemDetails.dart';
@@ -76,12 +75,34 @@ class _DashboardUiState extends State<DashboardUi> {
           Row(
             children: [
               StatsCard(
-                onPress: () {},
-                icon: Icons.file_download_outlined,
-                cardColor: Color.fromARGB(255, 217, 241, 218),
-                label: 'Mortage',
-                amount: '₹ ' + '0',
-              ),
+                  onPress: () {},
+                  icon: Icons.file_download_outlined,
+                  cardColor: Color.fromARGB(255, 217, 241, 218),
+                  label: 'Mortage',
+                  amount: FutureBuilder<dynamic>(
+                    future: FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(FirebaseAuth.instance.currentUser!.uid)
+                        .collection('mortgage')
+                        .get(),
+                    builder: ((context, snapshot) {
+                      if (snapshot.hasData) {
+                        if (snapshot.data.docs.length > 0) {
+                          int totalPrincipal = 0;
+                          var dataMap = snapshot.data.docs;
+                          for (int index = 0;
+                              index < snapshot.data.docs.length;
+                              index++) {
+                            totalPrincipal +=
+                                int.parse(dataMap[index]['amount'].toString());
+                          }
+                          return Text("₹ $totalPrincipal");
+                        }
+                        return Text("₹ 0");
+                      }
+                      return Expanded(child: LinearProgressIndicator());
+                    }),
+                  )),
               SizedBox(
                 width: 10,
               ),
@@ -90,7 +111,7 @@ class _DashboardUiState extends State<DashboardUi> {
                 icon: Icons.file_upload_outlined,
                 cardColor: Color.fromARGB(255, 255, 223, 227),
                 label: 'Sales',
-                amount: '₹ ' + '0',
+                amount: Text('₹ ' + '0'),
               ),
             ],
           ),
@@ -106,7 +127,7 @@ class _DashboardUiState extends State<DashboardUi> {
                 icon: null,
                 cardColor: Colors.grey.shade200,
                 label: 'Value of Items',
-                amount: 'Low Stocks',
+                amount: Text('Low Stocks'),
               ),
               SizedBox(
                 width: 10,
@@ -116,7 +137,7 @@ class _DashboardUiState extends State<DashboardUi> {
                 icon: Icons.bar_chart,
                 cardColor: Colors.grey.shade300,
                 label: 'Weekly Sale',
-                amount: '₹ ' + '0',
+                amount: Text('₹ ' + '0'),
               ),
             ],
           ),
@@ -140,10 +161,7 @@ class _DashboardUiState extends State<DashboardUi> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    amount,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
+                  amount,
                   SizedBox(
                     height: 10,
                   ),
