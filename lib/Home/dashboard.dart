@@ -75,34 +75,46 @@ class _DashboardUiState extends State<DashboardUi> {
           Row(
             children: [
               StatsCard(
-                  onPress: () {},
-                  icon: Icons.file_download_outlined,
-                  cardColor: Color.fromARGB(255, 217, 241, 218),
-                  label: 'Mortage',
-                  amount: FutureBuilder<dynamic>(
-                    future: FirebaseFirestore.instance
-                        .collection('users')
-                        .doc(FirebaseAuth.instance.currentUser!.uid)
-                        .collection('mortgage')
-                        .get(),
-                    builder: ((context, snapshot) {
-                      if (snapshot.hasData) {
-                        if (snapshot.data.docs.length > 0) {
-                          int totalPrincipal = 0;
-                          var dataMap = snapshot.data.docs;
-                          for (int index = 0;
-                              index < snapshot.data.docs.length;
-                              index++) {
-                            totalPrincipal +=
-                                int.parse(dataMap[index]['amount'].toString());
-                          }
-                          return Text("₹ $totalPrincipal");
+                onPress: () {},
+                icon: Icons.file_download_outlined,
+                cardColor: Color.fromARGB(255, 217, 241, 218),
+                label: 'Mortage',
+                amount: FutureBuilder<dynamic>(
+                  future: FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(FirebaseAuth.instance.currentUser!.uid)
+                      .collection('mortgage')
+                      .get(),
+                  builder: ((context, snapshot) {
+                    if (snapshot.hasData) {
+                      if (snapshot.data.docs.length > 0) {
+                        int totalPrincipal = 0;
+                        var dataMap = snapshot.data.docs;
+                        for (int index = 0;
+                            index < snapshot.data.docs.length;
+                            index++) {
+                          totalPrincipal +=
+                              int.parse(dataMap[index]['amount'].toString());
                         }
-                        return Text("₹ 0");
+                        return Text(
+                          "₹ " + Constants.cFInt.format(totalPrincipal),
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        );
                       }
-                      return Expanded(child: LinearProgressIndicator());
-                    }),
-                  )),
+                      return Text(
+                        "₹ 0",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      );
+                    }
+                    return Transform.scale(
+                      scale: 0.5,
+                      child: CircularProgressIndicator(),
+                    );
+                  }),
+                ),
+              ),
               SizedBox(
                 width: 10,
               ),
@@ -111,7 +123,10 @@ class _DashboardUiState extends State<DashboardUi> {
                 icon: Icons.file_upload_outlined,
                 cardColor: Color.fromARGB(255, 255, 223, 227),
                 label: 'Sales',
-                amount: Text('₹ ' + '0'),
+                amount: Text(
+                  "0",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
               ),
             ],
           ),
@@ -127,7 +142,10 @@ class _DashboardUiState extends State<DashboardUi> {
                 icon: null,
                 cardColor: Colors.grey.shade200,
                 label: 'Value of Items',
-                amount: Text('Low Stocks'),
+                amount: Text(
+                  "Low Stocks",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
               ),
               SizedBox(
                 width: 10,
@@ -137,7 +155,10 @@ class _DashboardUiState extends State<DashboardUi> {
                 icon: Icons.bar_chart,
                 cardColor: Colors.grey.shade300,
                 label: 'Weekly Sale',
-                amount: Text('₹ ' + '0'),
+                amount: Text(
+                  "0",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
               ),
             ],
           ),

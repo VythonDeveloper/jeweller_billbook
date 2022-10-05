@@ -338,7 +338,7 @@ class _MortgageUiState extends State<MortgageUi> {
                         ),
                       ),
                       Text(
-                        "Total Due",
+                        "Principal Amount",
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           color: primaryColor,
