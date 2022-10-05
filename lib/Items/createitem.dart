@@ -311,7 +311,7 @@ class _CreateItemUiState extends State<CreateItemUi> {
             // color: Colors.yellow,
             height: _lowStockToggle.value
                 ? MediaQuery.of(context).size.height * 0.6
-                : MediaQuery.of(context).size.height * 0.3,
+                : MediaQuery.of(context).size.height * 0.35,
             child: TabBarView(
               children: <Widget>[
                 categoryTabBar(),
