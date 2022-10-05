@@ -33,10 +33,13 @@ class _MortgageUiState extends State<MortgageUi> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Mortgage'),
+      ),
       body: SafeArea(
         child: Column(
           children: [
-            MortgageAppbar(),
+            MortgageSearchbar(),
             SizedBox(
               height: 3,
             ),
@@ -51,6 +54,9 @@ class _MortgageUiState extends State<MortgageUi> {
                     height: 10,
                   ),
                   mortgageList(),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.1,
+                  ),
                 ],
               ),
             ),
@@ -67,49 +73,29 @@ class _MortgageUiState extends State<MortgageUi> {
     );
   }
 
-  Widget MortgageAppbar() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 15),
-      child: Row(
-        children: [
-          Text(
-            'Mortgage',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w500,
-              letterSpacing: 0.5,
-            ),
+  Widget MortgageSearchbar() {
+    return Padding(
+      padding: EdgeInsets.all(8.0),
+      child: TextField(
+        controller: _searchKey,
+        decoration: InputDecoration(
+          prefixIcon: Icon(
+            Icons.search,
+            color: primaryColor,
           ),
-          SizedBox(
-            width: 30,
+          contentPadding: EdgeInsets.symmetric(horizontal: 10),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
           ),
-          Flexible(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: TextField(
-                controller: _searchKey,
-                decoration: InputDecoration(
-                  prefixIcon: Icon(
-                    Icons.search,
-                    color: Colors.blue.shade700,
-                  ),
-                  border: InputBorder.none,
-                  hintText: 'Search by name',
-                  hintStyle: TextStyle(
-                    color: Colors.grey.shade500,
-                    fontSize: 16,
-                  ),
-                ),
-                onChanged: (value) {
-                  setState(() {});
-                },
-              ),
-            ),
+          hintText: 'Search by name',
+          hintStyle: TextStyle(
+            color: Colors.grey.shade500,
+            fontSize: 16,
           ),
-        ],
+        ),
+        onChanged: (value) {
+          setState(() {});
+        },
       ),
     );
   }
@@ -215,6 +201,7 @@ class _MortgageUiState extends State<MortgageUi> {
               int loopCounter = 0;
               return ListView.builder(
                 shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
                 itemCount: snapshot.data.docs.length,
                 itemBuilder: (context, index) {
                   loopCounter += 1;
