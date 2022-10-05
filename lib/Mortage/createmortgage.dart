@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:jeweller_stockbook/Helper/select_Contacts.dart';
 import 'package:jeweller_stockbook/Mortage/contactCrud.dart';
 import 'package:jeweller_stockbook/components.dart';
 import 'package:jeweller_stockbook/constants.dart';
@@ -20,7 +19,6 @@ class CreateMortgageUi extends StatefulWidget {
 class _CreateMortgageUiState extends State<CreateMortgageUi> {
   int uniqueId = DateTime.now().millisecondsSinceEpoch;
   final _formKey = GlobalKey<FormState>();
-  final _shopName = new TextEditingController();
   final _customerName = new TextEditingController();
   final _mobile = new TextEditingController();
   final _description = new TextEditingController();
@@ -53,7 +51,6 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
   @override
   void dispose() {
     super.dispose();
-    _shopName.dispose();
     _customerName.dispose();
     _mobile.dispose();
     _description.dispose();
@@ -172,7 +169,6 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
             showLoading(context);
             Map<String, dynamic> mortgageMap = {
               "id": uniqueId,
-              "shopName": _shopName.text,
               "customerName": _customerName.text,
               "mobile": "+91" + _mobile.text,
               "description": _description.text,
@@ -180,6 +176,7 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
               "unit": "GMS",
               "purity": _selectedPurity,
               "amount": int.parse(_amount.text),
+              "totalPaid": 0,
               "date": selectedDate.millisecondsSinceEpoch,
               "lastPaymentDate": selectedDate.millisecondsSinceEpoch,
               "closingDate": 0,
@@ -212,25 +209,6 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // TextFormField(
-          //   controller: _shopName,
-          //   decoration: InputDecoration(
-          //     contentPadding: EdgeInsets.symmetric(horizontal: 10),
-          //     border: OutlineInputBorder(),
-          //     label: Text("Shop Name"),
-          //   ),
-          //   keyboardType: TextInputType.name,
-          //   textCapitalization: TextCapitalization.words,
-          //   validator: (value) {
-          //     if (value == null || value.isEmpty) {
-          //       return 'This is required';
-          //     }
-          //     return null;
-          //   },
-          // ),
-          // SizedBox(
-          //   height: 10,
-          // ),
           TextFormField(
             controller: _customerName,
             decoration: InputDecoration(

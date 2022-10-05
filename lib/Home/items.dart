@@ -351,7 +351,7 @@ class _ItemsUiState extends State<ItemsUi> {
   }
 
   Widget itemsCard({required var itemMap}) {
-    return GestureDetector(
+    return InkWell(
       onTap: () {
         FocusScope.of(context).unfocus();
         PageRouteTransition.push(context, ItemDetailsUI(itemId: itemMap['id']))

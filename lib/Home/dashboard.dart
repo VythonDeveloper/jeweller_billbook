@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
+import 'package:jeweller_stockbook/Items/itemDetails.dart';
 import 'package:jeweller_stockbook/Mortage/mortgageDetails.dart';
 import 'package:jeweller_stockbook/Stock/lowStock.dart';
 import 'package:jeweller_stockbook/colors.dart';
@@ -173,6 +174,7 @@ class _DashboardUiState extends State<DashboardUi> {
   }
 
   Widget ItemTimeline() {
+<<<<<<< HEAD
     return FutureBuilder<dynamic>(
       future: FirebaseFirestore.instance
           .collection('users')
@@ -199,6 +201,49 @@ class _DashboardUiState extends State<DashboardUi> {
                           Icons.timeline,
                           color: Colors.white,
                           size: 15,
+=======
+    return Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 10,
+          ),
+          FutureBuilder<dynamic>(
+            future: FirebaseFirestore.instance
+                .collection('users')
+                .doc(FirebaseAuth.instance.currentUser!.uid)
+                .collection('transactions')
+                .orderBy('date', descending: true)
+                .get(),
+            builder: ((context, snapshot) {
+              if (snapshot.hasData) {
+                if (snapshot.data.docs.length > 0) {
+                  timelineDateTitle = '';
+                  return Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 15, left: 15),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.timeline,
+                              size: 15,
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              "Timeline",
+                              style: TextStyle(
+                                fontSize: 15,
+                                letterSpacing: 0.7,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+>>>>>>> ae25d76a786381aada598ee62bf69f8798f6c13c
                         ),
                         SizedBox(
                           width: 10,
@@ -298,102 +343,109 @@ class _DashboardUiState extends State<DashboardUi> {
   }
 
   Widget stockTxnCard({required var txnMap}) {
-    return Container(
-      color: Colors.grey.shade100,
-      margin: EdgeInsets.only(bottom: 10),
-      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "${txnMap['itemCategory']}",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: primaryColor,
-                        fontSize: 13,
+    return GestureDetector(
+      onTap: () {
+        PageRouteTransition.push(
+                context, ItemDetailsUI(itemId: txnMap['itemId']))
+            .then((value) => setState(() {}));
+      },
+      child: Container(
+        color: Colors.grey.shade100,
+        margin: EdgeInsets.only(bottom: 10),
+        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "${txnMap['itemCategory']}",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: primaryColor,
+                          fontSize: 13,
+                        ),
                       ),
-                    ),
-                    Text(
-                      "${txnMap['itemName']}",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                      Text(
+                        "${txnMap['itemName']}",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    Text(
-                      Constants.dateFormat(txnMap['date']),
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black,
-                        fontSize: 13,
+                      Text(
+                        Constants.dateFormat(txnMap['date']),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
+                          fontSize: 13,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              Expanded(
-                child: Column(
-                  children: [
-                    Text(
-                      "Change",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: primaryColor,
-                        fontSize: 13,
+                Expanded(
+                  child: Column(
+                    children: [
+                      Text(
+                        "Change",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: primaryColor,
+                          fontSize: 13,
+                        ),
                       ),
-                    ),
-                    Text(
-                      txnMap['change'].toString().replaceAll('#', '\n'),
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black,
-                        fontSize: 13,
-                      ),
-                    )
-                  ],
+                      Text(
+                        txnMap['change'].toString().replaceAll('#', '\n'),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
+                          fontSize: 13,
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      "Final",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: primaryColor,
-                        fontSize: 13,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        "Final",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: primaryColor,
+                          fontSize: 13,
+                        ),
                       ),
-                    ),
-                    Text(
-                      "${txnMap['finalStockWeight']} ${txnMap['unit']}",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black,
-                        fontSize: 13,
+                      Text(
+                        "${txnMap['finalStockWeight']} ${txnMap['unit']}",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
+                          fontSize: 13,
+                        ),
                       ),
-                    ),
-                    Text(
-                      "${txnMap['finalStockPiece']} pcs",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black,
-                        fontSize: 13,
+                      Text(
+                        "${txnMap['finalStockPiece']} pcs",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
+                          fontSize: 13,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          )
-        ],
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
@@ -402,7 +454,8 @@ class _DashboardUiState extends State<DashboardUi> {
     return GestureDetector(
       onTap: () {
         PageRouteTransition.push(
-            context, MortgageDetailsUi(mrtgId: txnMap['mortgageId']));
+                context, MortgageDetailsUi(mrtgId: txnMap['mortgageId']))
+            .then((value) => setState(() {}));
       },
       child: Container(
         color: Colors.grey.shade100,
@@ -447,6 +500,7 @@ class _DashboardUiState extends State<DashboardUi> {
                 ),
                 Expanded(
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
                         "Amount Paid",
