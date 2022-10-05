@@ -40,7 +40,7 @@ class _ItemsUiState extends State<ItemsUi> {
         children: [
           ItemsAppbar(),
           SizedBox(
-            height: 10,
+            height: 3,
           ),
           itemsSortingBar(),
           SizedBox(
@@ -369,7 +369,7 @@ class _ItemsUiState extends State<ItemsUi> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CircleAvatar(
-              backgroundColor: primaryAlternateAccentColor,
+              backgroundColor: primaryAlternateColor,
               radius: 18,
               child: Text(
                 itemMap['name'][0],

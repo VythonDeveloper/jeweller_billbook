@@ -75,7 +75,7 @@ class _MortgageUiState extends State<MortgageUi> {
 
   Widget MortgageSearchbar() {
     return Padding(
-      padding: EdgeInsets.all(8.0),
+      padding: EdgeInsets.symmetric(horizontal: 15),
       child: TextField(
         controller: _searchKey,
         decoration: InputDecoration(
