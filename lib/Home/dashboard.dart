@@ -174,7 +174,6 @@ class _DashboardUiState extends State<DashboardUi> {
   }
 
   Widget ItemTimeline() {
-<<<<<<< HEAD
     return FutureBuilder<dynamic>(
       future: FirebaseFirestore.instance
           .collection('users')
@@ -201,49 +200,6 @@ class _DashboardUiState extends State<DashboardUi> {
                           Icons.timeline,
                           color: Colors.white,
                           size: 15,
-=======
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: 10,
-          ),
-          FutureBuilder<dynamic>(
-            future: FirebaseFirestore.instance
-                .collection('users')
-                .doc(FirebaseAuth.instance.currentUser!.uid)
-                .collection('transactions')
-                .orderBy('date', descending: true)
-                .get(),
-            builder: ((context, snapshot) {
-              if (snapshot.hasData) {
-                if (snapshot.data.docs.length > 0) {
-                  timelineDateTitle = '';
-                  return Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 15, left: 15),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.timeline,
-                              size: 15,
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Text(
-                              "Timeline",
-                              style: TextStyle(
-                                fontSize: 15,
-                                letterSpacing: 0.7,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
->>>>>>> ae25d76a786381aada598ee62bf69f8798f6c13c
                         ),
                         SizedBox(
                           width: 10,
