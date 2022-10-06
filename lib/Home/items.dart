@@ -40,7 +40,7 @@ class _ItemsUiState extends State<ItemsUi> {
         children: [
           ItemsAppbar(),
           SizedBox(
-            height: 10,
+            height: 3,
           ),
           itemsSortingBar(),
           SizedBox(
