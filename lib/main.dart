@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
         statusBarBrightness: Brightness.light,
         statusBarIconBrightness: Brightness.dark,
         statusBarColor: Colors.transparent,
-        systemNavigationBarColor: Color.fromARGB(255, 232, 235, 255),
+        systemNavigationBarColor: primaryAlternateAccentColor,
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
     );
@@ -37,12 +37,12 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'StockBook',
       theme: ThemeData(
-        colorSchemeSeed: primaryColor,
+        colorSchemeSeed: primaryAlternateColor,
         scaffoldBackgroundColor: Colors.white,
         fontFamily: 'San',
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
-          backgroundColor: Color.fromARGB(255, 232, 235, 255),
-        ),
+        // bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        //   backgroundColor: Color.fromARGB(255, 232, 235, 255),
+        // ),
         useMaterial3: true,
       ),
       home: FutureBuilder<dynamic>(

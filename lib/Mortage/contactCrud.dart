@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts/contact.dart';
 import 'package:jeweller_stockbook/Helper/select_Contacts.dart';
+import 'package:jeweller_stockbook/constants.dart';
 
 class ContactCrudUI extends StatefulWidget {
   const ContactCrudUI({super.key});
@@ -14,11 +15,17 @@ class _ContactCrudUIState extends State<ContactCrudUI> {
   List<Contact> contactsList = [];
   List<Contact> contactsFiltered = [];
   bool isLoading = false;
+
   //------------------->
   @override
   void initState() {
     super.initState();
-    getContacts();
+
+    if (Constants.myContacts.length == 0) {
+      getContacts();
+    } else {
+      contactsList = Constants.myContacts;
+    }
     _searchKey.addListener(() {
       filterContacts();
     });
@@ -49,10 +56,10 @@ class _ContactCrudUIState extends State<ContactCrudUI> {
     setState(() {
       isLoading = true;
     });
-    contactsList = await SelectContact().getContacts().whenComplete(() {
-      setState(() {
-        isLoading = false;
-      });
+    contactsList = await SelectContact().getContacts();
+    Constants.myContacts.addAll(contactsList);
+    setState(() {
+      isLoading = false;
     });
   }
 
@@ -110,21 +117,18 @@ class _ContactCrudUIState extends State<ContactCrudUI> {
       onTap: () {
         final formattedNumber =
             contact.phones[0].number.replaceAll(' ', '').split('+91').last;
+
         Map<String, dynamic> contactMap = {
           'displayName': contact.displayName,
           'phone': formattedNumber,
         };
         Navigator.pop(context, contactMap);
       },
-      leading: contact.photo == null
-          ? CircleAvatar(
-              child: Text(
-                contact.displayName[0],
-              ),
-            )
-          : CircleAvatar(
-              backgroundImage: MemoryImage(contact.photo!),
-            ),
+      leading: CircleAvatar(
+        child: Text(
+          contact.displayName[0],
+        ),
+      ),
       title: Text(contact.displayName),
       subtitle: Text(contact.phones[0].number),
     );

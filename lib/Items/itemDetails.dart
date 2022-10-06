@@ -113,13 +113,12 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8.0),
+          padding: EdgeInsets.symmetric(horizontal: 15),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Expanded(
                 child: FloatingActionButton.extended(
-                  heroTag: 'btn3',
                   extendedPadding: EdgeInsets.symmetric(horizontal: 50),
                   onPressed: () {
                     showDialog<void>(
@@ -137,7 +136,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                       bottomLeft: Radius.circular(10),
                     ),
                   ),
-                  backgroundColor: Colors.indigo,
+                  backgroundColor: primaryColor,
                   extendedIconLabelSpacing: 10,
                   icon: Icon(
                     Icons.add,
@@ -154,7 +153,6 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
               ),
               Expanded(
                 child: FloatingActionButton.extended(
-                  heroTag: 'btn4',
                   onPressed: () {
                     showDialog<void>(
                       context: context,
@@ -229,7 +227,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                         'View Report',
                         style: TextStyle(
                           fontWeight: FontWeight.w700,
-                          color: Colors.indigo,
+                          color: primaryColor,
                           fontSize: 15,
                         ),
                       ),
@@ -238,7 +236,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                       ),
                       Icon(
                         Icons.arrow_forward_ios_rounded,
-                        color: Colors.indigo,
+                        color: primaryColor,
                         size: 15,
                       ),
                     ],
@@ -299,7 +297,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                   fontFamily: 'San',
                 ),
                 indicatorSize: TabBarIndicatorSize.label,
-                indicatorColor: Colors.indigo,
+                indicatorColor: primaryColor,
                 tabs: [
                   Tab(text: "Timeline"),
                   Tab(text: "Details"),

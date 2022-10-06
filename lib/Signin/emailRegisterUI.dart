@@ -71,7 +71,7 @@ class _EmailRegisterUIState extends State<EmailRegisterUI> {
       SystemUiOverlayStyle.dark.copyWith(
         statusBarIconBrightness: Brightness.dark,
         statusBarColor: Colors.transparent,
-        systemNavigationBarColor: primaryAccentColor,
+        systemNavigationBarColor: primaryAlternateAccentColor,
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
     );
@@ -89,25 +89,31 @@ class _EmailRegisterUIState extends State<EmailRegisterUI> {
               children: [
                 Container(
                   width: double.infinity,
-                  color: primaryAccentColor,
-                  padding: EdgeInsets.only(top: 50, bottom: 20, left: 20),
+                  color: primaryAlternateAccentColor,
+                  padding: EdgeInsets.only(top: 50, bottom: 10, left: 20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      IconButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        icon: Icon(
-                          Icons.arrow_back,
+                      CircleAvatar(
+                        backgroundColor: Colors.white,
+                        child: IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: Icon(
+                            Icons.arrow_back,
+                          ),
                         ),
+                      ),
+                      SizedBox(
+                        height: 10,
                       ),
                       Text(
                         'Register',
                         style: TextStyle(
-                          color: primaryColor,
-                          fontSize: 30,
-                          fontWeight: FontWeight.w400,
+                          color: primaryAlternateColor,
+                          fontSize: 40,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ],
@@ -180,14 +186,19 @@ class _EmailRegisterUIState extends State<EmailRegisterUI> {
           }
         },
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(isLoading ? 100 : 10),
         ),
-        color: primaryColor,
+        color: primaryAlternateColor,
         elevation: 0,
         highlightElevation: 0,
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         child: isLoading
-            ? CircularProgressIndicator()
+            ? Transform.scale(
+                scale: 0.5,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                ),
+              )
             : Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -201,7 +212,7 @@ class _EmailRegisterUIState extends State<EmailRegisterUI> {
                   Text(
                     'Create Account',
                     style: TextStyle(
-                      fontSize: 17,
+                      fontSize: 15,
                       color: Colors.white,
                     ),
                   ),
@@ -231,9 +242,7 @@ Widget CustomTextField(
         contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
         prefixIcon: icon,
         labelText: label,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        border: UnderlineInputBorder(),
       ),
       validator: validator,
     ),

@@ -33,7 +33,6 @@ class _HomePageState extends State<HomePage> {
     return WillPopScope(
       onWillPop: onWillPop,
       child: Scaffold(
-        backgroundColor: Color.fromARGB(255, 233, 233, 233),
         body: Body(),
         bottomNavigationBar: BottomNavNew(),
       ),
@@ -56,7 +55,8 @@ class _HomePageState extends State<HomePage> {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
       currentIndex: _selectedbottomNavIndex,
-      selectedItemColor: primaryColor,
+      backgroundColor: primaryAlternateAccentColor,
+      selectedItemColor: primaryAlternateColor,
       unselectedItemColor: Colors.grey.withOpacity(0.5),
       unselectedIconTheme: IconThemeData(
         color: Colors.grey.withOpacity(0.5),

@@ -73,25 +73,31 @@ class _EmailLoginUIState extends State<EmailLoginUI> {
               children: [
                 Container(
                   width: double.infinity,
-                  color: primaryAccentColor,
-                  padding: EdgeInsets.only(top: 50, bottom: 20, left: 20),
+                  color: primaryAlternateAccentColor,
+                  padding: EdgeInsets.only(top: 50, bottom: 10, left: 20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      IconButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        icon: Icon(
-                          Icons.arrow_back,
+                      CircleAvatar(
+                        backgroundColor: Colors.white,
+                        child: IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: Icon(
+                            Icons.arrow_back,
+                          ),
                         ),
+                      ),
+                      SizedBox(
+                        height: 10,
                       ),
                       Text(
                         'Log In',
                         style: TextStyle(
-                          color: primaryColor,
-                          fontSize: 30,
-                          fontWeight: FontWeight.w400,
+                          color: primaryAlternateColor,
+                          fontSize: 40,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ],
@@ -101,6 +107,9 @@ class _EmailLoginUIState extends State<EmailLoginUI> {
                     child: ListView(
                   padding: EdgeInsets.all(20),
                   children: [
+                    SizedBox(
+                      height: 40,
+                    ),
                     CustomTextField(
                       icon: Icon(Icons.email),
                       label: 'Email',
@@ -150,28 +159,33 @@ class _EmailLoginUIState extends State<EmailLoginUI> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
-        color: primaryColor,
+        color: primaryAlternateColor,
         elevation: 0,
         highlightElevation: 0,
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         child: isLoading
-            ? CircularProgressIndicator()
+            ? Transform.scale(
+                scale: 0.5,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                ),
+              )
             : Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    Icons.arrow_forward,
-                    color: Colors.white,
+                  Text(
+                    'Log In',
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Colors.white,
+                    ),
                   ),
                   SizedBox(
                     width: 10,
                   ),
-                  Text(
-                    'Log In',
-                    style: TextStyle(
-                      fontSize: 17,
-                      color: Colors.white,
-                    ),
+                  Icon(
+                    Icons.arrow_forward,
+                    color: Colors.white,
                   ),
                 ],
               ),
@@ -198,9 +212,7 @@ class _EmailLoginUIState extends State<EmailLoginUI> {
           contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
           prefixIcon: icon,
           labelText: label,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          border: UnderlineInputBorder(),
         ),
         validator: validator,
       ),

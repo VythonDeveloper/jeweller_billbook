@@ -107,57 +107,20 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "Create Mortgage",
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 17,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.5,
-          ),
-        ),
+        title: Text("Create Mortgage"),
       ),
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: EdgeInsets.all(12),
           children: <Widget>[
             basicItemDetails(),
             SizedBox(
               height: 10,
             ),
             otherDetailsTabBar(),
-            Visibility(
-              visible: _calculatedResult['profitLoss'] != 'NA',
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Yor\'re in'),
-                  Text(
-                    _calculatedResult['profitLoss'],
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: _calculatedResult['profitLoss'] == 'Profit'
-                          ? profitColor
-                          : lossColor,
-                      letterSpacing: 0.7,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Divider(),
-            SizedBox(
-              height: 10,
-            ),
-            Text(
-              "Calculations",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-            ),
             calculationsPart(),
             SizedBox(
-              height: 200,
+              height: 70,
             )
           ],
         ),
@@ -204,6 +167,7 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
 
   Widget basicItemDetails() {
     return Container(
+      padding: EdgeInsets.all(12),
       width: double.infinity,
       color: Colors.white,
       child: Column(
@@ -214,11 +178,21 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
             decoration: InputDecoration(
               suffixIcon: IconButton(
                 onPressed: () async {
-                  final contactDetails = await Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => ContactCrudUI()));
-                  _customerName.text = contactDetails['displayName'];
-                  _mobile.text = contactDetails['phone'];
-                  setState(() {});
+                  try {
+                    final contactDetails = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ContactCrudUI()));
+                    _customerName.text = contactDetails['displayName'];
+                    _mobile.text = contactDetails['phone'];
+                  } catch (e) {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ContactCrudUI()));
+                  } finally {
+                    setState(() {});
+                  }
                 },
                 icon: Icon(
                   Icons.contact_phone_rounded,
@@ -302,9 +276,6 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
       padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
       child: Column(
         children: [
-          SizedBox(
-            height: 10,
-          ),
           TextFormField(
             controller: _description,
             decoration: InputDecoration(
@@ -364,14 +335,21 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
                   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(5),
+                    border: Border.all(
+                      color: primaryColor,
+                    ),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         "Purity",
-                        style: TextStyle(fontSize: 12, color: Colors.indigo),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: primaryColor,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                       DropdownButton<String>(
                         isExpanded: true,
@@ -382,7 +360,7 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
                           size: 17,
                         ),
                         elevation: 2,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(5),
                         underline: Container(),
                         onChanged: (String? value) {
                           // This is called when the user selects an item.
@@ -419,12 +397,10 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
 
   Widget interestTabBar() {
     return Container(
+      padding: EdgeInsets.all(12),
       color: Colors.white,
       child: ListView(
         children: [
-          SizedBox(
-            height: 10,
-          ),
           Row(
             children: [
               Expanded(
@@ -520,14 +496,21 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
                   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(5),
+                    border: Border.all(
+                      color: primaryColor,
+                    ),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         "Status",
-                        style: TextStyle(fontSize: 12, color: Colors.indigo),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: primaryColor,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                       DropdownButton<String>(
                         isExpanded: true,
@@ -538,7 +521,7 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
                           size: 17,
                         ),
                         elevation: 2,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(5),
                         underline: Container(),
                         onChanged: (String? value) {
                           // This is called when the user selects an item.
@@ -574,10 +557,44 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
 
   Widget calculationsPart() {
     return Container(
-      margin: EdgeInsets.only(top: 10),
+      padding: EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Visibility(
+            visible: _calculatedResult['profitLoss'] != 'NA',
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Yor\'re in'),
+                Text(
+                  _calculatedResult['profitLoss'],
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: _calculatedResult['profitLoss'] == 'Profit'
+                        ? profitColor
+                        : lossColor,
+                    letterSpacing: 0.7,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Divider(),
+          SizedBox(
+            height: 10,
+          ),
+          Text(
+            "Calculations",
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 18,
+            ),
+          ),
+          SizedBox(
+            height: 20,
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

@@ -1,3 +1,4 @@
+import 'package:flutter_contacts/contact.dart';
 import 'package:intl/intl.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
 
@@ -23,15 +24,15 @@ class Constants {
         .difference(DateTime.fromMillisecondsSinceEpoch(millisec));
 
     if (timeDiff.inDays != 0) {
-      return 'updated ' + timeDiff.inDays.toString() + ' days ago';
+      return 'Updated ' + timeDiff.inDays.toString() + ' days ago';
     }
     if (timeDiff.inHours != 0) {
-      return 'updated ' + timeDiff.inHours.toString() + ' hours ago';
+      return 'Updated ' + timeDiff.inHours.toString() + ' hours ago';
     }
     if (timeDiff.inMinutes != 0) {
-      return 'updated ' + timeDiff.inMinutes.toString() + ' minutes ago';
+      return 'Updated ' + timeDiff.inMinutes.toString() + ' minutes ago';
     }
-    return 'updated ' + timeDiff.inSeconds.toString() + ' seconds ago';
+    return 'Updated ' + timeDiff.inSeconds.toString() + ' seconds ago';
   }
 
   static Map<String, dynamic> calculateMortgage(
@@ -69,6 +70,8 @@ class Constants {
 
   static var cFInt = NumberFormat('#,##,###');
   static var cFDecimal = NumberFormat('#,##,###.0#');
+
+  static List<Contact> myContacts = [];
 }
 
 // 14/24

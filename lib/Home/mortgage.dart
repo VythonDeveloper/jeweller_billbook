@@ -66,7 +66,11 @@ class _MortgageUiState extends State<MortgageUi> {
       floatingActionButton: CustomFABButton(
           onPressed: () {
             PageRouteTransition.push(context, CreateMortgageUi())
-                .then((value) => setState(() {}));
+                .then(((value) {
+              if (mounted) {
+                setState(() {});
+              }
+            }));
           },
           icon: Icons.receipt,
           label: 'Create Mortgage Bill'),
@@ -75,7 +79,7 @@ class _MortgageUiState extends State<MortgageUi> {
 
   Widget MortgageSearchbar() {
     return Padding(
-      padding: EdgeInsets.all(8.0),
+      padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
       child: TextField(
         controller: _searchKey,
         decoration: InputDecoration(
@@ -101,8 +105,7 @@ class _MortgageUiState extends State<MortgageUi> {
   }
 
   Widget mortgageSortingBar() {
-    return Container(
-      color: Colors.white,
+    return Padding(
       padding: EdgeInsets.symmetric(vertical: 3, horizontal: 15),
       child: Row(
         children: [
@@ -112,6 +115,9 @@ class _MortgageUiState extends State<MortgageUi> {
               decoration: BoxDecoration(
                 color: Colors.grey.shade100,
                 borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: primaryColor,
+                ),
               ),
               child: DropdownButton<String>(
                 isExpanded: true,
@@ -248,9 +254,29 @@ class _MortgageUiState extends State<MortgageUi> {
               );
             }
             return Center(
-              child: Text(
-                "No Mortgage. Create...",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+              child: Padding(
+                padding: EdgeInsets.only(top: 100),
+                child: Column(
+                  children: [
+                    Text(
+                      "No Mortgage",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.grey.shade400,
+                      ),
+                    ),
+                    Text(
+                      "CREATE",
+                      style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.grey.shade400,
+                        letterSpacing: 5,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           }

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:jeweller_stockbook/Items/itemDetails.dart';
 import 'package:jeweller_stockbook/Mortage/mortgageDetails.dart';
@@ -52,8 +53,17 @@ class _DashboardUiState extends State<DashboardUi> {
             SizedBox(
               width: 10,
             ),
-            Text(UserData.userDisplayName),
+            Text(
+              UserData.userDisplayName,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: textColor,
+              ),
+            ),
           ],
+        ),
+        systemOverlayStyle: SystemUiOverlayStyle(
+          systemNavigationBarColor: primaryAlternateAccentColor,
         ),
       ),
       body: SafeArea(
@@ -231,7 +241,7 @@ class _DashboardUiState extends State<DashboardUi> {
                   padding: EdgeInsets.only(bottom: 15, left: 0, top: 15),
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                    color: primaryColor,
+                    color: primaryAlternateColor,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
@@ -361,7 +371,7 @@ class _DashboardUiState extends State<DashboardUi> {
                       Text(
                         "${txnMap['itemCategory']}",
                         style: TextStyle(
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w700,
                           color: primaryColor,
                           fontSize: 13,
                         ),

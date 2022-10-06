@@ -80,7 +80,7 @@ class _ItemsUiState extends State<ItemsUi> {
         decoration: InputDecoration(
           prefixIcon: Icon(
             Icons.search,
-            color: primaryColor,
+            color: primaryAlternateColor,
           ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
@@ -100,8 +100,7 @@ class _ItemsUiState extends State<ItemsUi> {
   }
 
   Widget itemsSortingBar() {
-    return Container(
-      color: Colors.white,
+    return Padding(
       padding: EdgeInsets.symmetric(vertical: 3, horizontal: 15),
       child: Row(
         children: [
@@ -110,6 +109,7 @@ class _ItemsUiState extends State<ItemsUi> {
               onTap: () {
                 showModalBottomSheet<void>(
                     context: context,
+                    isDismissible: false,
                     builder: (BuildContext context) {
                       return selectCategoryModal();
                     }).then((value) {
@@ -121,6 +121,9 @@ class _ItemsUiState extends State<ItemsUi> {
                 decoration: BoxDecoration(
                   color: Colors.grey.shade100,
                   borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: primaryColor,
+                  ),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -210,8 +213,12 @@ class _ItemsUiState extends State<ItemsUi> {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    CircleAvatar(
-                      backgroundColor: primaryAccentColor,
+                    Container(
+                      decoration: BoxDecoration(
+                        color: primaryAlternateAccentColor,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: primaryColor),
+                      ),
                       child: IconButton(
                         onPressed: () {
                           PageRouteTransition.push(context, ItemCategoryUi())
@@ -251,7 +258,7 @@ class _ItemsUiState extends State<ItemsUi> {
       margin: EdgeInsets.only(right: 5),
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: Colors.indigo,
+        color: primaryAlternateColor,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -369,7 +376,7 @@ class _ItemsUiState extends State<ItemsUi> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CircleAvatar(
-              backgroundColor: primaryAlternateAccentColor,
+              backgroundColor: primaryAlternateColor,
               radius: 18,
               child: Text(
                 itemMap['name'][0],
@@ -443,7 +450,11 @@ class _ItemsUiState extends State<ItemsUi> {
                 FocusScope.of(context).unfocus();
                 PageRouteTransition.push(
                         context, ItemDetailsUI(itemId: itemMap['id']))
-                    .then((value) => setState(() {}));
+                    .then((value) {
+                  if (mounted) {
+                    setState(() {});
+                  }
+                });
               },
               icon: Icon(
                 Icons.tune,
@@ -459,80 +470,87 @@ class _ItemsUiState extends State<ItemsUi> {
 
   Widget selectCategoryModal() {
     return StatefulBuilder(builder: (context, StateSetter setModalState) {
-      return Container(
-        color: Color.fromARGB(255, 255, 255, 255),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(top: 10, left: 10, right: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Select Item Category'),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: Icon(Icons.close),
-                  )
-                ],
-              ),
-            ),
-            Divider(),
-            Padding(
-              padding: EdgeInsets.only(bottom: 15, left: 15, right: 15),
-              child: Column(
-                children: [
-                  MaterialButton(
-                    onPressed: () {
-                      PageRouteTransition.push(context, ItemCategoryUi())
-                          .then((value) => setModalState(() {}));
-                    },
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    color: Colors.indigo,
-                    elevation: 0,
-                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 15),
-                    child: Text(
-                      "Manage Categories",
+      return SafeArea(
+        top: false,
+        child: Container(
+          color: Color.fromARGB(255, 255, 255, 255),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.only(top: 10, left: 10, right: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Select Item Category',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: textColor,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(bottom: 10),
-                    decoration: BoxDecoration(
-                      color: _selectedCategory == 'All Categories'
-                          ? Colors.indigo.withOpacity(0.1)
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: RadioListTile(
-                      title: Text("All Categories"),
-                      value: "All Categories",
-                      groupValue: _selectedCategory,
-                      onChanged: (value) {
-                        setModalState(() {
-                          _selectedCategory = value.toString();
-                          Navigator.pop(context);
-                        });
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
                       },
-                    ),
-                  ),
-                  categoriesRadioList(setModalState),
-                ],
+                      child: Icon(Icons.close),
+                    )
+                  ],
+                ),
               ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-          ],
+              Divider(),
+              Padding(
+                padding: EdgeInsets.only(bottom: 15, left: 15, right: 15),
+                child: Column(
+                  children: [
+                    MaterialButton(
+                      onPressed: () {
+                        PageRouteTransition.push(context, ItemCategoryUi())
+                            .then((value) => setModalState(() {}));
+                      },
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      color: primaryColor,
+                      elevation: 0,
+                      padding:
+                          EdgeInsets.symmetric(vertical: 12, horizontal: 15),
+                      child: Text(
+                        "Manage Categories",
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(bottom: 10),
+                      decoration: BoxDecoration(
+                        color: _selectedCategory == 'All Categories'
+                            ? primaryAccentColor
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: RadioListTile(
+                        title: Text("All Categories"),
+                        value: "All Categories",
+                        groupValue: _selectedCategory,
+                        onChanged: (value) {
+                          setModalState(() {
+                            _selectedCategory = value.toString();
+                            Navigator.pop(context);
+                          });
+                        },
+                      ),
+                    ),
+                    categoriesRadioList(setModalState),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       );
     });
@@ -585,8 +603,8 @@ class _ItemsUiState extends State<ItemsUi> {
           return SizedBox();
         }
         return Padding(
-          padding: EdgeInsets.only(top: 10.0),
-          child: CircularProgressIndicator(),
+          padding: EdgeInsets.symmetric(vertical: 10.0),
+          child: CustomLoading(indicatorColor: primaryColor),
         );
       },
     );

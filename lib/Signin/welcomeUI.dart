@@ -22,30 +22,7 @@ class _LoginUIState extends State<LoginUI> {
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
           child: _isLoading
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Transform.scale(
-                        scale: 0.5,
-                        child: CircularProgressIndicator(
-                          color: Colors.black,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        'Fetching Your Stocks',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black,
-                          fontSize: 20,
-                        ),
-                      ),
-                    ],
-                  ),
-                )
+              ? Loading()
               : Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -64,7 +41,7 @@ class _LoginUIState extends State<LoginUI> {
                                   style: TextStyle(
                                     fontSize: 100,
                                     fontWeight: FontWeight.bold,
-                                    color: primaryAccentColor,
+                                    color: primaryAlternateAccentColor,
                                   ),
                                 ),
                                 Text(
@@ -72,7 +49,7 @@ class _LoginUIState extends State<LoginUI> {
                                   style: TextStyle(
                                     fontSize: 50,
                                     fontWeight: FontWeight.bold,
-                                    color: primaryColor,
+                                    color: primaryAlternateColor,
                                   ),
                                 ),
                               ],
@@ -80,7 +57,13 @@ class _LoginUIState extends State<LoginUI> {
                             SizedBox(
                               height: 20,
                             ),
-                            Text('Made with ❤ for Stock Lovers')
+                            Text(
+                              'Made with ❤ for Stock Lovers',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: textColor,
+                              ),
+                            )
                           ],
                         ),
                       ),
@@ -92,6 +75,7 @@ class _LoginUIState extends State<LoginUI> {
                           'Login safely with',
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
+                            color: textColor,
                           ),
                         ),
                         SizedBox(
@@ -128,6 +112,7 @@ class _LoginUIState extends State<LoginUI> {
                           'OR Login with',
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
+                            color: textColor,
                           ),
                         ),
                         SizedBox(
@@ -152,7 +137,13 @@ class _LoginUIState extends State<LoginUI> {
                                 SizedBox(
                                   width: 10,
                                 ),
-                                Text('Email / Password'),
+                                Text(
+                                  'Email / Password',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    color: textColor,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -165,6 +156,10 @@ class _LoginUIState extends State<LoginUI> {
                           children: [
                             Text(
                               'Don\'t have an Account?',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: textColor,
+                              ),
                             ),
                             SizedBox(
                               width: 20,
@@ -176,15 +171,18 @@ class _LoginUIState extends State<LoginUI> {
                               },
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: primaryColor,
+                                  color: primaryAlternateColor,
                                   borderRadius: BorderRadius.circular(50),
                                 ),
                                 padding: EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 5),
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
                                 child: Text(
                                   'Create Account',
                                   style: TextStyle(
                                     color: Colors.white,
+                                    fontWeight: FontWeight.w500,
                                     fontSize: 12,
                                   ),
                                 ),
@@ -197,6 +195,33 @@ class _LoginUIState extends State<LoginUI> {
                   ],
                 ),
         ),
+      ),
+    );
+  }
+
+  Center Loading() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Transform.scale(
+            scale: 0.5,
+            child: CircularProgressIndicator(
+              color: Colors.black,
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Text(
+            'Fetching Your Stocks',
+            style: TextStyle(
+              fontWeight: FontWeight.w500,
+              color: textColor,
+              fontSize: 20,
+            ),
+          ),
+        ],
       ),
     );
   }

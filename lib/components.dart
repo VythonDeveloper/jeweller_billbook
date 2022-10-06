@@ -42,3 +42,14 @@ Widget CustomFABButton({final onPressed, heroTag, icon, label}) {
     label: Text(label),
   );
 }
+
+Widget CustomLoading({final indicatorColor}) {
+  return Transform.scale(
+    scale: 0.7,
+    child: Center(
+      child: CircularProgressIndicator(
+        color: indicatorColor,
+      ),
+    ),
+  );
+}

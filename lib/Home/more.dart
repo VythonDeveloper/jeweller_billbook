@@ -63,8 +63,11 @@ class _MoreUIState extends State<MoreUI> {
           Container(
             padding: EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: primaryAccentColor,
+              color: primaryAlternateAccentColor,
               borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: primaryAlternateColor,
+              ),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,6 +79,7 @@ class _MoreUIState extends State<MoreUI> {
                       child: Text(
                         'Current Gold Rate',
                         style: TextStyle(
+                          fontWeight: FontWeight.w600,
                           letterSpacing: 0.5,
                         ),
                       ),
@@ -118,7 +122,21 @@ class _MoreUIState extends State<MoreUI> {
                 SizedBox(
                   height: 15,
                 ),
-                Text(Constants.timeAgo(_updatedOn)),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.schedule,
+                      size: 17,
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Text(
+                      Constants.timeAgo(_updatedOn),
+                    ),
+                  ],
+                ),
                 Divider(),
                 Align(
                   alignment: Alignment.topRight,
@@ -148,10 +166,11 @@ class _MoreUIState extends State<MoreUI> {
                         });
                       }
                     },
-                    color: primaryColor,
+                    color: primaryAlternateColor,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
                     padding: EdgeInsets.all(10),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -187,8 +206,12 @@ class _MoreUIState extends State<MoreUI> {
             },
             color: Color.fromARGB(255, 255, 239, 241),
             elevation: 0,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5),
+              side: BorderSide(
+                color: Colors.red,
+              ),
+            ),
             padding: EdgeInsets.all(15),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
