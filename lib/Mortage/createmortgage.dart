@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:jeweller_stockbook/Mortage/contactCrud.dart';
 import 'package:jeweller_stockbook/components.dart';
 import 'package:jeweller_stockbook/constants.dart';
 import 'package:page_route_transition/page_route_transition.dart';
@@ -176,25 +175,6 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
           TextFormField(
             controller: _customerName,
             decoration: InputDecoration(
-              suffixIcon: IconButton(
-                onPressed: () async {
-                  try {
-                    final contactDetails = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ContactCrudUI()));
-                    _customerName.text = contactDetails['displayName'];
-                    _mobile.text = contactDetails['phone'];
-                  } catch (e) {
-                  } finally {
-                    setState(() {});
-                  }
-                },
-                icon: Icon(
-                  Icons.contact_phone_rounded,
-                  color: primaryColor,
-                ),
-              ),
               contentPadding: EdgeInsets.symmetric(horizontal: 10),
               border: OutlineInputBorder(),
               label: Text("Customer Name"),

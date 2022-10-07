@@ -1,7 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:jeweller_stockbook/Home/home.dart';
 import 'package:jeweller_stockbook/Signin/splashUI.dart';
 import 'package:jeweller_stockbook/Signin/welcomeUI.dart';
 import 'package:jeweller_stockbook/Helper/auth.dart';

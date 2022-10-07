@@ -8,18 +8,34 @@ import 'package:page_route_transition/page_route_transition.dart';
 
 import '../Helper/user.dart';
 
-class MortgageDetailsUi extends StatefulWidget {
-  final mrtgId;
-  const MortgageDetailsUi({super.key, required this.mrtgId});
+class MortgageBillDetailsUi extends StatefulWidget {
+  final mrtgBookId;
+  final mrtgBillId;
+  final customerName;
+  final phone;
+
+  const MortgageBillDetailsUi(
+      {super.key,
+      required this.mrtgBillId,
+      required this.mrtgBookId,
+      required this.customerName,
+      required this.phone});
 
   @override
-  State<MortgageDetailsUi> createState() =>
-      _MortgageDetailsUiState(mrtgId: mrtgId);
+  State<MortgageBillDetailsUi> createState() => _MortgageBillDetailsUiState(
+      mrtgBookId: mrtgBookId,
+      mrtgBillId: mrtgBillId,
+      customerName: customerName,
+      phone: phone);
 }
 
-class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
-  final mrtgId;
-  _MortgageDetailsUiState({this.mrtgId});
+class _MortgageBillDetailsUiState extends State<MortgageBillDetailsUi> {
+  final mrtgBookId;
+  final mrtgBillId;
+  final customerName;
+  final phone;
+  _MortgageBillDetailsUiState(
+      {this.mrtgBookId, this.mrtgBillId, this.customerName, this.phone});
   final _formKey = GlobalKey<FormState>();
   final _paidAmount = new TextEditingController();
   final _mrtgTxnDate = new TextEditingController();
@@ -34,10 +50,9 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
     _mrtgTxnDate.dispose();
   }
 
-  Map<String, dynamic> mrtgMap = {
+  Map<String, dynamic> mrtgBillMap = {
     "id": 0,
-    "customerName": '',
-    "mobile": '',
+    "bookId": 0,
     "description": '',
     "weight": 0.0,
     "unit": '',
@@ -64,25 +79,27 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
     _mrtgTxnDate.text = Constants.dateFormat(DateTime(selectedMrtgTxnDate.year,
             selectedMrtgTxnDate.month, selectedMrtgTxnDate.day)
         .millisecondsSinceEpoch);
-    fetchMortgageDetails();
+    fetchMortgageBillDetails();
   }
 
-  Future<void> fetchMortgageDetails() async {
+  Future<void> fetchMortgageBillDetails() async {
     await FirebaseFirestore.instance
         .collection('users')
         .doc(UserData.uid)
-        .collection('mortgage')
-        .doc(mrtgId.toString())
+        .collection('mortgageBook')
+        .doc(mrtgBookId.toString())
+        .collection('mortgageBill')
+        .doc(mrtgBillId.toString())
         .get()
         .then((value) {
-      mrtgMap = value.data()!;
+      mrtgBillMap = value.data()!;
 
       _calculatedResult = Constants.calculateMortgage(
-          mrtgMap['weight'],
-          mrtgMap['purity'],
-          mrtgMap['amount'],
-          mrtgMap['interestPerMonth'],
-          mrtgMap['lastPaymentDate']);
+          mrtgBillMap['weight'],
+          mrtgBillMap['purity'],
+          mrtgBillMap['amount'],
+          mrtgBillMap['interestPerMonth'],
+          mrtgBillMap['lastPaymentDate']);
       setState(() {});
     });
   }
@@ -116,9 +133,9 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
             IconButton(
               onPressed: () {
                 PageRouteTransition.push(
-                        context, EditMortgageUi(mrtgMap: mrtgMap))
+                        context, EditMortgageBillUi(mrtgBillMap: mrtgBillMap))
                     .then((value) {
-                  fetchMortgageDetails();
+                  fetchMortgageBillDetails();
                 });
               },
               icon: Icon(Icons.edit),
@@ -189,7 +206,7 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                mrtgMap['customerName'],
+                customerName,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 16,
@@ -197,7 +214,7 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
                 ),
               ),
               Text(
-                mrtgMap['mobile'],
+                phone,
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                   color: Colors.grey.shade600,
@@ -243,7 +260,7 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
                 ),
               ),
               Text(
-                "₹ " + Constants.cFInt.format(mrtgMap['totalPaid']),
+                "₹ " + Constants.cFInt.format(mrtgBillMap['totalPaid']),
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 15,
@@ -353,7 +370,7 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
                     .collection('users')
                     .doc(UserData.uid)
                     .collection('transactions')
-                    .where('mortgageId', isEqualTo: mrtgMap['id'])
+                    .where('mrtgBillId', isEqualTo: mrtgBillId)
                     .where('type', isEqualTo: _transactionType)
                     .orderBy('date', descending: true)
                     .get(),
@@ -448,7 +465,7 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
                 ),
               ),
               Text(
-                mrtgMap['description'],
+                mrtgBillMap['description'],
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 15,
@@ -471,9 +488,9 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
                       ),
                     ),
                     Text(
-                      mrtgMap['weight'].toStringAsFixed(3) +
+                      mrtgBillMap['weight'].toStringAsFixed(3) +
                           " " +
-                          mrtgMap['unit'],
+                          mrtgBillMap['unit'],
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 15,
@@ -498,7 +515,7 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
                       ),
                     ),
                     Text(
-                      mrtgMap['purity'],
+                      mrtgBillMap['purity'],
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 15,
@@ -523,7 +540,7 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
                       ),
                     ),
                     Text(
-                      "₹ " + Constants.cFInt.format(mrtgMap['amount']),
+                      "₹ " + Constants.cFInt.format(mrtgBillMap['amount']),
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 15,
@@ -552,7 +569,7 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
                       ),
                     ),
                     Text(
-                      Constants.dateFormat(mrtgMap['date']),
+                      Constants.dateFormat(mrtgBillMap['date']),
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 15,
@@ -577,7 +594,8 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
                       ),
                     ),
                     Text(
-                      Constants.cFDecimal.format(mrtgMap['interestPerMonth']) +
+                      Constants.cFDecimal
+                              .format(mrtgBillMap['interestPerMonth']) +
                           "%",
                       style: TextStyle(
                         color: Colors.black,
@@ -603,7 +621,7 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
                       ),
                     ),
                     Text(
-                      mrtgMap['status'],
+                      mrtgBillMap['status'],
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 15,
@@ -759,7 +777,7 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
                 .collection('users')
                 .doc(UserData.uid)
                 .collection('mortgage')
-                .doc(mrtgMap['id'].toString())
+                .doc(mrtgBillMap['id'].toString())
                 .delete()
                 .then((value) {
               FirebaseFirestore.instance
@@ -767,7 +785,7 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
                   .doc(UserData.uid)
                   .collection('transactions')
                   .where('type', isEqualTo: _transactionType)
-                  .where('mortgageId', isEqualTo: mrtgMap['id'])
+                  .where('mrtgBillId', isEqualTo: mrtgBillMap['id'])
                   .get()
                   .then((value) {
                 if (value.size > 0) {
@@ -889,8 +907,8 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
                       Map<String, dynamic> mrtgTxnMap = {
                         'id': uniqueId,
                         'date': selectedMrtgTxnDate.millisecondsSinceEpoch,
-                        'description': mrtgMap['customerName'] + " paid due",
-                        'mortgageId': mrtgId,
+                        'description': customerName + " paid due",
+                        'mrtgBillId': mrtgBillId,
                         'paidAmount': int.parse(_paidAmount.text),
                         'type': _transactionType
                       };
@@ -904,13 +922,13 @@ class _MortgageDetailsUiState extends State<MortgageDetailsUi> {
                         FirebaseFirestore.instance
                             .collection('users')
                             .doc(UserData.uid)
-                            .collection('mortgage')
-                            .doc(mrtgMap['id'].toString())
+                            .collection('mortgageBook')
+                            .doc(mrtgBookId.toString())
                             .update({
                           "totalPaid":
                               FieldValue.increment(int.parse(_paidAmount.text))
                         });
-                        mrtgMap['totalPaid'] += int.parse(_paidAmount.text);
+                        mrtgBillMap['totalPaid'] += int.parse(_paidAmount.text);
                         _paidAmount.clear();
                         PageRouteTransition.pop(context);
                         PageRouteTransition.pop(context);

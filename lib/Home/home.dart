@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jeweller_stockbook/Home/dashboard.dart';
 import 'package:jeweller_stockbook/Home/items.dart';
 import 'package:jeweller_stockbook/Home/more.dart';
-import 'package:jeweller_stockbook/Home/mortgage.dart';
+import 'package:jeweller_stockbook/Home/mortgagebook.dart';
 import 'package:jeweller_stockbook/colors.dart';
 import 'package:jeweller_stockbook/components.dart';
 
@@ -26,12 +26,6 @@ class _HomePageState extends State<HomePage> {
       return Future.value(false);
     }
     return Future.value(true);
-  }
-
-  @override
-  void initState() {
-    print('From Home');
-    super.initState();
   }
 
   @override

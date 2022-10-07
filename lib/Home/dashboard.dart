@@ -4,12 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:jeweller_stockbook/Items/itemDetails.dart';
-import 'package:jeweller_stockbook/Mortage/mortgageDetails.dart';
 import 'package:jeweller_stockbook/Stock/lowStock.dart';
 import 'package:jeweller_stockbook/colors.dart';
 import 'package:jeweller_stockbook/constants.dart';
 import 'package:page_route_transition/page_route_transition.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class DashboardUi extends StatefulWidget {
   const DashboardUi({Key? key}) : super(key: key);
@@ -19,28 +17,9 @@ class DashboardUi extends StatefulWidget {
 }
 
 class _DashboardUiState extends State<DashboardUi> {
-  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   List<dynamic> transactionsMap = [];
   String timelineDateTitle = '';
   bool showDateWidget = false;
-
-  @override
-  void initState() {
-    super.initState();
-    userDetails();
-  }
-
-  void userDetails() async {
-    if (UserData.uid == '') {
-      final SharedPreferences prefs = await _prefs;
-      UserData.uid = prefs.getString('USERKEY')!;
-      UserData.username = prefs.getString('USERNAMEKEY')!;
-      UserData.userDisplayName = prefs.getString('USERDISPLAYNAMEKEY')!;
-      UserData.email = prefs.getString('USEREMAILKEY')!;
-      UserData.profileUrl = prefs.getString('USERPROFILEKEY')!;
-      setState(() {});
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +49,7 @@ class _DashboardUiState extends State<DashboardUi> {
         child: ListView(
           children: [
             statusBlocks(),
-            ItemTimeline(),
+            itemTimeline(),
           ],
         ),
       ),
@@ -84,7 +63,7 @@ class _DashboardUiState extends State<DashboardUi> {
         children: [
           Row(
             children: [
-              StatsCard(
+              statsCard(
                   onPress: () {},
                   icon: Icons.file_download_outlined,
                   cardColor: Color.fromARGB(255, 217, 241, 218),
@@ -94,7 +73,7 @@ class _DashboardUiState extends State<DashboardUi> {
                   // FutureBuilder<dynamic>(
                   //   future: FirebaseFirestore.instance
                   //       .collection('users')
-                  //       .doc(FirebaseAuth.instance.currentUser!.uid)
+                  //       .doc(UserData.uid)
                   //       .collection('mortgage')
                   //       .get(),
                   //   builder: ((context, snapshot) {
@@ -130,7 +109,7 @@ class _DashboardUiState extends State<DashboardUi> {
               SizedBox(
                 width: 10,
               ),
-              StatsCard(
+              statsCard(
                 onPress: () {},
                 icon: Icons.file_upload_outlined,
                 cardColor: Color.fromARGB(255, 255, 223, 227),
@@ -147,7 +126,7 @@ class _DashboardUiState extends State<DashboardUi> {
           ),
           Row(
             children: [
-              StatsCard(
+              statsCard(
                 onPress: () {
                   PageRouteTransition.push(context, LowStockUI());
                 },
@@ -162,7 +141,7 @@ class _DashboardUiState extends State<DashboardUi> {
               SizedBox(
                 width: 10,
               ),
-              StatsCard(
+              statsCard(
                 onPress: () {},
                 icon: Icons.bar_chart,
                 cardColor: Colors.grey.shade300,
@@ -179,7 +158,7 @@ class _DashboardUiState extends State<DashboardUi> {
     );
   }
 
-  Widget StatsCard({final onPress, label, icon, amount, cardColor}) {
+  Widget statsCard({final onPress, label, icon, amount, cardColor}) {
     return Expanded(
       child: GestureDetector(
         onTap: onPress,
@@ -224,7 +203,7 @@ class _DashboardUiState extends State<DashboardUi> {
     );
   }
 
-  Widget ItemTimeline() {
+  Widget itemTimeline() {
     return FutureBuilder<dynamic>(
       future: FirebaseFirestore.instance
           .collection('users')
@@ -458,80 +437,73 @@ class _DashboardUiState extends State<DashboardUi> {
   }
 
   Widget mrtgTxnCard({required var txnMap}) {
-    return GestureDetector(
-      onTap: () {
-        PageRouteTransition.push(
-                context, MortgageDetailsUi(mrtgId: txnMap['mortgageId']))
-            .then((value) => setState(() {}));
-      },
-      child: Container(
-        color: Colors.grey.shade100,
-        margin: EdgeInsets.only(bottom: 10),
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Mortgage",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: Colors.purple,
-                          fontSize: 13,
-                          letterSpacing: 0.5,
-                        ),
+    return Container(
+      color: Colors.grey.shade100,
+      margin: EdgeInsets.only(bottom: 10),
+      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Mortgage",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.purple,
+                        fontSize: 13,
+                        letterSpacing: 0.5,
                       ),
-                      Text(
-                        "${txnMap['description']}",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    ),
+                    Text(
+                      "${txnMap['description']}",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
-                      Text(
-                        Constants.dateFormat(txnMap['date']),
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black,
-                          fontSize: 13,
-                        ),
+                    ),
+                    Text(
+                      Constants.dateFormat(txnMap['date']),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                        fontSize: 13,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        "Amount Paid",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: primaryColor,
-                          fontSize: 13,
-                        ),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      "Amount Paid",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: primaryColor,
+                        fontSize: 13,
                       ),
-                      Text(
-                        "₹ " + Constants.cFDecimal.format(txnMap['paidAmount']),
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black,
-                          fontSize: 13,
-                        ),
+                    ),
+                    Text(
+                      "₹ " + Constants.cFDecimal.format(txnMap['paidAmount']),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                        fontSize: 13,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            )
-          ],
-        ),
+              ),
+            ],
+          )
+        ],
       ),
     );
   }

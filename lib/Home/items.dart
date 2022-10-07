@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:jeweller_stockbook/Items/createitem.dart';
 import 'package:jeweller_stockbook/Category/itemcategory.dart';
 import 'package:jeweller_stockbook/Items/itemDetails.dart';
@@ -188,7 +188,7 @@ class _ItemsUiState extends State<ItemsUi> {
     return FutureBuilder<dynamic>(
       future: FirebaseFirestore.instance
           .collection('users')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .doc(UserData.uid)
           .collection('items')
           .orderBy('id', descending: true)
           .get(),
@@ -289,7 +289,7 @@ class _ItemsUiState extends State<ItemsUi> {
     return FutureBuilder<dynamic>(
         future: FirebaseFirestore.instance
             .collection('users')
-            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .doc(UserData.uid)
             .collection("items")
             .orderBy('id', descending: true)
             .get(),
@@ -560,7 +560,7 @@ class _ItemsUiState extends State<ItemsUi> {
     return FutureBuilder<dynamic>(
       future: FirebaseFirestore.instance
           .collection('users')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .doc(UserData.uid)
           .collection('categories')
           .orderBy('id')
           .get(),

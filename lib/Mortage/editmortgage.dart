@@ -8,17 +8,19 @@ import 'package:page_route_transition/page_route_transition.dart';
 import '../Helper/user.dart';
 import '../colors.dart';
 
-class EditMortgageUi extends StatefulWidget {
-  final mrtgMap;
-  const EditMortgageUi({Key? key, required this.mrtgMap}) : super(key: key);
+class EditMortgageBillUi extends StatefulWidget {
+  final mrtgBillMap;
+  const EditMortgageBillUi({Key? key, required this.mrtgBillMap})
+      : super(key: key);
 
   @override
-  State<EditMortgageUi> createState() => _EditMortgageUiState(mrtgMap: mrtgMap);
+  State<EditMortgageBillUi> createState() =>
+      _EditMortgageBillUiState(mrtgBillMap: mrtgBillMap);
 }
 
-class _EditMortgageUiState extends State<EditMortgageUi> {
-  final mrtgMap;
-  _EditMortgageUiState({required this.mrtgMap});
+class _EditMortgageBillUiState extends State<EditMortgageBillUi> {
+  final mrtgBillMap;
+  _EditMortgageBillUiState({required this.mrtgBillMap});
   int uniqueId = DateTime.now().millisecondsSinceEpoch;
   final _formKey = GlobalKey<FormState>();
   final _customerName = new TextEditingController();
@@ -65,15 +67,15 @@ class _EditMortgageUiState extends State<EditMortgageUi> {
   @override
   void initState() {
     super.initState();
-    _customerName.text = mrtgMap['customerName'];
-    _mobile.text = mrtgMap['mobile'].split("+91")[1];
-    _description.text = mrtgMap['description'];
-    _weight.text = mrtgMap['weight'].toString();
-    _selectedPurity = mrtgMap['purity'];
-    _amount.text = mrtgMap['amount'].toString();
-    _interestPerMonth.text = mrtgMap['interestPerMonth'].toString();
-    _selectedMortgageStatus = mrtgMap['status'];
-    selectedDate = DateTime.fromMillisecondsSinceEpoch(mrtgMap['date']);
+    _customerName.text = mrtgBillMap['customerName'];
+    _mobile.text = mrtgBillMap['mobile'].split("+91")[1];
+    _description.text = mrtgBillMap['description'];
+    _weight.text = mrtgBillMap['weight'].toString();
+    _selectedPurity = mrtgBillMap['purity'];
+    _amount.text = mrtgBillMap['amount'].toString();
+    _interestPerMonth.text = mrtgBillMap['interestPerMonth'].toString();
+    _selectedMortgageStatus = mrtgBillMap['status'];
+    selectedDate = DateTime.fromMillisecondsSinceEpoch(mrtgBillMap['date']);
     _date.text = Constants.dateFormat(
         DateTime(selectedDate.year, selectedDate.month, selectedDate.day)
             .millisecondsSinceEpoch);
@@ -198,7 +200,7 @@ class _EditMortgageUiState extends State<EditMortgageUi> {
                 .collection('users')
                 .doc(UserData.uid)
                 .collection('mortgage')
-                .doc(mrtgMap['id'].toString())
+                .doc(mrtgBillMap['id'].toString())
                 .update(updatedMortgageMap)
                 .then((value) {
               PageRouteTransition.pop(context);

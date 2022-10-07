@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:jeweller_stockbook/colors.dart';
 import 'package:jeweller_stockbook/components.dart';
@@ -30,7 +29,7 @@ class _MoreUIState extends State<MoreUI> {
   void fetchGoldRate() async {
     await FirebaseFirestore.instance
         .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .doc(UserData.uid)
         .get()
         .then((value) {
       setState(() {

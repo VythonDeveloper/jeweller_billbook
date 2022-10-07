@@ -8,14 +8,14 @@ import 'package:jeweller_stockbook/constants.dart';
 
 import '../colors.dart';
 
-class ContactCrudUI extends StatefulWidget {
-  const ContactCrudUI({super.key});
+class CreateMortgageBookUi extends StatefulWidget {
+  const CreateMortgageBookUi({super.key});
 
   @override
-  State<ContactCrudUI> createState() => _ContactCrudUIState();
+  State<CreateMortgageBookUi> createState() => _CreateMortgageBookUiState();
 }
 
-class _ContactCrudUIState extends State<ContactCrudUI> {
+class _CreateMortgageBookUiState extends State<CreateMortgageBookUi> {
   TextEditingController _searchKey = TextEditingController();
   // List<Contact> Constants.myContacts = [];
   List<Contact> contactsFiltered = [];
@@ -124,7 +124,7 @@ class _ContactCrudUIState extends State<ContactCrudUI> {
           'id': uniqueId,
           'name': name,
           'phone': formattedNumber,
-          'totalPrincipal': 0,
+          'totalPrinciple': 0,
           'totalInterest': 0,
           'totalPaid': 0
         };
@@ -132,7 +132,7 @@ class _ContactCrudUIState extends State<ContactCrudUI> {
         await FirebaseFirestore.instance
             .collection('users')
             .doc(UserData.uid)
-            .collection('mortgage')
+            .collection('mortgageBook')
             .doc(uniqueId.toString())
             .set(mrtgBook);
         Navigator.pop(context);
