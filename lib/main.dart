@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jeweller_stockbook/Home/home.dart';
+import 'package:jeweller_stockbook/Signin/splashUI.dart';
 import 'package:jeweller_stockbook/Signin/welcomeUI.dart';
 import 'package:jeweller_stockbook/Helper/auth.dart';
 import 'package:jeweller_stockbook/colors.dart';
@@ -40,27 +41,21 @@ class MyApp extends StatelessWidget {
         colorSchemeSeed: primaryAlternateColor,
         scaffoldBackgroundColor: Colors.white,
         fontFamily: 'San',
+
         // bottomNavigationBarTheme: BottomNavigationBarThemeData(
         //   backgroundColor: Color.fromARGB(255, 232, 235, 255),
         // ),
         useMaterial3: true,
       ),
-      home: FutureBuilder<dynamic>(
+      home: FutureBuilder(
         future: AuthMethods().getCurrentuser(),
-        builder: ((context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Scaffold(
-              body: Center(
-                child: CircularProgressIndicator(),
-              ),
-            );
-          }
+        builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return HomePage();
+            return SplashUI();
           } else {
             return LoginUI();
           }
-        }),
+        },
       ),
     );
   }

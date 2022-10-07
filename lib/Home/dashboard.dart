@@ -85,46 +85,48 @@ class _DashboardUiState extends State<DashboardUi> {
           Row(
             children: [
               StatsCard(
-                onPress: () {},
-                icon: Icons.file_download_outlined,
-                cardColor: Color.fromARGB(255, 217, 241, 218),
-                label: 'Mortage',
-                amount: FutureBuilder<dynamic>(
-                  future: FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(FirebaseAuth.instance.currentUser!.uid)
-                      .collection('mortgage')
-                      .get(),
-                  builder: ((context, snapshot) {
-                    if (snapshot.hasData) {
-                      if (snapshot.data.docs.length > 0) {
-                        int totalPrincipal = 0;
-                        var dataMap = snapshot.data.docs;
-                        for (int index = 0;
-                            index < snapshot.data.docs.length;
-                            index++) {
-                          totalPrincipal +=
-                              int.parse(dataMap[index]['amount'].toString());
-                        }
-                        return Text(
-                          "₹ " + Constants.cFInt.format(totalPrincipal),
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                        );
-                      }
-                      return Text(
-                        "₹ 0",
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                      );
-                    }
-                    return Transform.scale(
-                      scale: 0.5,
-                      child: CircularProgressIndicator(),
-                    );
-                  }),
-                ),
-              ),
+                  onPress: () {},
+                  icon: Icons.file_download_outlined,
+                  cardColor: Color.fromARGB(255, 217, 241, 218),
+                  label: 'Mortage',
+                  amount: Text('0')
+
+                  // FutureBuilder<dynamic>(
+                  //   future: FirebaseFirestore.instance
+                  //       .collection('users')
+                  //       .doc(FirebaseAuth.instance.currentUser!.uid)
+                  //       .collection('mortgage')
+                  //       .get(),
+                  //   builder: ((context, snapshot) {
+                  //     if (snapshot.hasData) {
+                  //       if (snapshot.data.docs.length > 0) {
+                  //         int totalPrincipal = 0;
+                  //         var dataMap = snapshot.data.docs;
+                  //         for (int index = 0;
+                  //             index < snapshot.data.docs.length;
+                  //             index++) {
+                  //           totalPrincipal +=
+                  //               int.parse(dataMap[index]['amount'].toString());
+                  //         }
+                  //         return Text(
+                  //           "₹ " + Constants.cFInt.format(totalPrincipal),
+                  //           style: TextStyle(
+                  //               fontSize: 16, fontWeight: FontWeight.bold),
+                  //         );
+                  //       }
+                  //       return Text(
+                  //         "₹ 0",
+                  //         style: TextStyle(
+                  //             fontSize: 16, fontWeight: FontWeight.bold),
+                  //       );
+                  //     }
+                  //     return Transform.scale(
+                  //       scale: 0.5,
+                  //       child: CircularProgressIndicator(),
+                  //     );
+                  //   }),
+                  // ),
+                  ),
               SizedBox(
                 width: 10,
               ),
