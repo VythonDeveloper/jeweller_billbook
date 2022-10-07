@@ -186,10 +186,6 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
                     _customerName.text = contactDetails['displayName'];
                     _mobile.text = contactDetails['phone'];
                   } catch (e) {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ContactCrudUI()));
                   } finally {
                     setState(() {});
                   }

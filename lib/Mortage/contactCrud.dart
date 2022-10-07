@@ -1,7 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts/contact.dart';
 import 'package:jeweller_stockbook/Helper/select_Contacts.dart';
+import 'package:jeweller_stockbook/Helper/user.dart';
+import 'package:jeweller_stockbook/components.dart';
 import 'package:jeweller_stockbook/constants.dart';
+
+import '../colors.dart';
 
 class ContactCrudUI extends StatefulWidget {
   const ContactCrudUI({super.key});
@@ -12,7 +17,7 @@ class ContactCrudUI extends StatefulWidget {
 
 class _ContactCrudUIState extends State<ContactCrudUI> {
   TextEditingController _searchKey = TextEditingController();
-  List<Contact> contactsList = [];
+  // List<Contact> Constants.myContacts = [];
   List<Contact> contactsFiltered = [];
   bool isLoading = false;
 
@@ -21,11 +26,6 @@ class _ContactCrudUIState extends State<ContactCrudUI> {
   void initState() {
     super.initState();
 
-    if (Constants.myContacts.length == 0) {
-      getContacts();
-    } else {
-      contactsList = Constants.myContacts;
-    }
     _searchKey.addListener(() {
       filterContacts();
     });
@@ -33,7 +33,7 @@ class _ContactCrudUIState extends State<ContactCrudUI> {
 
   filterContacts() {
     List<Contact> _contacts = [];
-    _contacts.addAll(contactsList);
+    _contacts.addAll(Constants.myContacts);
     if (_searchKey.text.isNotEmpty) {
       _contacts.retainWhere((contact) {
         String searchTerm = _searchKey.text.toLowerCase().trim();
@@ -56,8 +56,8 @@ class _ContactCrudUIState extends State<ContactCrudUI> {
     setState(() {
       isLoading = true;
     });
-    contactsList = await SelectContact().getContacts();
-    Constants.myContacts.addAll(contactsList);
+    Constants.myContacts = await SelectContact().getContacts();
+
     setState(() {
       isLoading = false;
     });
@@ -84,28 +84,28 @@ class _ContactCrudUIState extends State<ContactCrudUI> {
       ),
       body: Column(
         children: [
+          Visibility(
+            visible: isLoading,
+            child: LinearProgressIndicator(),
+          ),
           ContactsAppbar(),
           Expanded(
-            child: isLoading
-                ? Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: isSearching
-                        ? contactsFiltered.length
-                        : contactsList.length,
-                    physics: BouncingScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      Contact contact = isSearching
-                          ? contactsFiltered[index]
-                          : contactsList[index];
-                      if (contact.phones.isEmpty) {
-                        return SizedBox();
-                      }
-                      return ContactCard(contact);
-                    },
-                  ),
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: isSearching
+                  ? contactsFiltered.length
+                  : Constants.myContacts.length,
+              physics: BouncingScrollPhysics(),
+              itemBuilder: (context, index) {
+                Contact contact = isSearching
+                    ? contactsFiltered[index]
+                    : Constants.myContacts[index];
+                if (contact.phones.isEmpty) {
+                  return SizedBox();
+                }
+                return ContactCard(contact);
+              },
+            ),
           )
         ],
       ),
@@ -114,17 +114,32 @@ class _ContactCrudUIState extends State<ContactCrudUI> {
 
   ListTile ContactCard(Contact contact) {
     return ListTile(
-      onTap: () {
-        final formattedNumber =
-            contact.phones[0].number.replaceAll(' ', '').split('+91').last;
+      onTap: () async {
+        showLoading(context);
+        int uniqueId = DateTime.now().millisecondsSinceEpoch;
+        final formattedNumber = contact.phones[0].number.replaceAll(' ', '');
+        final name = contact.displayName;
 
-        Map<String, dynamic> contactMap = {
-          'displayName': contact.displayName,
+        Map<String, dynamic> mrtgBook = {
+          'id': uniqueId,
+          'name': name,
           'phone': formattedNumber,
+          'totalPrincipal': 0,
+          'totalInterest': 0,
+          'totalPaid': 0
         };
-        Navigator.pop(context, contactMap);
+
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(UserData.uid)
+            .collection('mortgage')
+            .doc(uniqueId.toString())
+            .set(mrtgBook);
+        Navigator.pop(context);
+        Navigator.pop(context);
       },
       leading: CircleAvatar(
+        backgroundColor: primaryColor,
         child: Text(
           contact.displayName[0],
         ),
@@ -145,7 +160,7 @@ class _ContactCrudUIState extends State<ContactCrudUI> {
             decoration: InputDecoration(
               prefixIcon: Icon(
                 Icons.search,
-                color: Colors.blue.shade700,
+                color: primaryColor,
               ),
               contentPadding: EdgeInsets.symmetric(horizontal: 10),
               border: OutlineInputBorder(
@@ -172,7 +187,7 @@ class _ContactCrudUIState extends State<ContactCrudUI> {
               margin: EdgeInsets.symmetric(vertical: 10),
               width: double.infinity,
               decoration: BoxDecoration(
-                color: Colors.indigo.withOpacity(0.15),
+                color: primaryAccentColor,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Row(
@@ -181,7 +196,7 @@ class _ContactCrudUIState extends State<ContactCrudUI> {
                 children: [
                   Icon(
                     Icons.add_circle_outline_outlined,
-                    color: Colors.indigo,
+                    color: primaryColor,
                   ),
                   SizedBox(
                     width: 10,
@@ -190,7 +205,7 @@ class _ContactCrudUIState extends State<ContactCrudUI> {
                     'Create Contact',
                     style: TextStyle(
                       fontSize: 17,
-                      color: Colors.indigo,
+                      color: primaryColor,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

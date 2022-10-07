@@ -29,6 +29,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void initState() {
+    print('From Home');
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: onWillPop,

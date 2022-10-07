@@ -83,7 +83,7 @@ class _ItemsUiState extends State<ItemsUi> {
             color: primaryAlternateColor,
           ),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(100),
           ),
           contentPadding: EdgeInsets.symmetric(horizontal: 10),
           hintText: 'Search by Name',

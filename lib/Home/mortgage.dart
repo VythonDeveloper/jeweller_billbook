@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:jeweller_stockbook/Mortage/contactCrud.dart';
 import 'package:jeweller_stockbook/Mortage/createmortgage.dart';
+import 'package:jeweller_stockbook/Mortage/mortgageBookUI.dart';
 import 'package:jeweller_stockbook/Mortage/mortgageDetails.dart';
 import 'package:jeweller_stockbook/Stock/lowStock.dart';
 import 'package:jeweller_stockbook/colors.dart';
@@ -43,10 +45,7 @@ class _MortgageUiState extends State<MortgageUi> {
             SizedBox(
               height: 3,
             ),
-            mortgageSortingBar(),
-            SizedBox(
-              height: 3,
-            ),
+            // mortgageSortingBar(),
             Expanded(
               child: ListView(
                 children: [
@@ -64,16 +63,18 @@ class _MortgageUiState extends State<MortgageUi> {
         ),
       ),
       floatingActionButton: CustomFABButton(
-          onPressed: () {
-            PageRouteTransition.push(context, CreateMortgageUi())
-                .then(((value) {
-              if (mounted) {
-                setState(() {});
-              }
-            }));
-          },
-          icon: Icons.receipt,
-          label: 'Create Mortgage Bill'),
+        onPressed: () {
+          Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => ContactCrudUI()))
+              .then(((value) {
+            if (mounted) {
+              setState(() {});
+            }
+          }));
+        },
+        icon: Icons.book,
+        label: '+ Mortgage Book',
+      ),
     );
   }
 
@@ -89,7 +90,7 @@ class _MortgageUiState extends State<MortgageUi> {
           ),
           contentPadding: EdgeInsets.symmetric(horizontal: 10),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(100),
           ),
           hintText: 'Search by name',
           hintStyle: TextStyle(
@@ -192,64 +193,279 @@ class _MortgageUiState extends State<MortgageUi> {
     );
   }
 
+  Widget filterModal() {
+    TextStyle headingStyle = TextStyle(
+      fontWeight: FontWeight.w600,
+      fontSize: 17,
+    );
+    return StatefulBuilder(
+      builder: ((context, setState) {
+        return ListView(
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Filter Options',
+                    style: headingStyle,
+                  ),
+                  MaterialButton(
+                    onPressed: () {},
+                    color: primaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    elevation: 0,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.done,
+                          color: Colors.white,
+                        ),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        Text(
+                          "Apply",
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Divider(height: 0),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Status',
+                    style: headingStyle,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    children: [
+                      CustomRadioButton(
+                        onTap: () {},
+                        label: "All",
+                      ),
+                      CustomRadioButton(
+                        onTap: () {},
+                        label: "Active",
+                      ),
+                      CustomRadioButton(
+                        onTap: () {},
+                        label: "Closed",
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    'Date Range',
+                    style: headingStyle,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    children: [
+                      Flexible(
+                        child: TextField(
+                          readOnly: true,
+                          // controller: ,
+                          onTap: () {
+                            showDateRangePicker(
+                              context: context,
+                              firstDate: DateTime(2000, 1, 1),
+                              lastDate: DateTime.now(),
+                              builder: ((context, child) {
+                                return Theme(
+                                  data: ThemeData.light(
+                                    useMaterial3: false,
+                                  ),
+                                  child: child!,
+                                );
+                                // return Theme(
+                                //   data: Theme.of(context).copyWith(
+                                //     indicatorColor: Colors.white,
+                                //     // colorScheme: ColorScheme.light(
+                                //     //   primary: Colors.yellow,
+                                //     //   onPrimary: primaryColor,
+                                //     //   brightness: Brightness.light,
+                                //     //   onSurface: Colors.green,
+                                //     //   background: Colors.blue,
+                                //     // ),
+                                //     scaffoldBackgroundColor: primaryAccentColor,
+                                //     // primaryColor: primaryColor,
+                                //     iconTheme: IconThemeData(
+                                //       color: Colors.white,
+                                //     ),
+                                //     primaryIconTheme: IconThemeData(
+                                //       color: Colors.white,
+                                //     ),
+                                //     appBarTheme: AppBarTheme(
+                                //       backgroundColor: primaryColor,
+                                //       foregroundColor: Colors.white,
+                                //       actionsIconTheme: IconThemeData(
+                                //         color: Colors.white,
+                                //       ),
+                                //       iconTheme: IconThemeData(
+                                //         color: Colors.white,
+                                //       ),
+                                //     ),
+                                //     textButtonTheme: TextButtonThemeData(
+                                //         // style: TextButton.styleFrom(
+                                //         //   backgroundColor: primaryColor,
+                                //         // ),
+                                //         ),
+                                //   ),
+                                //   child: child!,
+                                // );
+                              }),
+                            );
+                          },
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            contentPadding:
+                                EdgeInsets.symmetric(horizontal: 10),
+                            labelText: 'From',
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 5),
+                        child: Text(' - '),
+                      ),
+                      Flexible(
+                        child: TextField(
+                          readOnly: true,
+                          // controller: ,
+                          onTap: () {
+                            showDateRangePicker(
+                              context: context,
+                              firstDate: DateTime(2000, 1, 1),
+                              lastDate: DateTime.now(),
+                              builder: ((context, child) {
+                                return Theme(
+                                  data: ThemeData.light(
+                                    useMaterial3: false,
+                                  ),
+                                  child: child!,
+                                );
+                                // return Theme(
+                                //   data: Theme.of(context).copyWith(
+                                //     indicatorColor: Colors.white,
+                                //     // colorScheme: ColorScheme.light(
+                                //     //   primary: Colors.yellow,
+                                //     //   onPrimary: primaryColor,
+                                //     //   brightness: Brightness.light,
+                                //     //   onSurface: Colors.green,
+                                //     //   background: Colors.blue,
+                                //     // ),
+                                //     scaffoldBackgroundColor: primaryAccentColor,
+                                //     // primaryColor: primaryColor,
+                                //     iconTheme: IconThemeData(
+                                //       color: Colors.white,
+                                //     ),
+                                //     primaryIconTheme: IconThemeData(
+                                //       color: Colors.white,
+                                //     ),
+                                //     appBarTheme: AppBarTheme(
+                                //       backgroundColor: primaryColor,
+                                //       foregroundColor: Colors.white,
+                                //       actionsIconTheme: IconThemeData(
+                                //         color: Colors.white,
+                                //       ),
+                                //       iconTheme: IconThemeData(
+                                //         color: Colors.white,
+                                //       ),
+                                //     ),
+                                //     textButtonTheme: TextButtonThemeData(
+                                //         // style: TextButton.styleFrom(
+                                //         //   backgroundColor: primaryColor,
+                                //         // ),
+                                //         ),
+                                //   ),
+                                //   child: child!,
+                                // );
+                              }),
+                            );
+                          },
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            contentPadding:
+                                EdgeInsets.symmetric(horizontal: 10),
+                            labelText: 'To',
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    'Type',
+                    style: headingStyle,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    children: [
+                      CustomRadioButton(
+                        onTap: () {},
+                        label: "All",
+                      ),
+                      CustomRadioButton(
+                        onTap: () {},
+                        label: "In Profit",
+                      ),
+                      CustomRadioButton(
+                        onTap: () {},
+                        label: "In Loss",
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      }),
+    );
+  }
+
   Widget mortgageList() {
     return FutureBuilder<dynamic>(
         future: FirebaseFirestore.instance
             .collection('users')
             .doc(FirebaseAuth.instance.currentUser!.uid)
             .collection("mortgage")
-            .orderBy('date', descending: true)
+            .orderBy('id', descending: true)
             .get(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             if (snapshot.data.docs.length > 0) {
-              int dataCounter = 0;
-              int loopCounter = 0;
               return ListView.builder(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 itemCount: snapshot.data.docs.length,
                 itemBuilder: (context, index) {
-                  loopCounter += 1;
-                  DocumentSnapshot _mrtgMap = snapshot.data.docs[index];
-                  if (_selectedStatus == 'All Status') {
-                    if (_searchKey.text.isEmpty) {
-                      dataCounter++;
-                      return mortgageCard(mrtgMap: _mrtgMap);
-                    } else if (_mrtgMap['customerName']
-                        .toLowerCase()
-                        .contains(_searchKey.text.toLowerCase())) {
-                      dataCounter++;
-                      return mortgageCard(mrtgMap: _mrtgMap);
-                    }
-                  } else if (_mrtgMap['status'].toLowerCase() ==
-                      _selectedStatus.toLowerCase()) {
-                    if (_searchKey.text.isEmpty) {
-                      dataCounter++;
-
-                      return mortgageCard(mrtgMap: _mrtgMap);
-                    } else if (_mrtgMap['customerName']
-                        .toLowerCase()
-                        .contains(_searchKey.text.toLowerCase())) {
-                      dataCounter++;
-                      return mortgageCard(mrtgMap: _mrtgMap);
-                    }
-                  }
-
-                  if (dataCounter == 0 &&
-                      loopCounter == snapshot.data.docs.length) {
-                    return Center(
-                      child: Text(
-                        "No mortgage found",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.grey.shade400,
-                        ),
-                      ),
-                    );
-                  }
-                  return SizedBox();
+                  DocumentSnapshot _mrtgBookMap = snapshot.data.docs[index];
+                  return mortgageBookCard(mrtgBookMap: _mrtgBookMap);
                 },
               );
             }
@@ -286,17 +502,10 @@ class _MortgageUiState extends State<MortgageUi> {
         });
   }
 
-  Widget mortgageCard({required var mrtgMap}) {
-    var _calculatedResult = Constants.calculateMortgage(
-        mrtgMap['weight'],
-        mrtgMap['purity'],
-        mrtgMap['amount'],
-        mrtgMap['interestPerMonth'],
-        mrtgMap['lastPaymentDate']);
+  Widget mortgageBookCard({required var mrtgBookMap}) {
     return GestureDetector(
       onTap: () {
-        PageRouteTransition.push(
-                context, MortgageDetailsUi(mrtgId: mrtgMap['id']))
+        PageRouteTransition.push(context, MortgageBookUI(mrtgBook: mrtgBookMap))
             .then((value) => setState(() {}));
       },
       child: Container(
@@ -307,119 +516,141 @@ class _MortgageUiState extends State<MortgageUi> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      mrtgBookMap['name'],
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      mrtgBookMap['phone'],
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                        fontSize: 13,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                  ],
+                ),
+                CircleAvatar(
+                  radius: 18,
+                  backgroundColor: primaryColor,
+                  child: IconButton(
+                    onPressed: () {},
+                    icon: Icon(
+                      Icons.call,
+                      color: primaryAccentColor,
+                      size: 15,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Mortgage",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: Colors.purple,
-                          fontSize: 13,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                      Text(
-                        "${mrtgMap['customerName']}",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        Constants.dateFormat(mrtgMap['date']),
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ],
-                  ),
+                  child: MortgageBookStatsCard(
+                      label: 'Principle Amount',
+                      cardColor: Colors.blueGrey.shade500,
+                      content: "₹ " +
+                          Constants.cFDecimal
+                              .format(mrtgBookMap['totalPrincipal']),
+                      mrtgBookMap: mrtgBookMap),
+                ),
+                SizedBox(
+                  width: 5,
                 ),
                 Expanded(
-                  child: Column(
-                    children: [
-                      Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 1),
-                        decoration: BoxDecoration(
-                          color: mrtgMap['status'] == 'Active'
-                              ? Colors.blue.shade700
-                              : Colors.black,
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                        child: Text(
-                          mrtgMap['status'],
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white,
-                            fontFamily: 'default',
-                            fontSize: 12,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                      ),
-                      Text(
-                        "Principal Amount",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: primaryColor,
-                          fontSize: 13,
-                        ),
-                      ),
-                      Text(
-                        "₹ " + Constants.cFDecimal.format(mrtgMap['amount']),
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black,
-                          fontSize: 13,
-                        ),
-                      )
-                    ],
-                  ),
+                  child: MortgageBookStatsCard(
+                      label: 'Due Amount',
+                      cardColor: Colors.blueGrey.shade700,
+                      content: "₹ " +
+                          Constants.cFDecimal
+                              .format(mrtgBookMap['totalPrincipal']),
+                      mrtgBookMap: mrtgBookMap),
+                ),
+                SizedBox(
+                  width: 5,
                 ),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        _calculatedResult['profitLoss'],
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: _calculatedResult['profitLoss'] == "Profit"
-                              ? profitColor
-                              : lossColor,
-                          fontSize: 14,
-                        ),
-                      ),
-                      Text(
-                        "Valuation",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: primaryColor,
-                          fontSize: 13,
-                        ),
-                      ),
-                      Text(
-                        "₹ " +
-                            Constants.cFDecimal
-                                .format(_calculatedResult['valuation']),
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ],
-                  ),
+                  child: MortgageBookStatsCard(
+                      label: 'Principle Amount',
+                      cardColor: Colors.blueGrey.shade900,
+                      content: "₹ " +
+                          Constants.cFDecimal
+                              .format(mrtgBookMap['totalPrincipal']),
+                      mrtgBookMap: mrtgBookMap),
                 ),
               ],
             )
           ],
+        ),
+      ),
+    );
+  }
+
+  Container MortgageBookStatsCard(
+      {final mrtgBookMap, label, cardColor, content}) {
+    return Container(
+      padding: EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(5),
+        color: cardColor,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          FittedBox(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+                fontSize: 13,
+              ),
+            ),
+          ),
+          FittedBox(
+            child: Text(
+              content,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                fontSize: 15,
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget CustomRadioButton({final label, onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: EdgeInsets.only(right: 10),
+        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(50),
+          color: primaryAccentColor,
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            color: primaryColor,
+          ),
         ),
       ),
     );
