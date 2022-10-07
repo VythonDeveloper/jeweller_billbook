@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
@@ -207,7 +206,7 @@ class _DashboardUiState extends State<DashboardUi> {
     return FutureBuilder<dynamic>(
       future: FirebaseFirestore.instance
           .collection('users')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .doc(UserData.uid)
           .collection('transactions')
           .orderBy('id', descending: true)
           .get(),

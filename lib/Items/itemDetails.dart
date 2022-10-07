@@ -119,6 +119,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
             children: [
               Expanded(
                 child: FloatingActionButton.extended(
+                  heroTag: 'btn11',
                   extendedPadding: EdgeInsets.symmetric(horizontal: 50),
                   onPressed: () {
                     showDialog<void>(
@@ -153,6 +154,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
               ),
               Expanded(
                 child: FloatingActionButton.extended(
+                  heroTag: 'btn12',
                   onPressed: () {
                     showDialog<void>(
                       context: context,
