@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:jeweller_stockbook/Mortage/editmortgage.dart';
+import 'package:jeweller_stockbook/Mortage/editMrtgBill.dart';
 import 'package:jeweller_stockbook/colors.dart';
 import 'package:jeweller_stockbook/components.dart';
 import 'package:jeweller_stockbook/constants.dart';
@@ -8,13 +8,13 @@ import 'package:page_route_transition/page_route_transition.dart';
 
 import '../Helper/user.dart';
 
-class MortgageBillDetailsUi extends StatefulWidget {
+class MrtgBillDetailsUi extends StatefulWidget {
   final mrtgBookId;
   final mrtgBillId;
   final customerName;
   final phone;
 
-  const MortgageBillDetailsUi(
+  const MrtgBillDetailsUi(
       {super.key,
       required this.mrtgBillId,
       required this.mrtgBookId,
@@ -22,19 +22,19 @@ class MortgageBillDetailsUi extends StatefulWidget {
       required this.phone});
 
   @override
-  State<MortgageBillDetailsUi> createState() => _MortgageBillDetailsUiState(
+  State<MrtgBillDetailsUi> createState() => _MrtgBillDetailsUiState(
       mrtgBookId: mrtgBookId,
       mrtgBillId: mrtgBillId,
       customerName: customerName,
       phone: phone);
 }
 
-class _MortgageBillDetailsUiState extends State<MortgageBillDetailsUi> {
+class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
   final mrtgBookId;
   final mrtgBillId;
   final customerName;
   final phone;
-  _MortgageBillDetailsUiState(
+  _MrtgBillDetailsUiState(
       {this.mrtgBookId, this.mrtgBillId, this.customerName, this.phone});
   final _formKey = GlobalKey<FormState>();
   final _paidAmount = new TextEditingController();
@@ -79,15 +79,13 @@ class _MortgageBillDetailsUiState extends State<MortgageBillDetailsUi> {
     _mrtgTxnDate.text = Constants.dateFormat(DateTime(selectedMrtgTxnDate.year,
             selectedMrtgTxnDate.month, selectedMrtgTxnDate.day)
         .millisecondsSinceEpoch);
-    fetchMortgageBillDetails();
+    fetchMrtgBillDetails();
   }
 
-  Future<void> fetchMortgageBillDetails() async {
+  Future<void> fetchMrtgBillDetails() async {
     await FirebaseFirestore.instance
         .collection('users')
         .doc(UserData.uid)
-        .collection('mortgageBook')
-        .doc(mrtgBookId.toString())
         .collection('mortgageBill')
         .doc(mrtgBillId.toString())
         .get()
@@ -133,9 +131,9 @@ class _MortgageBillDetailsUiState extends State<MortgageBillDetailsUi> {
             IconButton(
               onPressed: () {
                 PageRouteTransition.push(
-                        context, EditMortgageBillUi(mrtgBillMap: mrtgBillMap))
+                        context, EditMrtgBillUi(mrtgBillMap: mrtgBillMap))
                     .then((value) {
-                  fetchMortgageBillDetails();
+                  fetchMrtgBillDetails();
                 });
               },
               icon: Icon(Icons.edit),
@@ -146,7 +144,7 @@ class _MortgageBillDetailsUiState extends State<MortgageBillDetailsUi> {
                   context: context,
                   barrierDismissible: false, // user must tap button!
                   builder: (BuildContext context) {
-                    return DeleteMortgageAlert();
+                    return deleteMrtgBillAlert();
                   },
                 );
               },
@@ -293,8 +291,8 @@ class _MortgageBillDetailsUiState extends State<MortgageBillDetailsUi> {
                 indicatorSize: TabBarIndicatorSize.label,
                 indicatorColor: Colors.indigo,
                 tabs: [
-                  Tab(text: "Timeline"),
                   Tab(text: "Details"),
+                  Tab(text: "Payment Timeline"),
                 ],
               ),
             ),
@@ -302,8 +300,8 @@ class _MortgageBillDetailsUiState extends State<MortgageBillDetailsUi> {
           Expanded(
             child: TabBarView(
               children: [
-                ItemTimeline(),
-                Details(),
+                details(),
+                paymentTimeline(),
               ],
             ),
           ),
@@ -312,143 +310,7 @@ class _MortgageBillDetailsUiState extends State<MortgageBillDetailsUi> {
     );
   }
 
-  Widget ItemTimeline() {
-    return Container(
-      child: ListView(
-        children: [
-          Column(
-            children: [
-              Container(
-                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 12),
-                color: Colors.grey.shade100,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'Date',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                          color: primaryColor,
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          'Paid',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: primaryColor,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Align(
-                        alignment: Alignment.topRight,
-                        child: Text(
-                          'Total Paid',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: primaryColor,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              FutureBuilder<dynamic>(
-                future: FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(UserData.uid)
-                    .collection('transactions')
-                    .where('mrtgBillId', isEqualTo: mrtgBillId)
-                    .where('type', isEqualTo: _transactionType)
-                    .orderBy('date', descending: true)
-                    .get(),
-                builder: ((context, snapshot) {
-                  if (snapshot.hasData) {
-                    if (snapshot.data.docs.length > 0) {
-                      totalPaid = 0;
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: snapshot.data.docs.length,
-                        itemBuilder: (context, index) {
-                          var mrtgTxnMap = snapshot.data.docs[index];
-                          totalPaid +=
-                              int.parse(mrtgTxnMap['paidAmount'].toString());
-
-                          return TimelineCard(
-                              mrtgTxnMap: mrtgTxnMap, totalPaid: totalPaid);
-                        },
-                      );
-                    }
-                    return Center(
-                      child: Text(
-                        "No Data",
-                        style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.w700),
-                      ),
-                    );
-                  }
-                  return LinearProgressIndicator(
-                    minHeight: 3,
-                  );
-                }),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Container TimelineCard({required var mrtgTxnMap, required int totalPaid}) {
-    return Container(
-      padding: EdgeInsets.all(12),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              Constants.dateFormat(mrtgTxnMap['date']),
-            ),
-          ),
-          Expanded(
-            child: Align(
-              alignment: Alignment.center,
-              child: Text(
-                '₹ ' + Constants.cFInt.format(mrtgTxnMap['paidAmount']),
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            child: Align(
-              alignment: Alignment.topRight,
-              child: Text(
-                '₹ ' + Constants.cFInt.format(totalPaid),
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget Details() {
+  Widget details() {
     return Container(
       padding: EdgeInsets.all(20),
       child: Column(
@@ -751,7 +613,143 @@ class _MortgageBillDetailsUiState extends State<MortgageBillDetailsUi> {
     );
   }
 
-  AlertDialog DeleteMortgageAlert() {
+  Widget paymentTimeline() {
+    return Container(
+      child: ListView(
+        children: [
+          Column(
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 12),
+                color: Colors.grey.shade100,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Date',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: primaryColor,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          'Paid',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: primaryColor,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.topRight,
+                        child: Text(
+                          'Total Paid',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: primaryColor,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              FutureBuilder<dynamic>(
+                future: FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(UserData.uid)
+                    .collection('transactions')
+                    .where('mrtgBillId', isEqualTo: mrtgBillId)
+                    .where('type', isEqualTo: _transactionType)
+                    .orderBy('date', descending: true)
+                    .get(),
+                builder: ((context, snapshot) {
+                  if (snapshot.hasData) {
+                    if (snapshot.data.docs.length > 0) {
+                      totalPaid = 0;
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: snapshot.data.docs.length,
+                        itemBuilder: (context, index) {
+                          var mrtgTxnMap = snapshot.data.docs[index];
+                          totalPaid +=
+                              int.parse(mrtgTxnMap['paidAmount'].toString());
+
+                          return paymentRow(
+                              mrtgTxnMap: mrtgTxnMap, totalPaid: totalPaid);
+                        },
+                      );
+                    }
+                    return Center(
+                      child: Text(
+                        "No payment captured.",
+                        style: TextStyle(
+                            fontSize: 15, fontWeight: FontWeight.w700),
+                      ),
+                    );
+                  }
+                  return LinearProgressIndicator(
+                    minHeight: 3,
+                  );
+                }),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Container paymentRow({required var mrtgTxnMap, required int totalPaid}) {
+    return Container(
+      padding: EdgeInsets.all(12),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              Constants.dateFormat(mrtgTxnMap['date']),
+            ),
+          ),
+          Expanded(
+            child: Align(
+              alignment: Alignment.center,
+              child: Text(
+                '₹ ' + Constants.cFInt.format(mrtgTxnMap['paidAmount']),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Align(
+              alignment: Alignment.topRight,
+              child: Text(
+                '₹ ' + Constants.cFInt.format(totalPaid),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  AlertDialog deleteMrtgBillAlert() {
     return AlertDialog(
       title: Text('Delete mortgage and all transactions?'),
       content: SingleChildScrollView(
@@ -829,7 +827,7 @@ class _MortgageBillDetailsUiState extends State<MortgageBillDetailsUi> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Add Paid Amount for Mortgage',
+                      'Add Payment for Mortgage Bill',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
@@ -904,7 +902,7 @@ class _MortgageBillDetailsUiState extends State<MortgageBillDetailsUi> {
                       showLoading(context);
                       int uniqueId = DateTime.now().millisecondsSinceEpoch;
 
-                      Map<String, dynamic> mrtgTxnMap = {
+                      Map<String, dynamic> billPaymentMap = {
                         'id': uniqueId,
                         'date': selectedMrtgTxnDate.millisecondsSinceEpoch,
                         'description': customerName + " paid due",
@@ -917,13 +915,23 @@ class _MortgageBillDetailsUiState extends State<MortgageBillDetailsUi> {
                           .doc(UserData.uid)
                           .collection('transactions')
                           .doc(uniqueId.toString())
-                          .set(mrtgTxnMap)
+                          .set(billPaymentMap)
                           .then((value) {
                         FirebaseFirestore.instance
                             .collection('users')
                             .doc(UserData.uid)
                             .collection('mortgageBook')
                             .doc(mrtgBookId.toString())
+                            .update({
+                          "totalPaid":
+                              FieldValue.increment(int.parse(_paidAmount.text))
+                        });
+
+                        FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(UserData.uid)
+                            .collection('mortgageBill')
+                            .doc(mrtgBillId.toString())
                             .update({
                           "totalPaid":
                               FieldValue.increment(int.parse(_paidAmount.text))

@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
-import 'package:jeweller_stockbook/Mortage/createmortgagebook.dart';
-import 'package:jeweller_stockbook/Mortage/mortgagebill.dart';
+import 'package:jeweller_stockbook/Mortage/createMrtgBook.dart';
+import 'package:jeweller_stockbook/Mortage/mrtgBill.dart';
 import 'package:jeweller_stockbook/colors.dart';
 import 'package:jeweller_stockbook/constants.dart';
 import 'package:page_route_transition/page_route_transition.dart';
@@ -36,7 +36,7 @@ class _MortgageUiState extends State<MortgageUi> {
       body: SafeArea(
         child: Column(
           children: [
-            mortgageSearchbar(),
+            mrtgBookSearchbar(),
             SizedBox(
               height: 3,
             ),
@@ -47,7 +47,7 @@ class _MortgageUiState extends State<MortgageUi> {
                   SizedBox(
                     height: 10,
                   ),
-                  mortgageBookList(),
+                  mrtgBookList(),
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.1,
                   ),
@@ -59,10 +59,9 @@ class _MortgageUiState extends State<MortgageUi> {
       ),
       floatingActionButton: CustomFABButton(
         onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => CreateMortgageBookUi())).then(((value) {
+          Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => CreateMrtgBookUi()))
+              .then(((value) {
             if (mounted) {
               setState(() {});
             }
@@ -74,7 +73,7 @@ class _MortgageUiState extends State<MortgageUi> {
     );
   }
 
-  Widget mortgageSearchbar() {
+  Widget mrtgBookSearchbar() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 15),
       child: TextField(
@@ -101,7 +100,7 @@ class _MortgageUiState extends State<MortgageUi> {
     );
   }
 
-  Widget mortgageBookList() {
+  Widget mrtgBookList() {
     return FutureBuilder<dynamic>(
         future: FirebaseFirestore.instance
             .collection('users')
@@ -118,7 +117,7 @@ class _MortgageUiState extends State<MortgageUi> {
                 itemCount: snapshot.data.docs.length,
                 itemBuilder: (context, index) {
                   DocumentSnapshot _mrtgBookMap = snapshot.data.docs[index];
-                  return mortgageBookCard(mrtgBookMap: _mrtgBookMap);
+                  return mrtgBookCard(mrtgBookMap: _mrtgBookMap);
                 },
               );
             }
@@ -155,10 +154,10 @@ class _MortgageUiState extends State<MortgageUi> {
         });
   }
 
-  Widget mortgageBookCard({required var mrtgBookMap}) {
+  Widget mrtgBookCard({required var mrtgBookMap}) {
     return GestureDetector(
       onTap: () {
-        PageRouteTransition.push(context, MortgageBookUI(mrtgBook: mrtgBookMap))
+        PageRouteTransition.push(context, MrtgBillUi(mrtgBook: mrtgBookMap))
             .then((value) => setState(() {}));
       },
       child: Container(
@@ -212,7 +211,7 @@ class _MortgageUiState extends State<MortgageUi> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                  child: MortgageBookStatsCard(
+                  child: mrtgBookStatsCard(
                       label: 'Total Principle',
                       cardColor: Colors.blueGrey.shade500,
                       content: "₹ " +
@@ -224,24 +223,23 @@ class _MortgageUiState extends State<MortgageUi> {
                   width: 5,
                 ),
                 Expanded(
-                  child: MortgageBookStatsCard(
+                  child: mrtgBookStatsCard(
                       label: 'Total Interest',
                       cardColor: Colors.blueGrey.shade700,
                       content: "₹ " +
                           Constants.cFDecimal
-                              .format(mrtgBookMap['totalPrinciple']),
+                              .format(mrtgBookMap['totalInterest']),
                       mrtgBookMap: mrtgBookMap),
                 ),
                 SizedBox(
                   width: 5,
                 ),
                 Expanded(
-                  child: MortgageBookStatsCard(
+                  child: mrtgBookStatsCard(
                       label: 'Total Paid',
                       cardColor: Colors.blueGrey.shade900,
                       content: "₹ " +
-                          Constants.cFDecimal
-                              .format(mrtgBookMap['totalPrinciple']),
+                          Constants.cFDecimal.format(mrtgBookMap['totalPaid']),
                       mrtgBookMap: mrtgBookMap),
                 ),
               ],
@@ -252,8 +250,7 @@ class _MortgageUiState extends State<MortgageUi> {
     );
   }
 
-  Container MortgageBookStatsCard(
-      {final mrtgBookMap, label, cardColor, content}) {
+  Container mrtgBookStatsCard({final mrtgBookMap, label, cardColor, content}) {
     return Container(
       padding: EdgeInsets.all(8),
       decoration: BoxDecoration(

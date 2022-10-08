@@ -1,23 +1,24 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
-import 'package:jeweller_stockbook/Mortage/mortgageDetails.dart';
+import 'package:jeweller_stockbook/Mortage/createMrtgBill.dart';
+import 'package:jeweller_stockbook/Mortage/mrtgBillDetails.dart';
 import 'package:jeweller_stockbook/colors.dart';
 import 'package:jeweller_stockbook/constants.dart';
 import 'package:page_route_transition/page_route_transition.dart';
+import '../components.dart';
 
-class MortgageBookUI extends StatefulWidget {
+class MrtgBillUi extends StatefulWidget {
   final mrtgBook;
-  const MortgageBookUI({super.key, this.mrtgBook});
+  const MrtgBillUi({super.key, this.mrtgBook});
 
   @override
-  State<MortgageBookUI> createState() =>
-      _MortgageBookUIState(mrtgBook: mrtgBook);
+  State<MrtgBillUi> createState() => _MrtgBillUiState(mrtgBook: mrtgBook);
 }
 
-class _MortgageBookUIState extends State<MortgageBookUI> {
+class _MrtgBillUiState extends State<MrtgBillUi> {
   final mrtgBook;
-  _MortgageBookUIState({this.mrtgBook});
+  _MrtgBillUiState({this.mrtgBook});
 
   final _searchKey = TextEditingController();
   List<String> statusList = ['All', 'Active', 'Closed'];
@@ -100,14 +101,14 @@ class _MortgageBookUIState extends State<MortgageBookUI> {
               SizedBox(
                 height: 5,
               ),
-              mortgageSearchbar(),
+              mrtgBillSearchBar(),
               MaterialButton(
                 onPressed: () {
                   showModalBottomSheet<void>(
                       context: context,
                       isDismissible: false,
                       builder: (BuildContext context) {
-                        return filterModal();
+                        return mrtgBillfilterModal();
                       }).then((value) {
                     setState(() {});
                   });
@@ -122,15 +123,38 @@ class _MortgageBookUIState extends State<MortgageBookUI> {
                   )),
                 ),
               ),
-              billList(),
+              mrtgBillList(),
+              SizedBox(
+                height: 100,
+              ),
             ],
           ),
         ),
       ),
+      floatingActionButton: CustomFABButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CreateMrtgBillUi(
+                name: mrtgBook['name'],
+                phone: mrtgBook['phone'],
+                mrtgBookId: mrtgBook['id'],
+              ),
+            ),
+          ).then(((value) {
+            if (mounted) {
+              setState(() {});
+            }
+          }));
+        },
+        icon: Icons.receipt_long,
+        label: '+ Create Mortgage Bill',
+      ),
     );
   }
 
-  Widget mortgageSearchbar() {
+  Widget mrtgBillSearchBar() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 15),
       child: TextField(
@@ -157,7 +181,7 @@ class _MortgageBookUIState extends State<MortgageBookUI> {
     );
   }
 
-  Widget filterModal() {
+  Widget mrtgBillfilterModal() {
     TextStyle headingStyle = TextStyle(
       fontWeight: FontWeight.w600,
       fontSize: 17,
@@ -433,14 +457,13 @@ class _MortgageBookUIState extends State<MortgageBookUI> {
     );
   }
 
-  Widget billList() {
+  Widget mrtgBillList() {
     return FutureBuilder<dynamic>(
         future: FirebaseFirestore.instance
             .collection('users')
             .doc(UserData.uid)
-            .collection("mortgageBook")
-            .doc(mrtgBook['id'].toString())
-            .collection('mortgageBill')
+            .collection("mortgageBill")
+            .where('bookId', isEqualTo: mrtgBook['id'])
             .orderBy('date', descending: true)
             .get(),
         builder: (context, snapshot) {
@@ -458,23 +481,23 @@ class _MortgageBookUIState extends State<MortgageBookUI> {
                   if (_selectedStatus == 'All') {
                     if (_searchKey.text.isEmpty) {
                       dataCounter++;
-                      return billCard(txnMap: _txnMap);
+                      return mrtgBillCard(txnMap: _txnMap);
                     } else if (_txnMap['description']
                         .toLowerCase()
                         .contains(_searchKey.text.toLowerCase())) {
                       dataCounter++;
-                      return billCard(txnMap: _txnMap);
+                      return mrtgBillCard(txnMap: _txnMap);
                     }
                   } else if (_txnMap['status'].toLowerCase() ==
                       _selectedStatus.toLowerCase()) {
                     if (_searchKey.text.isEmpty) {
                       dataCounter++;
-                      return billCard(txnMap: _txnMap);
+                      return mrtgBillCard(txnMap: _txnMap);
                     } else if (_txnMap['description']
                         .toLowerCase()
                         .contains(_searchKey.text.toLowerCase())) {
                       dataCounter++;
-                      return billCard(txnMap: _txnMap);
+                      return mrtgBillCard(txnMap: _txnMap);
                     }
                   }
 
@@ -508,12 +531,12 @@ class _MortgageBookUIState extends State<MortgageBookUI> {
         });
   }
 
-  Widget billCard({required var txnMap}) {
+  Widget mrtgBillCard({required var txnMap}) {
     return GestureDetector(
       onTap: () {
         PageRouteTransition.push(
             context,
-            MortgageBillDetailsUi(
+            MrtgBillDetailsUi(
               mrtgBookId: txnMap['bookId'],
               mrtgBillId: txnMap['id'],
               customerName: mrtgBook['name'],

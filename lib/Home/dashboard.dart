@@ -63,56 +63,54 @@ class _DashboardUiState extends State<DashboardUi> {
           Row(
             children: [
               statsCard(
-                  onPress: () {},
-                  icon: Icons.file_download_outlined,
-                  cardColor: Color.fromARGB(255, 217, 241, 218),
-                  label: 'Mortage',
-                  amount: Text('0')
-
-                  // FutureBuilder<dynamic>(
-                  //   future: FirebaseFirestore.instance
-                  //       .collection('users')
-                  //       .doc(UserData.uid)
-                  //       .collection('mortgage')
-                  //       .get(),
-                  //   builder: ((context, snapshot) {
-                  //     if (snapshot.hasData) {
-                  //       if (snapshot.data.docs.length > 0) {
-                  //         int totalPrincipal = 0;
-                  //         var dataMap = snapshot.data.docs;
-                  //         for (int index = 0;
-                  //             index < snapshot.data.docs.length;
-                  //             index++) {
-                  //           totalPrincipal +=
-                  //               int.parse(dataMap[index]['amount'].toString());
-                  //         }
-                  //         return Text(
-                  //           "₹ " + Constants.cFInt.format(totalPrincipal),
-                  //           style: TextStyle(
-                  //               fontSize: 16, fontWeight: FontWeight.bold),
-                  //         );
-                  //       }
-                  //       return Text(
-                  //         "₹ 0",
-                  //         style: TextStyle(
-                  //             fontSize: 16, fontWeight: FontWeight.bold),
-                  //       );
-                  //     }
-                  //     return Transform.scale(
-                  //       scale: 0.5,
-                  //       child: CircularProgressIndicator(),
-                  //     );
-                  //   }),
-                  // ),
-                  ),
+                onPress: () {},
+                icon: Icons.file_upload_outlined,
+                cardColor: Color.fromARGB(255, 255, 223, 227),
+                label: 'Mortage Principle',
+                amount: FutureBuilder<dynamic>(
+                  future: FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(UserData.uid)
+                      .collection('mortgageBook')
+                      .get(),
+                  builder: ((context, snapshot) {
+                    if (snapshot.hasData) {
+                      if (snapshot.data.docs.length > 0) {
+                        int totalPrinciple = 0;
+                        var dataMap = snapshot.data.docs;
+                        for (int index = 0;
+                            index < snapshot.data.docs.length;
+                            index++) {
+                          totalPrinciple += int.parse(
+                              dataMap[index]['totalPrinciple'].toString());
+                        }
+                        return Text(
+                          "₹ " + Constants.cFInt.format(totalPrinciple),
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        );
+                      }
+                      return Text(
+                        "₹ 0",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      );
+                    }
+                    return Transform.scale(
+                      scale: 0.5,
+                      child: CircularProgressIndicator(),
+                    );
+                  }),
+                ),
+              ),
               SizedBox(
                 width: 10,
               ),
               statsCard(
                 onPress: () {},
-                icon: Icons.file_upload_outlined,
-                cardColor: Color.fromARGB(255, 255, 223, 227),
-                label: 'Sales',
+                icon: Icons.file_download_outlined,
+                cardColor: Color.fromARGB(255, 217, 241, 218),
+                label: 'Mortgage Interest',
                 amount: Text(
                   "0",
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -130,7 +128,7 @@ class _DashboardUiState extends State<DashboardUi> {
                   PageRouteTransition.push(context, LowStockUI());
                 },
                 icon: null,
-                cardColor: Colors.grey.shade200,
+                cardColor: Color.fromARGB(255, 255, 194, 194),
                 label: 'Value of Items',
                 amount: Text(
                   "Low Stocks",
@@ -141,12 +139,14 @@ class _DashboardUiState extends State<DashboardUi> {
                 width: 10,
               ),
               statsCard(
-                onPress: () {},
-                icon: Icons.bar_chart,
-                cardColor: Colors.grey.shade300,
-                label: 'Weekly Sale',
+                onPress: () {
+                  PageRouteTransition.push(context, LowStockUI());
+                },
+                icon: null,
+                cardColor: Color.fromARGB(255, 255, 194, 194),
+                label: 'Mortgage Bills',
                 amount: Text(
-                  "0",
+                  "In Loss",
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),

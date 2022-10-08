@@ -8,18 +8,30 @@ import 'package:page_route_transition/page_route_transition.dart';
 import '../Helper/user.dart';
 import '../colors.dart';
 
-class CreateMortgageUi extends StatefulWidget {
-  const CreateMortgageUi({Key? key}) : super(key: key);
+class CreateMrtgBillUi extends StatefulWidget {
+  final name;
+  final phone;
+  final mrtgBookId;
+  const CreateMrtgBillUi(
+      {Key? key,
+      required this.name,
+      required this.phone,
+      required this.mrtgBookId})
+      : super(key: key);
 
   @override
-  State<CreateMortgageUi> createState() => _CreateMortgageUiState();
+  State<CreateMrtgBillUi> createState() =>
+      _CreateMrtgBillUiState(name: name, phone: phone, mrtgBookId: mrtgBookId);
 }
 
-class _CreateMortgageUiState extends State<CreateMortgageUi> {
+class _CreateMrtgBillUiState extends State<CreateMrtgBillUi> {
+  final name;
+  final phone;
+  final mrtgBookId;
+  _CreateMrtgBillUiState({this.name, this.phone, this.mrtgBookId});
+
   int uniqueId = DateTime.now().millisecondsSinceEpoch;
   final _formKey = GlobalKey<FormState>();
-  final _customerName = new TextEditingController();
-  final _mobile = new TextEditingController();
   final _description = new TextEditingController();
   final _weight = new TextEditingController();
 
@@ -50,8 +62,6 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
   @override
   void dispose() {
     super.dispose();
-    _customerName.dispose();
-    _mobile.dispose();
     _description.dispose();
     _weight.dispose();
     _amount.dispose();
@@ -106,17 +116,17 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Create Mortgage"),
+        title: Text("Create Mortgage Bill"),
       ),
       body: Form(
         key: _formKey,
         child: ListView(
           children: <Widget>[
-            basicItemDetails(),
+            customerDetails(),
             SizedBox(
               height: 10,
             ),
-            otherDetailsTabBar(),
+            billForm(),
             calculationsPart(),
             SizedBox(
               height: 70,
@@ -129,10 +139,9 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
         onPressed: () {
           if (_formKey.currentState!.validate()) {
             showLoading(context);
-            Map<String, dynamic> mortgageMap = {
+            Map<String, dynamic> mrtgBillMap = {
               "id": uniqueId,
-              "customerName": _customerName.text,
-              "mobile": "+91" + _mobile.text,
+              "bookId": mrtgBookId,
               "description": _description.text,
               "weight": double.parse(_weight.text),
               "unit": "GMS",
@@ -149,10 +158,18 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
             FirebaseFirestore.instance
                 .collection('users')
                 .doc(UserData.uid)
-                .collection('mortgage')
+                .collection('mortgageBill')
                 .doc(uniqueId.toString())
-                .set(mortgageMap)
+                .set(mrtgBillMap)
                 .then((value) {
+              FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(UserData.uid)
+                  .collection('mortgageBook')
+                  .doc(mrtgBookId.toString())
+                  .update({
+                'totalPrinciple': FieldValue.increment(int.parse(_amount.text))
+              });
               PageRouteTransition.pop(context);
               PageRouteTransition.pop(context);
             });
@@ -164,92 +181,42 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
     );
   }
 
-  Widget basicItemDetails() {
+  Widget customerDetails() {
     return Container(
-      padding: EdgeInsets.all(12),
+      padding: EdgeInsets.symmetric(horizontal: 12),
       width: double.infinity,
       color: Colors.white,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          TextFormField(
-            controller: _customerName,
-            decoration: InputDecoration(
-              contentPadding: EdgeInsets.symmetric(horizontal: 10),
-              border: OutlineInputBorder(),
-              label: Text("Customer Name"),
-            ),
-            keyboardType: TextInputType.name,
-            textCapitalization: TextCapitalization.words,
-            validator: (value) {
-              return null;
-            },
+          CircleAvatar(
+            // radius: 10,
+            child: Text(name[0]),
           ),
           SizedBox(
-            height: 10,
+            width: 10,
           ),
-          TextFormField(
-            controller: _mobile,
-            decoration: InputDecoration(
-              contentPadding: EdgeInsets.symmetric(horizontal: 10),
-              border: OutlineInputBorder(),
-              label: Text("Customer Mobile"),
-              prefixText: '+91 ',
-            ),
-            keyboardType: TextInputType.phone,
-            validator: (value) {
-              return null;
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget otherDetailsTabBar() {
-    return DefaultTabController(
-      length: 2,
-      initialIndex: 0,
-      child: Column(
-        children: [
-          Container(
-            child: TabBar(
-              labelStyle: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-                letterSpacing: 0.5,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                name,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              unselectedLabelColor: Colors.grey,
-              labelColor: primaryColor,
-              indicatorColor: primaryColor,
-              indicatorSize: TabBarIndicatorSize.label,
-              tabs: [
-                Tab(
-                  text: 'Item',
-                ),
-                Tab(
-                  text: 'Interest',
-                ),
-              ],
-            ),
-          ),
-          Container(
-            height: MediaQuery.of(context).size.height * 0.17,
-            child: TabBarView(
-              children: [
-                itemTabBar(),
-                interestTabBar(),
-              ],
-            ),
+              Text(
+                phone,
+                style: TextStyle(fontSize: 14),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 
-  Widget itemTabBar() {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+  Widget billForm() {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
       child: Column(
         children: [
           TextFormField(
@@ -366,17 +333,9 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
               ),
             ],
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget interestTabBar() {
-    return Container(
-      padding: EdgeInsets.all(12),
-      color: Colors.white,
-      child: ListView(
-        children: [
+          SizedBox(
+            height: 10,
+          ),
           Row(
             children: [
               Expanded(
@@ -414,28 +373,6 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
               ),
               Expanded(
                 child: TextFormField(
-                  onTap: () {
-                    _selectDate(context);
-                  },
-                  readOnly: true,
-                  controller: _date,
-                  decoration: InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                    label: Text("As of Date"),
-                    border: OutlineInputBorder(),
-                  ),
-                  keyboardType: TextInputType.number,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 15,
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: TextFormField(
                   controller: _interestPerMonth,
                   decoration: InputDecoration(
                     hintText: '0.0',
@@ -462,6 +399,28 @@ class _CreateMortgageUiState extends State<CreateMortgageUi> {
                     }
                     return null;
                   },
+                ),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 15,
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  onTap: () {
+                    _selectDate(context);
+                  },
+                  readOnly: true,
+                  controller: _date,
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                    label: Text("As of Date"),
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.number,
                 ),
               ),
               SizedBox(

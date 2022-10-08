@@ -8,19 +8,18 @@ import 'package:page_route_transition/page_route_transition.dart';
 import '../Helper/user.dart';
 import '../colors.dart';
 
-class EditMortgageBillUi extends StatefulWidget {
+class EditMrtgBillUi extends StatefulWidget {
   final mrtgBillMap;
-  const EditMortgageBillUi({Key? key, required this.mrtgBillMap})
-      : super(key: key);
+  const EditMrtgBillUi({Key? key, required this.mrtgBillMap}) : super(key: key);
 
   @override
-  State<EditMortgageBillUi> createState() =>
-      _EditMortgageBillUiState(mrtgBillMap: mrtgBillMap);
+  State<EditMrtgBillUi> createState() =>
+      _EditMrtgBillUiState(mrtgBillMap: mrtgBillMap);
 }
 
-class _EditMortgageBillUiState extends State<EditMortgageBillUi> {
+class _EditMrtgBillUiState extends State<EditMrtgBillUi> {
   final mrtgBillMap;
-  _EditMortgageBillUiState({required this.mrtgBillMap});
+  _EditMrtgBillUiState({required this.mrtgBillMap});
   int uniqueId = DateTime.now().millisecondsSinceEpoch;
   final _formKey = GlobalKey<FormState>();
   final _customerName = new TextEditingController();
@@ -199,7 +198,7 @@ class _EditMortgageBillUiState extends State<EditMortgageBillUi> {
             FirebaseFirestore.instance
                 .collection('users')
                 .doc(UserData.uid)
-                .collection('mortgage')
+                .collection('mortgageBill')
                 .doc(mrtgBillMap['id'].toString())
                 .update(updatedMortgageMap)
                 .then((value) {

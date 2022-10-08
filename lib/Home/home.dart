@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jeweller_stockbook/Home/dashboard.dart';
 import 'package:jeweller_stockbook/Home/items.dart';
 import 'package:jeweller_stockbook/Home/more.dart';
-import 'package:jeweller_stockbook/Home/mortgagebook.dart';
+import 'package:jeweller_stockbook/Home/mrtgBook.dart';
 import 'package:jeweller_stockbook/colors.dart';
 import 'package:jeweller_stockbook/components.dart';
 

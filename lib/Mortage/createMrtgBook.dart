@@ -8,14 +8,14 @@ import 'package:jeweller_stockbook/constants.dart';
 
 import '../colors.dart';
 
-class CreateMortgageBookUi extends StatefulWidget {
-  const CreateMortgageBookUi({super.key});
+class CreateMrtgBookUi extends StatefulWidget {
+  const CreateMrtgBookUi({super.key});
 
   @override
-  State<CreateMortgageBookUi> createState() => _CreateMortgageBookUiState();
+  State<CreateMrtgBookUi> createState() => _CreateMrtgBookUiState();
 }
 
-class _CreateMortgageBookUiState extends State<CreateMortgageBookUi> {
+class _CreateMrtgBookUiState extends State<CreateMrtgBookUi> {
   TextEditingController _searchKey = TextEditingController();
   // List<Contact> Constants.myContacts = [];
   List<Contact> contactsFiltered = [];
