@@ -40,7 +40,6 @@ class _MortgageUiState extends State<MortgageUi> {
             SizedBox(
               height: 3,
             ),
-            // mortgageSortingBar(),
             Expanded(
               child: ListView(
                 children: [
@@ -87,7 +86,7 @@ class _MortgageUiState extends State<MortgageUi> {
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(100),
           ),
-          hintText: 'Search by name',
+          hintText: 'Search by Name',
           hintStyle: TextStyle(
             color: Colors.grey.shade500,
             fontSize: 16,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jeweller_stockbook/colors.dart';
 
 showLoading(BuildContext context) {
   AlertDialog alert = AlertDialog(
@@ -24,9 +25,12 @@ showSnackBar(BuildContext context, String msg) {
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
     content: Text(
       msg,
-      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+      style: TextStyle(
+        color: primaryAccentColor,
+        fontWeight: FontWeight.w600,
+      ),
     ),
-    backgroundColor: Colors.blueGrey,
+    backgroundColor: primaryColor,
   ));
 }
 
@@ -50,6 +54,31 @@ Widget CustomLoading({final indicatorColor}) {
       child: CircularProgressIndicator(
         color: indicatorColor,
       ),
+    ),
+  );
+}
+
+Center PlaceholderText({final text1, text2}) {
+  return Center(
+    child: Column(
+      children: [
+        Text(
+          text1,
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+            color: Colors.grey.shade400,
+          ),
+        ),
+        Text(
+          text2,
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+            color: Colors.grey.shade400,
+          ),
+        ),
+      ],
     ),
   );
 }

@@ -71,7 +71,7 @@ class _EmailRegisterUIState extends State<EmailRegisterUI> {
       SystemUiOverlayStyle.dark.copyWith(
         statusBarIconBrightness: Brightness.dark,
         statusBarColor: Colors.transparent,
-        systemNavigationBarColor: primaryAlternateAccentColor,
+        systemNavigationBarColor: primaryAccentColor,
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
     );
@@ -89,7 +89,7 @@ class _EmailRegisterUIState extends State<EmailRegisterUI> {
               children: [
                 Container(
                   width: double.infinity,
-                  color: primaryAlternateAccentColor,
+                  color: primaryAccentColor,
                   padding: EdgeInsets.only(top: 50, bottom: 10, left: 20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -111,7 +111,7 @@ class _EmailRegisterUIState extends State<EmailRegisterUI> {
                       Text(
                         'Register',
                         style: TextStyle(
-                          color: primaryAlternateColor,
+                          color: primaryColor,
                           fontSize: 40,
                           fontWeight: FontWeight.w700,
                         ),
@@ -188,7 +188,7 @@ class _EmailRegisterUIState extends State<EmailRegisterUI> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(isLoading ? 100 : 10),
         ),
-        color: primaryAlternateColor,
+        color: primaryColor,
         elevation: 0,
         highlightElevation: 0,
         padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),

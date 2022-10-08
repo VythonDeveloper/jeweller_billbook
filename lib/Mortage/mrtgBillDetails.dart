@@ -129,9 +129,21 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
           backgroundColor: Colors.white,
           actions: [
             IconButton(
+              onPressed: () {},
+              icon: Icon(Icons.call),
+            ),
+            IconButton(
+              onPressed: () {},
+              icon: Icon(Icons.share),
+            ),
+            IconButton(
               onPressed: () {
                 PageRouteTransition.push(
-                        context, EditMrtgBillUi(mrtgBillMap: mrtgBillMap))
+                        context,
+                        EditMrtgBillUi(
+                            customerName: customerName,
+                            phone: phone,
+                            mrtgBillMap: mrtgBillMap))
                     .then((value) {
                   fetchMrtgBillDetails();
                 });
@@ -161,7 +173,6 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: FloatingActionButton.extended(
-          heroTag: 'btn3',
           extendedPadding: EdgeInsets.symmetric(horizontal: 50),
           onPressed: () {
             showModalBottomSheet<void>(
@@ -176,17 +187,19 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
-          backgroundColor: Colors.indigo,
+          backgroundColor: primaryColor,
           extendedIconLabelSpacing: 10,
           icon: Icon(
             Icons.add,
-            color: Colors.white,
+            color: primaryAccentColor,
           ),
           label: Text(
             'Payment',
             style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
+              color: primaryAccentColor,
+              fontWeight: FontWeight.w500,
+              fontSize: 16,
+              letterSpacing: 0.5,
             ),
           ),
         ),
@@ -199,6 +212,7 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
       padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -219,17 +233,24 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                   fontSize: 14,
                 ),
               ),
+              SizedBox(
+                height: 10,
+              ),
               GestureDetector(
                 onTap: () {},
                 child: Container(
-                  color: Colors.transparent,
+                  padding: EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    color: primaryColor,
+                  ),
                   child: Row(
                     children: [
                       Text(
                         'View Report',
                         style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          color: Colors.indigo,
+                          fontWeight: FontWeight.w500,
+                          color: primaryAccentColor,
                           fontSize: 15,
                         ),
                       ),
@@ -237,8 +258,8 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                         width: 5,
                       ),
                       Icon(
-                        Icons.arrow_forward_ios_rounded,
-                        color: Colors.indigo,
+                        Icons.view_agenda,
+                        color: primaryAccentColor,
                         size: 15,
                       ),
                     ],
@@ -248,12 +269,13 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
             ],
           ),
           Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
                 'Amount Paid',
                 style: TextStyle(
-                  color: Colors.grey.shade600,
+                  color: textColor,
+                  fontWeight: FontWeight.w500,
                   fontSize: 14,
                 ),
               ),
@@ -261,7 +283,7 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                 "₹ " + Constants.cFInt.format(mrtgBillMap['totalPaid']),
                 style: TextStyle(
                   color: Colors.black,
-                  fontSize: 15,
+                  fontSize: 17,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -276,27 +298,68 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
     return Expanded(
       child: Column(
         children: [
-          SizedBox(
-            height: 50,
-            child: AppBar(
-              bottom: TabBar(
-                labelColor: primaryColor,
-                unselectedLabelColor: Colors.grey,
-                automaticIndicatorColorAdjustment: true,
-                indicatorWeight: 2,
-                labelStyle: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontFamily: 'San',
-                ),
-                indicatorSize: TabBarIndicatorSize.label,
-                indicatorColor: Colors.indigo,
-                tabs: [
-                  Tab(text: "Details"),
-                  Tab(text: "Payment Timeline"),
-                ],
+          // SizedBox(
+          //   height: 50,
+          //   child: Padding(
+          //     padding: EdgeInsets.symmetric(horizontal: 8.0),
+          //     child: AppBar(
+          //       backgroundColor: primaryAccentColor,
+          //       bottom: TabBar(
+          //         splashBorderRadius: BorderRadius.circular(40),
+          //         labelColor: primaryColor,
+          //         unselectedLabelColor: Colors.grey,
+          //         automaticIndicatorColorAdjustment: true,
+          //         indicatorWeight: 2,
+          //         labelStyle: TextStyle(
+          //           fontWeight: FontWeight.w600,
+          //           letterSpacing: 0.5,
+          //           fontSize: 15,
+          //           fontFamily: 'San',
+          //         ),
+          //         indicatorSize: TabBarIndicatorSize.label,
+          //         indicatorColor: primaryColor,
+          //         tabs: [
+          //           Tab(text: "Details"),
+          //           Tab(text: "Payment Timeline"),
+          //         ],
+          //       ),
+          //     ),
+          //   ),
+          // ),
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 10),
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            decoration: BoxDecoration(
+              color: primaryAccentColor,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: TabBar(
+              splashBorderRadius: BorderRadius.circular(40),
+              labelColor: primaryColor,
+              unselectedLabelColor: Colors.blueGrey.shade200,
+              automaticIndicatorColorAdjustment: true,
+              indicatorWeight: 2,
+              labelStyle: TextStyle(
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.5,
+                fontSize: 15,
+                fontFamily: 'San',
               ),
+              unselectedLabelStyle: TextStyle(
+                fontWeight: FontWeight.w500,
+                letterSpacing: 0.5,
+                fontSize: 15,
+                fontFamily: 'San',
+              ),
+              indicatorSize: TabBarIndicatorSize.label,
+              indicatorColor: primaryColor,
+              tabs: [
+                Tab(text: "Details"),
+                Tab(text: "Payment Timeline"),
+              ],
             ),
           ),
+
           Expanded(
             child: TabBarView(
               children: [
@@ -615,11 +678,13 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
 
   Widget paymentTimeline() {
     return Container(
+      padding: EdgeInsets.only(top: 10),
       child: ListView(
         children: [
           Column(
             children: [
               Container(
+                margin: EdgeInsets.symmetric(horizontal: 10),
                 padding: EdgeInsets.symmetric(vertical: 15, horizontal: 12),
                 color: Colors.grey.shade100,
                 child: Row(
@@ -692,17 +757,12 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                         },
                       );
                     }
-                    return Center(
-                      child: Text(
-                        "No payment captured.",
-                        style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.w700),
-                      ),
+                    return PlaceholderText(
+                      text1: "No Payment",
+                      text2: "CAPTURED",
                     );
                   }
-                  return LinearProgressIndicator(
-                    minHeight: 3,
-                  );
+                  return CustomLoading();
                 }),
               ),
             ],
@@ -947,7 +1007,7 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: 15, horizontal: 25),
                     decoration: BoxDecoration(
-                      color: Colors.indigo,
+                      color: primaryColor,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     width: double.infinity,

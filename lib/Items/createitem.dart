@@ -101,7 +101,8 @@ class _CreateItemUiState extends State<CreateItemUi> {
             SizedBox(
               height: 20,
             ),
-            otherDetailsTabBar(),
+            categoryTabBar(),
+            stockTabBar(),
           ],
         ),
       ),
@@ -230,8 +231,8 @@ class _CreateItemUiState extends State<CreateItemUi> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(50),
                     color: _selectedItemType == "Product"
-                        ? Colors.indigo
-                        : Color.fromARGB(255, 220, 226, 255),
+                        ? primaryColor
+                        : primaryAccentColor,
                   ),
                   child: Text(
                     "Product",
@@ -239,7 +240,7 @@ class _CreateItemUiState extends State<CreateItemUi> {
                       fontWeight: FontWeight.w500,
                       color: _selectedItemType == "Product"
                           ? Colors.white
-                          : Colors.indigo,
+                          : primaryColor,
                     ),
                   ),
                 ),
@@ -258,8 +259,8 @@ class _CreateItemUiState extends State<CreateItemUi> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(50),
                     color: _selectedItemType == "Service"
-                        ? Colors.indigo
-                        : Color.fromARGB(255, 220, 226, 255),
+                        ? primaryColor
+                        : primaryAccentColor,
                   ),
                   child: Text(
                     "Service",
@@ -267,7 +268,7 @@ class _CreateItemUiState extends State<CreateItemUi> {
                       fontWeight: FontWeight.w500,
                       color: _selectedItemType == "Service"
                           ? Colors.white
-                          : Colors.indigo,
+                          : primaryColor,
                     ),
                   ),
                 ),
@@ -279,422 +280,368 @@ class _CreateItemUiState extends State<CreateItemUi> {
     );
   }
 
-  Widget otherDetailsTabBar() {
-    return DefaultTabController(
-      length: 2,
-      initialIndex: 0,
-      child: Column(
-        children: [
-          Container(
-            child: TabBar(
-              labelStyle: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-                letterSpacing: 0.5,
-              ),
-              unselectedLabelColor: Colors.grey,
-              labelColor: primaryColor,
-              indicatorColor: primaryColor,
-              indicatorSize: TabBarIndicatorSize.label,
-              tabs: [
-                Tab(
-                  text: "Category",
-                ),
-                Tab(
-                  text: "Stock",
-                ),
-              ],
-            ),
-          ),
-          AnimatedContainer(
-            duration: Duration(milliseconds: 200),
-            // color: Colors.yellow,
-            height: _lowStockToggle.value
-                ? MediaQuery.of(context).size.height * 0.6
-                : MediaQuery.of(context).size.height * 0.35,
-            child: TabBarView(
-              children: <Widget>[
-                categoryTabBar(),
-                stockTabBar(),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget categoryTabBar() {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-      child: Column(
-        children: [
-          SizedBox(
-            height: 10,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text("Select Category"),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 7),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: DropdownButton<String>(
-                  value: _selectedCategory,
-                  isDense: true,
-                  icon: Icon(
-                    Icons.keyboard_arrow_down_rounded,
-                    size: 17,
-                  ),
-                  elevation: 2,
-                  borderRadius: BorderRadius.circular(10),
-                  underline: Container(),
-                  onChanged: (String? value) {
-                    // This is called when the user selects an item.
-                    setState(() {
-                      _selectedCategory = value!;
-                    });
-                  },
-                  items: categoryList
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Padding(
-                        padding: EdgeInsets.only(right: 8.0),
-                        child: Text(
-                          value,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
+    return Column(
+      children: [
+        SizedBox(
+          height: 10,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text("Select Category"),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(8),
               ),
-            ],
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text("Unit"),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 7),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(8),
+              child: DropdownButton<String>(
+                value: _selectedCategory,
+                isDense: true,
+                icon: Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  size: 17,
                 ),
-                child: DropdownButton<String>(
-                  isDense: true,
-                  value: _selectedUnit,
-                  icon: Icon(
-                    Icons.keyboard_arrow_down_rounded,
-                    size: 17,
-                  ),
-                  elevation: 2,
-                  borderRadius: BorderRadius.circular(10),
-                  underline: Container(),
-                  onChanged: (String? value) {
-                    // This is called when the user selects an item.
-                    setState(() {
-                      _selectedUnit = value!;
-                    });
-                  },
-                  items: Constants.unitList
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Padding(
-                        padding: EdgeInsets.only(right: 8.0),
-                        child: Text(
-                          value,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                elevation: 2,
+                borderRadius: BorderRadius.circular(10),
+                underline: Container(),
+                onChanged: (String? value) {
+                  // This is called when the user selects an item.
+                  setState(() {
+                    _selectedCategory = value!;
+                  });
+                },
+                items:
+                    categoryList.map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 8.0),
+                      child: Text(
+                        value,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    );
-                  }).toList(),
-                ),
+                    ),
+                  );
+                }).toList(),
               ),
-            ],
-          ),
-        ],
-      ),
+            ),
+          ],
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text("Unit"),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: DropdownButton<String>(
+                isDense: true,
+                value: _selectedUnit,
+                icon: Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  size: 17,
+                ),
+                elevation: 2,
+                borderRadius: BorderRadius.circular(10),
+                underline: Container(),
+                onChanged: (String? value) {
+                  // This is called when the user selects an item.
+                  setState(() {
+                    _selectedUnit = value!;
+                  });
+                },
+                items: Constants.unitList
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 8.0),
+                      child: Text(
+                        value,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
   Widget stockTabBar() {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: 10,
-          ),
-          Text("Opening Stock"),
-          SizedBox(
-            height: 7,
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: TextFormField(
-                  controller: _openingStockWeight,
-                  decoration: InputDecoration(
-                    hintText: '0.0',
-                    contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                    suffixText: _selectedUnit,
-                    label: Text("Weight"),
-                    border: OutlineInputBorder(),
-                  ),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(
-                        RegExp(r'^\d+\.?\d{0,3}')),
-                  ],
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      _openingStockWeight.text = '0.0';
-                      return 'This is required';
-                    }
-                    if (double.parse(value) < 0.0) {
-                      return 'Keep positive value';
-                    }
-                    return null;
-                  },
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          height: 10,
+        ),
+        Text("Opening Stock"),
+        SizedBox(
+          height: 7,
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: TextFormField(
+                controller: _openingStockWeight,
+                decoration: InputDecoration(
+                  hintText: '0.0',
+                  contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                  suffixText: _selectedUnit,
+                  label: Text("Weight"),
+                  border: OutlineInputBorder(),
                 ),
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              Expanded(
-                child: TextFormField(
-                  controller: _openingStockPiece,
-                  decoration: InputDecoration(
-                    hintText: '0',
-                    contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                    suffixText: "PCS",
-                    label: Text("Piece"),
-                    border: OutlineInputBorder(),
-                  ),
-                  keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      _openingStockPiece.text = '0';
-                      return 'This is required';
-                    }
-                    if (int.parse(value) < 0) {
-                      return 'Keep positive value';
-                    }
-                    return null;
-                  },
-                ),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 15,
-          ),
-          TextFormField(
-            onTap: () {
-              _selectDate(context);
-            },
-            readOnly: true,
-            controller: _date,
-            decoration: InputDecoration(
-              contentPadding: EdgeInsets.symmetric(horizontal: 10),
-              label: Text("As of Date"),
-              border: OutlineInputBorder(),
-            ),
-            keyboardType: TextInputType.number,
-          ),
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                _lowStockToggle.value = !_lowStockToggle.value;
-              });
-            },
-            child: Container(
-              margin: EdgeInsets.only(top: 10),
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              decoration: BoxDecoration(
-                borderRadius: _lowStockToggle.value
-                    ? BorderRadius.only(
-                        topLeft: Radius.circular(10),
-                        topRight: Radius.circular(10),
-                      )
-                    : BorderRadius.circular(10),
-                color: _lowStockToggle.value
-                    ? Color.fromARGB(255, 230, 233, 253)
-                    : Colors.grey.shade100,
-              ),
-              width: double.infinity,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Low Stock Alert",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 15,
-                      color: _lowStockToggle.value
-                          ? Colors.indigo.shade700
-                          : Colors.black,
-                    ),
-                  ),
-                  Transform.scale(
-                    scale: 1.1,
-                    child: Switch(
-                      onChanged: (value) {
-                        setState(() {
-                          _lowStockToggle.value = !_lowStockToggle.value;
-                        });
-                      },
-                      value: _lowStockToggle.value,
-                      activeColor: Colors.indigoAccent,
-                      activeTrackColor: Colors.indigo.shade100,
-                      inactiveThumbColor: Colors.grey,
-                      inactiveTrackColor: Colors.grey.shade700,
-                    ),
-                  ),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,3}')),
                 ],
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    _openingStockWeight.text = '0.0';
+                    return 'This is required';
+                  }
+                  if (double.parse(value) < 0.0) {
+                    return 'Keep positive value';
+                  }
+                  return null;
+                },
               ),
             ),
+            SizedBox(
+              width: 10,
+            ),
+            Expanded(
+              child: TextFormField(
+                controller: _openingStockPiece,
+                decoration: InputDecoration(
+                  hintText: '0',
+                  contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                  suffixText: "PCS",
+                  label: Text("Piece"),
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    _openingStockPiece.text = '0';
+                    return 'This is required';
+                  }
+                  if (int.parse(value) < 0) {
+                    return 'Keep positive value';
+                  }
+                  return null;
+                },
+              ),
+            ),
+          ],
+        ),
+        SizedBox(
+          height: 15,
+        ),
+        TextFormField(
+          onTap: () {
+            _selectDate(context);
+          },
+          readOnly: true,
+          controller: _date,
+          decoration: InputDecoration(
+            contentPadding: EdgeInsets.symmetric(horizontal: 10),
+            label: Text("As of Date"),
+            border: OutlineInputBorder(),
           ),
-          AnimatedSize(
-            duration: Duration(milliseconds: 100),
-            child: ValueListenableBuilder<bool>(
-              valueListenable: _lowStockToggle,
-              builder: ((context, lowStockToggle, child) {
-                return lowStockToggle
-                    ? Container(
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Color.fromARGB(255, 210, 217, 255),
-                          borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(10),
-                            bottomRight: Radius.circular(10),
-                          ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Low Stock Quantity',
-                              style: TextStyle(
-                                letterSpacing: 0.5,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 7,
-                            ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    color: Colors.white,
-                                    child: TextFormField(
-                                      controller: _lowStockWeight,
-                                      decoration: InputDecoration(
-                                        label: Text("Alert Weight"),
-                                        hintText: '0.0',
-                                        contentPadding: EdgeInsets.symmetric(
-                                            horizontal: 10),
-                                        suffixText: _selectedUnit,
-                                        border: OutlineInputBorder(),
-                                      ),
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter.allow(
-                                            RegExp(r'^\d+\.?\d{0,3}')),
-                                      ],
-                                      keyboardType:
-                                          TextInputType.numberWithOptions(
-                                              decimal: true),
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          _lowStockWeight.text = '0.0';
-                                        }
-                                        if (double.parse(value!) < 0.0) {
-                                          return 'Keep positive value';
-                                        }
-                                        return null;
-                                      },
-                                      onChanged: (value) {
-                                        setState(() {});
-                                      },
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Expanded(
-                                  child: Container(
-                                    color: Colors.white,
-                                    child: TextFormField(
-                                      controller: _lowStockPiece,
-                                      decoration: InputDecoration(
-                                        hintText: '0',
-                                        label: Text("Alert Piece"),
-                                        contentPadding: EdgeInsets.symmetric(
-                                            horizontal: 10),
-                                        suffixText: "PCS",
-                                        border: OutlineInputBorder(),
-                                      ),
-                                      keyboardType: TextInputType.number,
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          _lowStockPiece.text = '0';
-                                        }
-                                        if (int.parse(value!) < 0) {
-                                          return 'Keep positive value';
-                                        }
-                                        return null;
-                                      },
-                                      onChanged: (value) {
-                                        setState(() {});
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: 15,
-                            ),
-                            Divider(),
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 10),
-                              child: Text(
-                                'You will be notified when stock goes below ' +
-                                    _lowStockWeight.text +
-                                    ' ' +
-                                    _selectedUnit +
-                                    ' or ' +
-                                    _lowStockPiece.text +
-                                    ' PCS',
-                                textAlign: TextAlign.start,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : Container();
-              }),
+          keyboardType: TextInputType.number,
+        ),
+        GestureDetector(
+          onTap: () {
+            setState(() {
+              _lowStockToggle.value = !_lowStockToggle.value;
+            });
+          },
+          child: Container(
+            margin: EdgeInsets.only(top: 10),
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            decoration: BoxDecoration(
+              borderRadius: _lowStockToggle.value
+                  ? BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(10),
+                    )
+                  : BorderRadius.circular(10),
+              color: _lowStockToggle.value
+                  ? primaryColor.withOpacity(0.3)
+                  : Colors.grey.shade100,
+            ),
+            width: double.infinity,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Low Stock Alert",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                    color: _lowStockToggle.value ? Colors.black : Colors.black,
+                  ),
+                ),
+                Transform.scale(
+                  scale: 1.1,
+                  child: Switch(
+                    onChanged: (value) {
+                      setState(() {
+                        _lowStockToggle.value = !_lowStockToggle.value;
+                      });
+                    },
+                    value: _lowStockToggle.value,
+                    activeColor: primaryColor,
+                    activeTrackColor: primaryAccentColor,
+                    inactiveThumbColor: Colors.grey,
+                    inactiveTrackColor: Colors.grey.shade700,
+                  ),
+                ),
+              ],
             ),
           ),
-          SizedBox(
-            height: 10,
+        ),
+        AnimatedSize(
+          duration: Duration(milliseconds: 100),
+          child: ValueListenableBuilder<bool>(
+            valueListenable: _lowStockToggle,
+            builder: ((context, lowStockToggle, child) {
+              return lowStockToggle
+                  ? Container(
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: primaryAccentColor,
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(10),
+                          bottomRight: Radius.circular(10),
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Low Stock Quantity',
+                            style: TextStyle(
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 7,
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  color: Colors.white,
+                                  child: TextFormField(
+                                    controller: _lowStockWeight,
+                                    decoration: InputDecoration(
+                                      label: Text("Alert Weight"),
+                                      hintText: '0.0',
+                                      contentPadding:
+                                          EdgeInsets.symmetric(horizontal: 10),
+                                      suffixText: _selectedUnit,
+                                      border: OutlineInputBorder(),
+                                    ),
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.allow(
+                                          RegExp(r'^\d+\.?\d{0,3}')),
+                                    ],
+                                    keyboardType:
+                                        TextInputType.numberWithOptions(
+                                            decimal: true),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        _lowStockWeight.text = '0.0';
+                                      }
+                                      if (double.parse(value!) < 0.0) {
+                                        return 'Keep positive value';
+                                      }
+                                      return null;
+                                    },
+                                    onChanged: (value) {
+                                      setState(() {});
+                                    },
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Expanded(
+                                child: Container(
+                                  color: Colors.white,
+                                  child: TextFormField(
+                                    controller: _lowStockPiece,
+                                    decoration: InputDecoration(
+                                      hintText: '0',
+                                      label: Text("Alert Piece"),
+                                      contentPadding:
+                                          EdgeInsets.symmetric(horizontal: 10),
+                                      suffixText: "PCS",
+                                      border: OutlineInputBorder(),
+                                    ),
+                                    keyboardType: TextInputType.number,
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        _lowStockPiece.text = '0';
+                                      }
+                                      if (int.parse(value!) < 0) {
+                                        return 'Keep positive value';
+                                      }
+                                      return null;
+                                    },
+                                    onChanged: (value) {
+                                      setState(() {});
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 15,
+                          ),
+                          Divider(),
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 10),
+                            child: Text(
+                              'You will be notified when stock goes below ' +
+                                  _lowStockWeight.text +
+                                  ' ' +
+                                  _selectedUnit +
+                                  ' or ' +
+                                  _lowStockPiece.text +
+                                  ' PCS',
+                              textAlign: TextAlign.start,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : Container();
+            }),
           ),
-        ],
-      ),
+        ),
+        SizedBox(
+          height: 10,
+        ),
+      ],
     );
   }
 }

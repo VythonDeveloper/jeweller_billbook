@@ -288,14 +288,29 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
         children: [
           SizedBox(
             height: 50,
-            child: AppBar(
-              bottom: TabBar(
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 10),
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              decoration: BoxDecoration(
+                color: primaryAccentColor,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: TabBar(
+                splashBorderRadius: BorderRadius.circular(40),
                 labelColor: primaryColor,
-                unselectedLabelColor: Colors.grey,
+                unselectedLabelColor: Colors.blueGrey.shade200,
                 automaticIndicatorColorAdjustment: true,
                 indicatorWeight: 2,
                 labelStyle: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.5,
+                  fontSize: 15,
+                  fontFamily: 'San',
+                ),
+                unselectedLabelStyle: TextStyle(
                   fontWeight: FontWeight.w500,
+                  letterSpacing: 0.5,
+                  fontSize: 15,
                   fontFamily: 'San',
                 ),
                 indicatorSize: TabBarIndicatorSize.label,
@@ -322,6 +337,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
 
   Widget ItemTimeline() {
     return Container(
+      padding: EdgeInsets.only(top: 10),
       child: ListView(
         children: [
           Column(

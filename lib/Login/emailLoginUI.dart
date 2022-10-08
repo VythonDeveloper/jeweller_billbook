@@ -73,7 +73,7 @@ class _EmailLoginUIState extends State<EmailLoginUI> {
               children: [
                 Container(
                   width: double.infinity,
-                  color: primaryAlternateAccentColor,
+                  color: primaryAccentColor,
                   padding: EdgeInsets.only(top: 50, bottom: 10, left: 20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -95,7 +95,7 @@ class _EmailLoginUIState extends State<EmailLoginUI> {
                       Text(
                         'Log In',
                         style: TextStyle(
-                          color: primaryAlternateColor,
+                          color: primaryColor,
                           fontSize: 40,
                           fontWeight: FontWeight.w700,
                         ),
@@ -159,7 +159,7 @@ class _EmailLoginUIState extends State<EmailLoginUI> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
-        color: primaryAlternateColor,
+        color: primaryColor,
         elevation: 0,
         highlightElevation: 0,
         padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),

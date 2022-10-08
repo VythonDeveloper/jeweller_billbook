@@ -41,7 +41,7 @@ class _DashboardUiState extends State<DashboardUi> {
           ],
         ),
         systemOverlayStyle: SystemUiOverlayStyle(
-          systemNavigationBarColor: primaryAlternateAccentColor,
+          systemNavigationBarColor: primaryAccentColor,
         ),
       ),
       body: SafeArea(
@@ -221,7 +221,7 @@ class _DashboardUiState extends State<DashboardUi> {
                   padding: EdgeInsets.only(bottom: 15, left: 0, top: 15),
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                    color: primaryAlternateColor,
+                    color: primaryColor,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [

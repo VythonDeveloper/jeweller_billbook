@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
+import 'package:jeweller_stockbook/colors.dart';
 import 'package:jeweller_stockbook/components.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 
@@ -54,16 +55,17 @@ class _ItemCategoryUiState extends State<ItemCategoryUi> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            CategoryAppbar(),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15),
-              child: categories(),
-            ),
-          ],
-        ),
+      appBar: AppBar(
+        title: Text('Category'),
+      ),
+      body: Column(
+        children: [
+          CategorySearchbar(),
+          SizedBox(
+            height: 10,
+          ),
+          categories(),
+        ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: CustomFABButton(
@@ -83,45 +85,31 @@ class _ItemCategoryUiState extends State<ItemCategoryUi> {
     );
   }
 
-  Widget CategoryAppbar() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-      child: Row(
-        children: [
-          Text(
-            'Category',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-          ),
-          SizedBox(
-            width: 30,
-          ),
-          Flexible(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: TextField(
-                controller: _searchKey,
-                decoration: InputDecoration(
-                  prefixIcon: Icon(
-                    Icons.search,
-                    color: Colors.blue.shade700,
-                  ),
-                  border: InputBorder.none,
-                  hintText: 'Search by name',
-                  hintStyle: TextStyle(
-                    color: Colors.grey.shade500,
-                    fontSize: 16,
-                  ),
-                ),
-                onChanged: (value) {
-                  setState(() {});
-                },
-              ),
+  Widget CategorySearchbar() {
+    return Flexible(
+      child: Container(
+        decoration: BoxDecoration(
+          color: primaryAccentColor,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: TextField(
+          controller: _searchKey,
+          decoration: InputDecoration(
+            prefixIcon: Icon(
+              Icons.search,
+              color: primaryColor,
+            ),
+            border: InputBorder.none,
+            hintText: 'Search by Name',
+            hintStyle: TextStyle(
+              color: Colors.grey.shade500,
+              fontSize: 16,
             ),
           ),
-        ],
+          onChanged: (value) {
+            setState(() {});
+          },
+        ),
       ),
     );
   }
@@ -140,6 +128,7 @@ class _ItemCategoryUiState extends State<ItemCategoryUi> {
               return ListView.builder(
                   shrinkWrap: true,
                   itemCount: snapshot.data.docs.length,
+                  padding: EdgeInsets.symmetric(horizontal: 10),
                   itemBuilder: (context, index) {
                     String name = snapshot.data.docs[index]['name'];
                     int id = snapshot.data.docs[index]['id'];
@@ -155,10 +144,13 @@ class _ItemCategoryUiState extends State<ItemCategoryUi> {
                     return SizedBox();
                   });
             } else {
-              return Text("No Category");
+              return Padding(
+                padding: EdgeInsets.only(top: 100.0),
+                child: PlaceholderText(text1: "No Category", text2: 'CREATED'),
+              );
             }
           }
-          return CircularProgressIndicator();
+          return CustomLoading();
         });
   }
 
@@ -167,7 +159,7 @@ class _ItemCategoryUiState extends State<ItemCategoryUi> {
       margin: EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        color: Colors.indigo.withOpacity(0.1),
+        color: primaryAccentColor,
       ),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -210,7 +202,7 @@ class _ItemCategoryUiState extends State<ItemCategoryUi> {
             IconButton(
               onPressed: () {},
               icon: CircleAvatar(
-                backgroundColor: Colors.indigo,
+                backgroundColor: primaryColor,
                 radius: 18,
                 child: Icon(
                   Icons.edit,
@@ -320,6 +312,7 @@ class _ItemCategoryUiState extends State<ItemCategoryUi> {
                   controller: _categoryName,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 10),
                     hintText: 'Ex: Gold, Silver',
                     labelText: 'Category Name',
                   ),
@@ -341,7 +334,7 @@ class _ItemCategoryUiState extends State<ItemCategoryUi> {
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: 15, horizontal: 25),
                     decoration: BoxDecoration(
-                      color: Colors.indigo,
+                      color: primaryColor,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     width: double.infinity,

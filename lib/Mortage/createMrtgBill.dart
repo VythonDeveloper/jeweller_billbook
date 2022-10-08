@@ -9,26 +9,26 @@ import '../Helper/user.dart';
 import '../colors.dart';
 
 class CreateMrtgBillUi extends StatefulWidget {
-  final name;
+  final customerName;
   final phone;
   final mrtgBookId;
   const CreateMrtgBillUi(
       {Key? key,
-      required this.name,
+      required this.customerName,
       required this.phone,
       required this.mrtgBookId})
       : super(key: key);
 
   @override
-  State<CreateMrtgBillUi> createState() =>
-      _CreateMrtgBillUiState(name: name, phone: phone, mrtgBookId: mrtgBookId);
+  State<CreateMrtgBillUi> createState() => _CreateMrtgBillUiState(
+      customerName: customerName, phone: phone, mrtgBookId: mrtgBookId);
 }
 
 class _CreateMrtgBillUiState extends State<CreateMrtgBillUi> {
-  final name;
+  final customerName;
   final phone;
   final mrtgBookId;
-  _CreateMrtgBillUiState({this.name, this.phone, this.mrtgBookId});
+  _CreateMrtgBillUiState({this.customerName, this.phone, this.mrtgBookId});
 
   int uniqueId = DateTime.now().millisecondsSinceEpoch;
   final _formKey = GlobalKey<FormState>();
@@ -191,7 +191,7 @@ class _CreateMrtgBillUiState extends State<CreateMrtgBillUi> {
         children: [
           CircleAvatar(
             // radius: 10,
-            child: Text(name[0]),
+            child: Text(customerName[0]),
           ),
           SizedBox(
             width: 10,
@@ -200,7 +200,7 @@ class _CreateMrtgBillUiState extends State<CreateMrtgBillUi> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                name,
+                customerName,
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               Text(

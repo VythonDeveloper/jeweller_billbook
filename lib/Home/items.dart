@@ -46,7 +46,33 @@ class _ItemsUiState extends State<ItemsUi> {
           SizedBox(
             height: 10,
           ),
-          totalWeightList(),
+          Row(
+            children: [
+              Container(
+                height: 40,
+                width: 40,
+                margin: EdgeInsets.only(left: 15),
+                decoration: BoxDecoration(
+                  color: primaryAccentColor,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: primaryColor),
+                ),
+                child: FittedBox(
+                  child: IconButton(
+                    onPressed: () {
+                      PageRouteTransition.push(context, ItemCategoryUi())
+                          .then((value) => setState(() {}));
+                    },
+                    icon: Icon(Icons.add),
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              totalWeightList(),
+            ],
+          ),
           SizedBox(
             height: 10,
           ),
@@ -80,7 +106,7 @@ class _ItemsUiState extends State<ItemsUi> {
         decoration: InputDecoration(
           prefixIcon: Icon(
             Icons.search,
-            color: primaryAlternateColor,
+            color: primaryColor,
           ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(100),
@@ -208,28 +234,11 @@ class _ItemsUiState extends State<ItemsUi> {
             }
 
             return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
+              padding: const EdgeInsets.only(right: 10),
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: primaryAlternateAccentColor,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: primaryColor),
-                      ),
-                      child: IconButton(
-                        onPressed: () {
-                          PageRouteTransition.push(context, ItemCategoryUi())
-                              .then((value) => setState(() {}));
-                        },
-                        icon: Icon(Icons.add),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
                     Row(
                       children: List.generate(
                         totalWeightMap.keys.length,
@@ -247,6 +256,7 @@ class _ItemsUiState extends State<ItemsUi> {
               ),
             );
           }
+          return Text('Create category');
         }
         return LinearProgressIndicator();
       }),
@@ -258,7 +268,7 @@ class _ItemsUiState extends State<ItemsUi> {
       margin: EdgeInsets.only(right: 5),
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: primaryAlternateColor,
+        color: primaryColor,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -345,12 +355,7 @@ class _ItemsUiState extends State<ItemsUi> {
                 },
               );
             }
-            return Center(
-              child: Text(
-                "No Items. Create...",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-              ),
-            );
+            return PlaceholderText(text1: "No Items", text2: 'CREATED');
           }
           return LinearProgressIndicator(
             minHeight: 3,
@@ -369,14 +374,14 @@ class _ItemsUiState extends State<ItemsUi> {
         margin: EdgeInsets.only(bottom: 10, left: 10, right: 10),
         padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         decoration: BoxDecoration(
-          color: primaryAlternateAccentColor,
+          color: primaryAccentColor,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CircleAvatar(
-              backgroundColor: primaryAlternateColor,
+              backgroundColor: primaryColor,
               radius: 18,
               child: Text(
                 itemMap['name'][0],
@@ -578,7 +583,7 @@ class _ItemsUiState extends State<ItemsUi> {
                       margin: EdgeInsets.only(bottom: 10),
                       decoration: BoxDecoration(
                         color: _selectedCategory == categoryName
-                            ? Colors.indigo.withOpacity(0.1)
+                            ? primaryAccentColor
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(10),
                       ),

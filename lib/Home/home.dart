@@ -55,8 +55,8 @@ class _HomePageState extends State<HomePage> {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
       currentIndex: _selectedbottomNavIndex,
-      backgroundColor: primaryAlternateAccentColor,
-      selectedItemColor: primaryAlternateColor,
+      backgroundColor: primaryAccentColor,
+      selectedItemColor: primaryColor,
       unselectedItemColor: Colors.grey.withOpacity(0.5),
       unselectedIconTheme: IconThemeData(
         color: Colors.grey.withOpacity(0.5),

@@ -41,7 +41,7 @@ class _LoginUIState extends State<LoginUI> {
                                   style: TextStyle(
                                     fontSize: 100,
                                     fontWeight: FontWeight.bold,
-                                    color: primaryAlternateAccentColor,
+                                    color: primaryAccentColor,
                                   ),
                                 ),
                                 Text(
@@ -49,7 +49,7 @@ class _LoginUIState extends State<LoginUI> {
                                   style: TextStyle(
                                     fontSize: 50,
                                     fontWeight: FontWeight.bold,
-                                    color: primaryAlternateColor,
+                                    color: primaryColor,
                                   ),
                                 ),
                               ],
@@ -171,7 +171,7 @@ class _LoginUIState extends State<LoginUI> {
                               },
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: primaryAlternateColor,
+                                  color: primaryColor,
                                   borderRadius: BorderRadius.circular(50),
                                 ),
                                 padding: EdgeInsets.symmetric(

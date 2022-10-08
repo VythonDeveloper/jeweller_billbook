@@ -4,26 +4,34 @@ import 'package:flutter/services.dart';
 import 'package:jeweller_stockbook/components.dart';
 import 'package:jeweller_stockbook/constants.dart';
 import 'package:page_route_transition/page_route_transition.dart';
-
 import '../Helper/user.dart';
 import '../colors.dart';
 
 class EditMrtgBillUi extends StatefulWidget {
+  final customerName;
+  final phone;
   final mrtgBillMap;
-  const EditMrtgBillUi({Key? key, required this.mrtgBillMap}) : super(key: key);
+  const EditMrtgBillUi(
+      {Key? key,
+      required this.customerName,
+      required this.phone,
+      this.mrtgBillMap})
+      : super(key: key);
 
   @override
-  State<EditMrtgBillUi> createState() =>
-      _EditMrtgBillUiState(mrtgBillMap: mrtgBillMap);
+  State<EditMrtgBillUi> createState() => _EditMrtgBillUiState(
+      customerName: customerName, phone: phone, mrtgBillMap: mrtgBillMap);
 }
 
 class _EditMrtgBillUiState extends State<EditMrtgBillUi> {
+  final customerName;
+  final phone;
   final mrtgBillMap;
-  _EditMrtgBillUiState({required this.mrtgBillMap});
+  _EditMrtgBillUiState(
+      {required this.customerName, required this.phone, this.mrtgBillMap});
+
   int uniqueId = DateTime.now().millisecondsSinceEpoch;
   final _formKey = GlobalKey<FormState>();
-  final _customerName = new TextEditingController();
-  final _mobile = new TextEditingController();
   final _description = new TextEditingController();
   final _weight = new TextEditingController();
 
@@ -54,8 +62,6 @@ class _EditMrtgBillUiState extends State<EditMrtgBillUi> {
   @override
   void dispose() {
     super.dispose();
-    _customerName.dispose();
-    _mobile.dispose();
     _description.dispose();
     _weight.dispose();
     _amount.dispose();
@@ -66,8 +72,6 @@ class _EditMrtgBillUiState extends State<EditMrtgBillUi> {
   @override
   void initState() {
     super.initState();
-    _customerName.text = mrtgBillMap['customerName'];
-    _mobile.text = mrtgBillMap['mobile'].split("+91")[1];
     _description.text = mrtgBillMap['description'];
     _weight.text = mrtgBillMap['weight'].toString();
     _selectedPurity = mrtgBillMap['purity'];
@@ -135,42 +139,14 @@ class _EditMrtgBillUiState extends State<EditMrtgBillUi> {
         child: ListView(
           padding: EdgeInsets.all(12),
           children: <Widget>[
-            basicItemDetails(),
+            customerDetails(),
             SizedBox(
               height: 10,
             ),
-            otherDetailsTabBar(),
-            Visibility(
-              visible: _calculatedResult['profitLoss'] != 'NA',
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Yor\'re in'),
-                  Text(
-                    _calculatedResult['profitLoss'],
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: _calculatedResult['profitLoss'] == 'Profit'
-                          ? profitColor
-                          : lossColor,
-                      letterSpacing: 0.7,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Divider(),
-            SizedBox(
-              height: 10,
-            ),
-            Text(
-              "Calculations",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-            ),
+            billForm(),
             calculationsPart(),
             SizedBox(
-              height: 200,
+              height: 70,
             )
           ],
         ),
@@ -183,14 +159,12 @@ class _EditMrtgBillUiState extends State<EditMrtgBillUi> {
             FocusScope.of(context).unfocus();
 
             Map<String, dynamic> updatedMortgageMap = {
-              "customerName": _customerName.text,
-              "mobile": "+91" + _mobile.text,
               "description": _description.text,
               "weight": double.parse(_weight.text),
               "purity": _selectedPurity,
               "amount": int.parse(_amount.text),
               "date": selectedDate.millisecondsSinceEpoch,
-              "closingDate": 0,
+              "lastPaymentDate": selectedDate.millisecondsSinceEpoch,
               "interestPerMonth": double.parse(_interestPerMonth.text),
               "status": _selectedMortgageStatus
             };
@@ -202,6 +176,15 @@ class _EditMrtgBillUiState extends State<EditMrtgBillUi> {
                 .doc(mrtgBillMap['id'].toString())
                 .update(updatedMortgageMap)
                 .then((value) {
+              int diffAmount = int.parse(_amount.text) -
+                  int.parse(mrtgBillMap['amount'].toString());
+
+              FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(UserData.uid)
+                  .collection('mortgageBook')
+                  .doc(mrtgBillMap['bookId'].toString())
+                  .update({'totalPrinciple': FieldValue.increment(diffAmount)});
               PageRouteTransition.pop(context);
               PageRouteTransition.pop(context);
             });
@@ -213,90 +196,41 @@ class _EditMrtgBillUiState extends State<EditMrtgBillUi> {
     );
   }
 
-  Widget basicItemDetails() {
+  Widget customerDetails() {
     return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12),
       width: double.infinity,
       color: Colors.white,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          TextFormField(
-            controller: _customerName,
-            decoration: InputDecoration(
-              contentPadding: EdgeInsets.symmetric(horizontal: 10),
-              border: OutlineInputBorder(),
-              label: Text("Customer Name"),
-            ),
-            keyboardType: TextInputType.name,
-            textCapitalization: TextCapitalization.words,
-            validator: (value) {
-              return null;
-            },
+          CircleAvatar(
+            // radius: 10,
+            child: Text(customerName[0]),
           ),
           SizedBox(
-            height: 10,
+            width: 10,
           ),
-          TextFormField(
-            controller: _mobile,
-            decoration: InputDecoration(
-              contentPadding: EdgeInsets.symmetric(horizontal: 10),
-              border: OutlineInputBorder(),
-              label: Text("Customer Mobile"),
-              prefixText: '+91 ',
-            ),
-            keyboardType: TextInputType.phone,
-            validator: (value) {
-              return null;
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget otherDetailsTabBar() {
-    return DefaultTabController(
-      length: 2,
-      initialIndex: 0,
-      child: Column(
-        children: [
-          Container(
-            child: TabBar(
-              labelStyle: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-                letterSpacing: 0.5,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                customerName,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              unselectedLabelColor: Colors.grey,
-              labelColor: primaryColor,
-              indicatorColor: primaryColor,
-              indicatorSize: TabBarIndicatorSize.label,
-              tabs: [
-                Tab(
-                  text: 'Item',
-                ),
-                Tab(
-                  text: 'Interest',
-                ),
-              ],
-            ),
-          ),
-          Container(
-            height: MediaQuery.of(context).size.height * 0.17,
-            child: TabBarView(
-              children: [
-                itemTabBar(),
-                interestTabBar(),
-              ],
-            ),
+              Text(
+                phone,
+                style: TextStyle(fontSize: 14),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 
-  Widget itemTabBar() {
-    return Container(
+  Widget billForm() {
+    return Padding(
       padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
       child: Column(
         children: [
@@ -410,16 +344,6 @@ class _EditMrtgBillUiState extends State<EditMrtgBillUi> {
               ),
             ],
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget interestTabBar() {
-    return Container(
-      color: Colors.white,
-      child: ListView(
-        children: [
           SizedBox(
             height: 10,
           ),
@@ -572,10 +496,44 @@ class _EditMrtgBillUiState extends State<EditMrtgBillUi> {
 
   Widget calculationsPart() {
     return Container(
-      margin: EdgeInsets.only(top: 10),
+      padding: EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Visibility(
+            visible: _calculatedResult['profitLoss'] != 'NA',
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Yor\'re in'),
+                Text(
+                  _calculatedResult['profitLoss'],
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: _calculatedResult['profitLoss'] == 'Profit'
+                        ? profitColor
+                        : lossColor,
+                    letterSpacing: 0.7,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Divider(),
+          SizedBox(
+            height: 10,
+          ),
+          Text(
+            "Calculations",
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 18,
+            ),
+          ),
+          SizedBox(
+            height: 20,
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

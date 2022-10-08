@@ -40,95 +40,101 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        top: false,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                width: double.infinity,
-                color: primaryAccentColor,
-                padding:
-                    EdgeInsets.only(left: 20, right: 20, top: 30, bottom: 10),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        IconButton(
-                          padding: EdgeInsets.zero,
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: Icon(
-                            Icons.arrow_back,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              width: double.infinity,
+              color: primaryAccentColor,
+              padding:
+                  EdgeInsets.only(left: 20, right: 20, top: 30, bottom: 10),
+              child: Column(
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          IconButton(
+                            padding: EdgeInsets.zero,
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            icon: Icon(
+                              Icons.arrow_back,
+                            ),
                           ),
-                        ),
-                        Text(
-                          mrtgBook['name'],
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
+                          Text(
+                            mrtgBook['name'],
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
-                        ),
-                        Text(
-                          mrtgBook['phone'],
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: textColor,
-                            fontWeight: FontWeight.w600,
+                          Text(
+                            mrtgBook['phone'],
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: textColor,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    CircleAvatar(
-                      radius: 18,
-                      backgroundColor: primaryColor,
-                      child: IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.call,
-                          color: primaryAccentColor,
-                          size: 15,
+                        ],
+                      ),
+                      Spacer(),
+                      CircleAvatar(
+                        radius: 18,
+                        backgroundColor: primaryColor,
+                        child: FittedBox(
+                          child: IconButton(
+                            onPressed: () {
+                              showModalBottomSheet<void>(
+                                  context: context,
+                                  isDismissible: false,
+                                  builder: (BuildContext context) {
+                                    return mrtgBillfilterModal();
+                                  }).then((value) {
+                                if (mounted) {
+                                  setState(() {});
+                                }
+                              });
+                            },
+                            icon: Icon(
+                              Icons.filter_list_sharp,
+                              color: primaryAccentColor,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      CircleAvatar(
+                        radius: 18,
+                        backgroundColor: primaryColor,
+                        child: FittedBox(
+                          child: IconButton(
+                            onPressed: () {},
+                            icon: Icon(
+                              Icons.call,
+                              color: primaryAccentColor,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  mrtgBillSearchBar(),
+                ],
               ),
-              SizedBox(
-                height: 5,
-              ),
-              mrtgBillSearchBar(),
-              MaterialButton(
-                onPressed: () {
-                  showModalBottomSheet<void>(
-                      context: context,
-                      isDismissible: false,
-                      builder: (BuildContext context) {
-                        return mrtgBillfilterModal();
-                      }).then((value) {
-                    setState(() {});
-                  });
-                },
-                child: Container(
-                  width: double.infinity,
-                  color: Colors.blueGrey,
-                  child: Center(
-                      child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text("Filter"),
-                  )),
-                ),
-              ),
-              mrtgBillList(),
-              SizedBox(
-                height: 100,
-              ),
-            ],
-          ),
+            ),
+            mrtgBillList(),
+            SizedBox(
+              height: 100,
+            ),
+          ],
         ),
       ),
       floatingActionButton: CustomFABButton(
@@ -137,7 +143,7 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
             context,
             MaterialPageRoute(
               builder: (context) => CreateMrtgBillUi(
-                name: mrtgBook['name'],
+                customerName: mrtgBook['name'],
                 phone: mrtgBook['phone'],
                 mrtgBookId: mrtgBook['id'],
               ),
@@ -155,8 +161,11 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
   }
 
   Widget mrtgBillSearchBar() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 15),
+    return Container(
+      padding: EdgeInsets.only(right: 15),
+      margin: EdgeInsets.only(top: 15),
+      decoration: BoxDecoration(
+          color: Colors.white, borderRadius: BorderRadius.circular(100)),
       child: TextField(
         controller: _searchKey,
         decoration: InputDecoration(
@@ -164,10 +173,7 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
             Icons.search,
             color: primaryColor,
           ),
-          contentPadding: EdgeInsets.symmetric(horizontal: 10),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(100),
-          ),
+          border: InputBorder.none,
           hintText: 'Search by description',
           hintStyle: TextStyle(
             color: Colors.grey.shade500,
@@ -191,16 +197,24 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
         return ListView(
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+              padding: EdgeInsets.symmetric(horizontal: 0, vertical: 10),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: Icon(Icons.close),
+                  ),
                   Text(
                     'Filter Options',
                     style: headingStyle,
                   ),
+                  Spacer(),
                   MaterialButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
                     color: primaryColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5),
@@ -212,6 +226,7 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                         Icon(
                           Icons.done,
                           color: Colors.white,
+                          size: 16,
                         ),
                         SizedBox(
                           width: 8,
@@ -224,6 +239,9 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                         ),
                       ],
                     ),
+                  ),
+                  SizedBox(
+                    width: 10,
                   ),
                 ],
               ),
@@ -272,7 +290,6 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                       Flexible(
                         child: TextField(
                           readOnly: true,
-                          // controller: ,
                           onTap: () {
                             showDateRangePicker(
                               context: context,
@@ -285,42 +302,6 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                                   ),
                                   child: child!,
                                 );
-                                // return Theme(
-                                //   data: Theme.of(context).copyWith(
-                                //     indicatorColor: Colors.white,
-                                //     // colorScheme: ColorScheme.light(
-                                //     //   primary: Colors.yellow,
-                                //     //   onPrimary: primaryColor,
-                                //     //   brightness: Brightness.light,
-                                //     //   onSurface: Colors.green,
-                                //     //   background: Colors.blue,
-                                //     // ),
-                                //     scaffoldBackgroundColor: primaryAccentColor,
-                                //     // primaryColor: primaryColor,
-                                //     iconTheme: IconThemeData(
-                                //       color: Colors.white,
-                                //     ),
-                                //     primaryIconTheme: IconThemeData(
-                                //       color: Colors.white,
-                                //     ),
-                                //     appBarTheme: AppBarTheme(
-                                //       backgroundColor: primaryColor,
-                                //       foregroundColor: Colors.white,
-                                //       actionsIconTheme: IconThemeData(
-                                //         color: Colors.white,
-                                //       ),
-                                //       iconTheme: IconThemeData(
-                                //         color: Colors.white,
-                                //       ),
-                                //     ),
-                                //     textButtonTheme: TextButtonThemeData(
-                                //         // style: TextButton.styleFrom(
-                                //         //   backgroundColor: primaryColor,
-                                //         // ),
-                                //         ),
-                                //   ),
-                                //   child: child!,
-                                // );
                               }),
                             );
                           },
@@ -339,7 +320,6 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                       Flexible(
                         child: TextField(
                           readOnly: true,
-                          // controller: ,
                           onTap: () {
                             showDateRangePicker(
                               context: context,
@@ -474,6 +454,7 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
               return ListView.builder(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.only(top: 10),
                 itemCount: snapshot.data.docs.length,
                 itemBuilder: (context, index) {
                   loopCounter += 1;
@@ -518,16 +499,12 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                 },
               );
             }
-            return Center(
-              child: Text(
-                "No Bill. Create...",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-              ),
+            return Padding(
+              padding: EdgeInsets.only(top: 100),
+              child: PlaceholderText(text1: 'No Bill', text2: 'CREATED'),
             );
           }
-          return LinearProgressIndicator(
-            minHeight: 3,
-          );
+          return CustomLoading();
         });
   }
 
@@ -574,18 +551,35 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
               child: Align(
                 alignment: Alignment.center,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(txnMap['status']),
+                    Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 1),
+                      decoration: BoxDecoration(
+                        color: txnMap['status'] == 'Active'
+                            ? Colors.blue.shade700
+                            : Colors.black,
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                      child: Text(
+                        txnMap['status'],
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
                     SizedBox(
                       height: 5,
                     ),
                     Text(
                       "Total Due",
                       style: TextStyle(
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w700,
                         color: primaryColor,
-                        fontSize: 13,
+                        fontSize: 14,
                       ),
                     ),
                     Text(
@@ -608,6 +602,10 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                   children: [
                     Text(
                       "In Profit",
+                      style: TextStyle(
+                        color: profitColor,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     SizedBox(
                       height: 5,
@@ -615,9 +613,9 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                     Text(
                       "Valuation",
                       style: TextStyle(
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w700,
                         color: primaryColor,
-                        fontSize: 13,
+                        fontSize: 14,
                       ),
                     ),
                     Text(
