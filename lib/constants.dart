@@ -9,6 +9,12 @@ class Constants {
     return date;
   }
 
+  static String dateTimeFormat(millisecond) {
+    var dt = DateTime.fromMillisecondsSinceEpoch(millisecond);
+    var date = DateFormat('dd MMM, yyyy hh:mm a').format(dt);
+    return date;
+  }
+
   static List<String> unitList = ['GMS', 'KGMS', 'PCS'];
   static double gold18KDecimal = 0.85;
   static double gold22KDecimal = 0.955;

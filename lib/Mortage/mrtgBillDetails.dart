@@ -703,7 +703,7 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                       child: Align(
                         alignment: Alignment.center,
                         child: Text(
-                          'Paid',
+                          'Total Paid',
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
@@ -716,7 +716,7 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                       child: Align(
                         alignment: Alignment.topRight,
                         child: Text(
-                          'Total Paid',
+                          '#',
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
@@ -743,17 +743,13 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                 builder: ((context, snapshot) {
                   if (snapshot.hasData) {
                     if (snapshot.data.docs.length > 0) {
-                      totalPaid = 0;
                       return ListView.builder(
                         shrinkWrap: true,
                         itemCount: snapshot.data.docs.length,
                         itemBuilder: (context, index) {
                           var mrtgTxnMap = snapshot.data.docs[index];
-                          totalPaid +=
-                              int.parse(mrtgTxnMap['paidAmount'].toString());
 
-                          return paymentRow(
-                              mrtgTxnMap: mrtgTxnMap, totalPaid: totalPaid);
+                          return paymentRow(mrtgTxnMap: mrtgTxnMap);
                         },
                       );
                     }
@@ -772,14 +768,14 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
     );
   }
 
-  Container paymentRow({required var mrtgTxnMap, required int totalPaid}) {
+  Container paymentRow({required var mrtgTxnMap}) {
     return Container(
       padding: EdgeInsets.all(12),
       child: Row(
         children: [
           Expanded(
             child: Text(
-              Constants.dateFormat(mrtgTxnMap['date']),
+              Constants.dateTimeFormat(mrtgTxnMap['date']),
             ),
           ),
           Expanded(
@@ -788,7 +784,9 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
               child: Text(
                 '₹ ' + Constants.cFInt.format(mrtgTxnMap['paidAmount']),
                 style: TextStyle(
+                  fontSize: 14,
                   fontWeight: FontWeight.bold,
+                  color: primaryColor,
                 ),
               ),
             ),
@@ -796,10 +794,21 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
           Expanded(
             child: Align(
               alignment: Alignment.topRight,
-              child: Text(
-                '₹ ' + Constants.cFInt.format(totalPaid),
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
+              child: IconButton(
+                onPressed: () {
+                  showDialog<void>(
+                    context: context,
+                    barrierDismissible: false, // user must tap button!
+                    builder: (BuildContext context) {
+                      return deleteBillPaymentAlert(
+                          txnId: mrtgTxnMap['id'],
+                          paidAmount: mrtgTxnMap['paidAmount']);
+                    },
+                  );
+                },
+                icon: Icon(
+                  Icons.delete,
+                  color: Colors.red,
                 ),
               ),
             ),
@@ -834,10 +843,23 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
             await FirebaseFirestore.instance
                 .collection('users')
                 .doc(UserData.uid)
-                .collection('mortgage')
+                .collection('mortgageBill')
                 .doc(mrtgBillMap['id'].toString())
                 .delete()
                 .then((value) {
+              FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(UserData.uid)
+                  .collection('mortgageBook')
+                  .doc(mrtgBillMap['bookId'].toString())
+                  .update({
+                'totalPrinciple': FieldValue.increment(
+                  -int.parse(mrtgBillMap['amount'].toString()),
+                ),
+                'totalPaid': FieldValue.increment(
+                  -int.parse(mrtgBillMap['totalPaid'].toString()),
+                )
+              });
               FirebaseFirestore.instance
                   .collection('users')
                   .doc(UserData.uid)
@@ -861,6 +883,60 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
               PageRouteTransition.pop(context);
               PageRouteTransition.pop(context);
             });
+          },
+        ),
+      ],
+    );
+  }
+
+  AlertDialog deleteBillPaymentAlert(
+      {required int txnId, required int paidAmount}) {
+    return AlertDialog(
+      title: Text('Delete transaction and all transactions?'),
+      content: SingleChildScrollView(
+        child: Text("Deleting transaction will effect Total Paid!"),
+      ),
+      actions: <Widget>[
+        TextButton(
+          child: const Text(
+            'Cancel',
+            style: TextStyle(color: Colors.red),
+          ),
+          onPressed: () {
+            PageRouteTransition.pop(context);
+          },
+        ),
+        TextButton(
+          child: const Text('Approve'),
+          onPressed: () async {
+            showLoading(context);
+
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(UserData.uid)
+                .collection('transactions')
+                .doc(txnId.toString())
+                .delete()
+                .then((value) {
+              FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(UserData.uid)
+                  .collection('mortgageBook')
+                  .doc(mrtgBookId.toString())
+                  .update({"totalPaid": FieldValue.increment(-paidAmount)});
+
+              FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(UserData.uid)
+                  .collection('mortgageBill')
+                  .doc(mrtgBillId.toString())
+                  .update({"totalPaid": FieldValue.increment(-paidAmount)});
+              mrtgBillMap['totalPaid'] -= paidAmount;
+
+              PageRouteTransition.pop(context);
+              PageRouteTransition.pop(context);
+            });
+            setState(() {});
           },
         ),
       ],

@@ -4,7 +4,6 @@ import 'package:jeweller_stockbook/colors.dart';
 import 'package:jeweller_stockbook/components.dart';
 import 'package:jeweller_stockbook/Helper/auth.dart';
 import 'package:jeweller_stockbook/constants.dart';
-import 'package:page_route_transition/page_route_transition.dart';
 
 import '../Helper/user.dart';
 
