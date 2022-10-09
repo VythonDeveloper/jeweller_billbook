@@ -17,7 +17,7 @@ class CreateMrtgBookUi extends StatefulWidget {
 
 class _CreateMrtgBookUiState extends State<CreateMrtgBookUi> {
   TextEditingController _searchKey = TextEditingController();
-  // List<Contact> Constants.myContacts = [];
+
   List<Contact> contactsFiltered = [];
   bool isLoading = false;
 

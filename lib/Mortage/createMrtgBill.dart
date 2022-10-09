@@ -183,14 +183,14 @@ class _CreateMrtgBillUiState extends State<CreateMrtgBillUi> {
 
   Widget customerDetails() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12),
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       width: double.infinity,
       color: Colors.white,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           CircleAvatar(
-            // radius: 10,
+            backgroundColor: primaryColor,
             child: Text(customerName[0]),
           ),
           SizedBox(

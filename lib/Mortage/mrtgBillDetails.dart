@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_share/flutter_share.dart';
 import 'package:jeweller_stockbook/Mortage/editMrtgBill.dart';
 import 'package:jeweller_stockbook/colors.dart';
 import 'package:jeweller_stockbook/components.dart';
 import 'package:jeweller_stockbook/constants.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 
+import '../Helper/pdf_invoice_api.dart';
 import '../Helper/user.dart';
 
 class MrtgBillDetailsUi extends StatefulWidget {
@@ -133,8 +135,15 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
               icon: Icon(Icons.call),
             ),
             IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.share),
+              onPressed: () async {
+                final pdfFile = await PdfInvoiceApi.generate(
+                    action: "Share", dataMap: {'': ''});
+                PdfInvoiceApi.shareFile(pdfFile);
+              },
+              icon: Icon(
+                Icons.whatsapp,
+                color: profitColor,
+              ),
             ),
             IconButton(
               onPressed: () {
@@ -237,7 +246,11 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                 height: 10,
               ),
               GestureDetector(
-                onTap: () {},
+                onTap: () async {
+                  final pdfFile = await PdfInvoiceApi.generate(
+                      action: "View", dataMap: {'': ''});
+                  PdfInvoiceApi.openFile(pdfFile);
+                },
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 14, vertical: 5),
                   decoration: BoxDecoration(
@@ -258,7 +271,7 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                         width: 5,
                       ),
                       Icon(
-                        Icons.view_agenda,
+                        Icons.picture_as_pdf_outlined,
                         color: primaryAccentColor,
                         size: 15,
                       ),

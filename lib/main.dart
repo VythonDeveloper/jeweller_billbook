@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorSchemeSeed: primaryColor,
         scaffoldBackgroundColor: Colors.white,
-        fontFamily: 'San',
+        // fontFamily: 'San',
         bottomNavigationBarTheme: BottomNavigationBarThemeData(
           backgroundColor: primaryAccentColor,
         ),

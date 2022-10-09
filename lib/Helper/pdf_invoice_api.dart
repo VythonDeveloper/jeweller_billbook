@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/services.dart';
+import 'package:flutter_share/flutter_share.dart';
 import 'package:intl/intl.dart';
 import 'package:number_to_words/number_to_words.dart';
 import 'package:open_file/open_file.dart';
@@ -9,38 +10,46 @@ import 'package:pdf/widgets.dart';
 
 class PdfInvoiceApi {
   static var dateFormat = new DateFormat('MMMM d, yyyy HH:mm');
-  static var rideDetails;
-  static Future<File> generate(var rideDetails) async {
-    final ByteData companyLogoBytes =
-        await rootBundle.load('./lib/assets/images/icon.png');
-    final Uint8List companyLogo = companyLogoBytes.buffer.asUint8List();
+  static var dataMap;
+  static Future<File> generate(
+      {required String action, required Map<String, dynamic> dataMap}) async {
+    // final ByteData companyLogoBytes =
+    //     await rootBundle.load('./lib/assets/images/icon.png');
+    // final Uint8List companyLogo = companyLogoBytes.buffer.asUint8List();
 
-    final ByteData authSignBytes =
-        await rootBundle.load('./lib/assets/images/authsign.png');
-    final Uint8List authSign = authSignBytes.buffer.asUint8List();
+    // final ByteData authSignBytes =
+    //     await rootBundle.load('./lib/assets/images/authsign.png');
+    // final Uint8List authSign = authSignBytes.buffer.asUint8List();
 
-    PdfInvoiceApi.rideDetails = rideDetails;
+    PdfInvoiceApi.dataMap = dataMap;
     final pdf = Document();
 
     pdf.addPage(MultiPage(
       pageFormat: PdfPageFormat.a4,
       margin: EdgeInsets.symmetric(vertical: 20, horizontal: 50),
       build: (context) => [
-        buildHeader(companyLogo),
-        buildInvoiceDetails(),
-        buildInvoiceMatter(),
-        buildOtherInfo(authSign),
+        Text(
+          'text',
+        ),
       ],
       // footer: (context) => buildFooter(),
     ));
-    return saveDocument(
-        name: 'Invoice_' + rideDetails['id'] + '.pdf', pdf: pdf);
+
+    return action == "View"
+        ? saveDocumentForView(
+            name: 'Invoice_' +
+                DateTime.now().millisecondsSinceEpoch.toString() +
+                '.pdf',
+            pdf: pdf)
+        : saveDocumentForShare(
+            name: 'Invoice_' +
+                DateTime.now().millisecondsSinceEpoch.toString() +
+                '.pdf',
+            pdf: pdf);
   }
 
-  static Future<File> saveDocument({
-    required String name,
-    required Document pdf,
-  }) async {
+  static Future<File> saveDocumentForView(
+      {required String name, required Document pdf}) async {
     final bytes = await pdf.save();
     final dir = await getApplicationDocumentsDirectory();
     final file = File('${dir.path}/$name');
@@ -48,9 +57,31 @@ class PdfInvoiceApi {
     return file;
   }
 
-  static Future openFile(File file) async {
+  static Future<File> saveDocumentForShare(
+      {required String name, required Document pdf}) async {
+    final bytes = await pdf.save();
+    final dir = await getExternalStorageDirectory();
+    final file = File('${dir!.path}/$name');
+    await file.writeAsBytes(bytes);
+    return file;
+  }
+
+  static Future<void> openFile(File file) async {
+    print(file.path);
     final url = file.path;
     await OpenFile.open(url);
+  }
+
+  static Future<void> shareFile(File file) async {
+    final url = file.path;
+    if (url.isNotEmpty) {
+      await FlutterShare.shareFile(
+        title: 'Share',
+        text: 'Sharing from StockBook',
+        chooserTitle: 'Chooser title',
+        filePath: url,
+      );
+    }
   }
 
   static Widget buildHeader(companyLogo) => Column(
@@ -102,10 +133,10 @@ class PdfInvoiceApi {
         children: [
           Table.fromTextArray(
             headers: [
-              'Invoice Id: ' + rideDetails['id'].toString(),
+              'Invoice Id: ' + dataMap['id'].toString(),
               'Invoice Date: ' +
-                  dateFormat.format(DateTime.fromMillisecondsSinceEpoch(
-                      rideDetails['bookedOn'])),
+                  dateFormat.format(
+                      DateTime.fromMillisecondsSinceEpoch(dataMap['bookedOn'])),
             ],
             data: [],
             border: null,
@@ -120,9 +151,9 @@ class PdfInvoiceApi {
           SizedBox(height: 0.5 * PdfPageFormat.cm),
           buildText(title: "Bill To", value: ""),
           SizedBox(height: 0.3 * PdfPageFormat.cm),
-          Text(rideDetails['customerName'],
+          Text(dataMap['customerName'],
               style: TextStyle(fontWeight: FontWeight.bold)),
-          Text(rideDetails['customerMobile']),
+          Text(dataMap['customerMobile']),
           Divider()
         ],
       );
@@ -167,7 +198,7 @@ class PdfInvoiceApi {
                     height: 10,
                   ),
                   Text(
-                    rideDetails['pickAddress'],
+                    dataMap['pickAddress'],
                     style: TextStyle(
                       color: PdfColor.fromHex('#050505'),
                     ),
@@ -217,7 +248,7 @@ class PdfInvoiceApi {
                     height: 10,
                   ),
                   Text(
-                    rideDetails['dropAddress'],
+                    dataMap['dropAddress'],
                     style: TextStyle(
                       color: PdfColor.fromHex('#050505'),
                     ),
@@ -261,7 +292,7 @@ class PdfInvoiceApi {
                       height: 5,
                     ),
                     Text(
-                      rideDetails['distance'],
+                      dataMap['distance'],
                       style: TextStyle(
                         fontSize: 15,
                         color: PdfColor.fromHex('#0D47A1'),
@@ -296,7 +327,7 @@ class PdfInvoiceApi {
                       height: 5,
                     ),
                     Text(
-                      rideDetails['transitTime'],
+                      dataMap['transitTime'],
                       style: TextStyle(
                         fontSize: 15,
                         color: PdfColor.fromHex('#FF6F00'),
@@ -360,7 +391,7 @@ class PdfInvoiceApi {
                 ),
               ),
               TextSpan(
-                text: rideDetails['driverName'],
+                text: dataMap['driverName'],
                 style: TextStyle(
                   color: PdfColor.fromHex('#808080'),
                   fontSize: 15,
@@ -380,11 +411,11 @@ class PdfInvoiceApi {
                 ),
               ),
               TextSpan(
-                text: rideDetails['vehicleType'] +
+                text: dataMap['vehicleType'] +
                     ', ' +
-                    rideDetails['vehicleName'] +
+                    dataMap['vehicleName'] +
                     ', ' +
-                    rideDetails['vehicleNumber'],
+                    dataMap['vehicleNumber'],
                 style: TextStyle(
                   color: PdfColor.fromHex('#808080'),
                   fontSize: 15,
@@ -432,7 +463,7 @@ class PdfInvoiceApi {
                   NumberToWord()
                           .convert(
                             'en-in',
-                            rideDetails['cost'],
+                            dataMap['cost'],
                           )
                           .toUpperCase() +
                       "RUPEES",
@@ -463,7 +494,7 @@ class PdfInvoiceApi {
             //         child: BarcodeWidget(
             //           barcode: Barcode.qrCode(),
             //           data: "https://aryagold.co.in/orderInvoice?orderId=" +
-            //               rideDetails['id'],
+            //               dataMap['id'],
             //         ),
             //       ),
             //       SizedBox(height: 0.3 * PdfPageFormat.cm),

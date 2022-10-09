@@ -46,32 +46,35 @@ class _ItemsUiState extends State<ItemsUi> {
           SizedBox(
             height: 10,
           ),
-          Row(
-            children: [
-              Container(
-                height: 40,
-                width: 40,
-                margin: EdgeInsets.only(left: 15),
-                decoration: BoxDecoration(
-                  color: primaryAccentColor,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: primaryColor),
-                ),
-                child: FittedBox(
-                  child: IconButton(
-                    onPressed: () {
-                      PageRouteTransition.push(context, ItemCategoryUi())
-                          .then((value) => setState(() {}));
-                    },
-                    icon: Icon(Icons.add),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                Container(
+                  height: 40,
+                  width: 40,
+                  margin: EdgeInsets.only(left: 15),
+                  decoration: BoxDecoration(
+                    color: primaryAccentColor,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: primaryColor),
+                  ),
+                  child: FittedBox(
+                    child: IconButton(
+                      onPressed: () {
+                        PageRouteTransition.push(context, ItemCategoryUi())
+                            .then((value) => setState(() {}));
+                      },
+                      icon: Icon(Icons.add),
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              totalWeightList(),
-            ],
+                SizedBox(
+                  width: 10,
+                ),
+                totalWeightList(),
+              ],
+            ),
           ),
           SizedBox(
             height: 10,
@@ -232,26 +235,18 @@ class _ItemsUiState extends State<ItemsUi> {
                     itemMap['leftStockWeight'];
               }
             }
-
             return Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    Row(
-                      children: List.generate(
-                        totalWeightMap.keys.length,
-                        (index) {
-                          String key = totalWeightMap.keys.elementAt(index);
-                          return totalWeightCard(
-                            key: key,
-                            totalWeight: totalWeightMap[key],
-                          );
-                        },
-                      ),
-                    ),
-                  ],
+              padding: EdgeInsets.only(right: 10),
+              child: Row(
+                children: List.generate(
+                  totalWeightMap.keys.length,
+                  (index) {
+                    String key = totalWeightMap.keys.elementAt(index);
+                    return totalWeightCard(
+                      key: key,
+                      totalWeight: totalWeightMap[key],
+                    );
+                  },
                 ),
               ),
             );
