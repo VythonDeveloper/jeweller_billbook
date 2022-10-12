@@ -22,6 +22,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
   _ItemDetailsUIState({this.itemId});
   final _formKey1 = GlobalKey<FormState>();
   final _formKey2 = GlobalKey<FormState>();
+  final _formKey3 = GlobalKey<FormState>();
   final _addStockWeight = TextEditingController();
   final _addStockPiece = TextEditingController();
   final _addStockRemark = new TextEditingController();
@@ -29,6 +30,11 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
   final _reduceStockWeight = TextEditingController();
   final _reduceStockPiece = TextEditingController();
   final _transactionType = "StockTransaction";
+  final _editStockRemark = new TextEditingController();
+  final _editStockWeight = new TextEditingController();
+  final _editStockPiece = new TextEditingController();
+  double finalStockWeight = 0.0;
+  double finalStockPiece = 0.0;
 
   @override
   void dispose() {
@@ -39,6 +45,9 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
     _reduceStockRemark.dispose();
     _reduceStockWeight.dispose();
     _reduceStockPiece.dispose();
+    _editStockRemark.dispose();
+    _editStockWeight.dispose();
+    _editStockPiece.dispose();
   }
 
   Map<String, dynamic> itemMap = {
@@ -51,7 +60,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
     'openingStockWeight': 0.0,
     'openingStockPiece': 0,
     'leftStockWeight': 0.0,
-    'leftStockPiece': 0,
+    'leftStockPiece': 0.0,
     'date': '',
     'lowStockWeight': 0.0,
     'lowStockPiece': 0
@@ -405,6 +414,10 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                 builder: ((context, snapshot) {
                   if (snapshot.hasData) {
                     if (snapshot.data.docs.length > 0) {
+                      finalStockPiece =
+                          double.parse(itemMap['leftStockPiece'].toString());
+                      finalStockWeight =
+                          double.parse(itemMap['leftStockWeight'].toString());
                       return ListView.builder(
                         shrinkWrap: true,
                         itemCount: snapshot.data.docs.length,
@@ -434,50 +447,86 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
     );
   }
 
-  Container TimelineCard({required var stkTxnMap}) {
-    String change = stkTxnMap['change'].split("#")[0] +
-        '\n' +
-        stkTxnMap['change'].split("#")[1];
-    String finalStock = stkTxnMap['finalStockWeight'].toStringAsFixed(3) +
-        ' ' +
-        stkTxnMap['unit'] +
-        '\n' +
-        stkTxnMap['finalStockPiece'].toString() +
-        " PCS";
+  Widget TimelineCard({required var stkTxnMap}) {
+    bool _isProfit = !(stkTxnMap['activity'] == "Reduce Stock");
+    double leftStockWeight = finalStockWeight;
+    double leftStockPiece = finalStockPiece;
 
-    bool _isProfit = stkTxnMap['change'].toString().contains('+');
-    return Container(
-      padding: EdgeInsets.all(12),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    if (_isProfit) {
+      finalStockWeight = (finalStockWeight - stkTxnMap['changeWeight']);
+      finalStockPiece = finalStockPiece - stkTxnMap['changePiece'];
+    } else {
+      finalStockWeight = (finalStockWeight + stkTxnMap['changeWeight']);
+      finalStockPiece = finalStockPiece + stkTxnMap['changePiece'];
+    }
+    return GestureDetector(
+      onTap: () {
+        // showModalBottomSheet<void>(
+        //   context: context,
+        //   isScrollControlled: true,
+        //   builder: (BuildContext context) {
+        //     return editStockTransactionModal(stkTxnMap: stkTxnMap);
+        //   },
+        // );
+      },
+      child: Container(
+        padding: EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              stkTxnMap['remark'].isEmpty ? "NA" : stkTxnMap['remark'],
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+            Row(
               children: [
-                Text(
-                  stkTxnMap['activity'],
-                  style: TextStyle(
-                    color: _isProfit ? profitColor : lossColor,
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        stkTxnMap['activity'],
+                        style: TextStyle(
+                          color: _isProfit ? profitColor : lossColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(Constants.dateFormat(stkTxnMap['date'])),
+                    ],
                   ),
                 ),
-                Text(Constants.dateFormat(stkTxnMap['date'])),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text((_isProfit ? '+ ' : '- ') +
+                          stkTxnMap['changeWeight'].toStringAsFixed(3) +
+                          " " +
+                          stkTxnMap['unit']),
+                      Text((_isProfit ? '+ ' : '- ') +
+                          stkTxnMap['changePiece'].toString() +
+                          " PCS"),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.topRight,
+                    child: Text(
+                      leftStockWeight.toStringAsFixed(3) +
+                          " " +
+                          stkTxnMap['unit'] +
+                          '\n' +
+                          leftStockPiece.toStringAsFixed(0) +
+                          " PCS",
+                      textAlign: TextAlign.end,
+                    ),
+                  ),
+                ),
               ],
             ),
-          ),
-          Expanded(
-            child: Align(alignment: Alignment.center, child: Text(change)),
-          ),
-          Expanded(
-            child: Align(
-              alignment: Alignment.topRight,
-              child: Text(
-                finalStock,
-                textAlign: TextAlign.end,
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -830,6 +879,22 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 15),
                 child: TextFormField(
+                  controller: _reduceStockRemark,
+                  autofocus: true,
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                    border: OutlineInputBorder(),
+                    hintText: 'Add remark',
+                    labelText: 'Remark',
+                  ),
+                  keyboardType: TextInputType.text,
+                  textCapitalization: TextCapitalization.words,
+                ),
+              ),
+              SizedBox(height: 10),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 15),
+                child: TextFormField(
                   controller: _reduceStockWeight,
                   decoration: InputDecoration(
                       contentPadding: EdgeInsets.symmetric(horizontal: 10),
@@ -909,6 +974,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                 'itemCategory': itemMap['category'],
                 'itemId': itemMap['id'],
                 'unit': itemMap['unit'],
+                'remark': _reduceStockRemark.text,
                 'change': '- ' +
                     double.parse(_reduceStockWeight.text).toStringAsFixed(3) +
                     ' ' +
@@ -942,6 +1008,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                   'leftStockWeight': stkTxnMap['finalStockWeight'],
                   'leftStockPiece': stkTxnMap['finalStockPiece']
                 });
+                _reduceStockRemark.clear();
                 _reduceStockWeight.clear();
                 _reduceStockPiece.clear();
                 PageRouteTransition.pop(context);
@@ -953,6 +1020,153 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
       ],
     );
   }
+
+  // Widget editStockTransactionModal({required var stkTxnMap}) {
+  //   _editStockRemark.text = stkTxnMap['remark'];
+  //   _editStockWeight.text = stkTxnMap['weight'];
+  //   _editStockPiece.text = stkTxnMap['piece'];
+  //   return StatefulBuilder(
+  //       builder: (BuildContext context, StateSetter setModalState) {
+  //     return Container(
+  //       margin: EdgeInsets.only(
+  //         bottom: MediaQuery.of(context).viewInsets.bottom,
+  //       ),
+  //       color: Color.fromARGB(255, 255, 255, 255),
+  //       child: Form(
+  //         key: _formKey3,
+  //         child: Column(
+  //           crossAxisAlignment: CrossAxisAlignment.start,
+  //           mainAxisSize: MainAxisSize.min,
+  //           children: <Widget>[
+  //             Padding(
+  //               padding: EdgeInsets.only(top: 10, left: 10, right: 10),
+  //               child: Row(
+  //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                 children: [
+  //                   Text(
+  //                     'Edit Stock Transaction',
+  //                     style: TextStyle(
+  //                       fontSize: 16,
+  //                       fontWeight: FontWeight.w500,
+  //                     ),
+  //                   ),
+  //                   GestureDetector(
+  //                     onTap: () {
+  //                       Navigator.pop(context);
+  //                     },
+  //                     child: Icon(Icons.close),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //             Divider(),
+  //             Padding(
+  //               padding: EdgeInsets.symmetric(horizontal: 15),
+  //               child: TextFormField(
+  //                 controller: _editStockRemark,
+  //                 autofocus: true,
+  //                 decoration: InputDecoration(
+  //                   contentPadding: EdgeInsets.symmetric(horizontal: 10),
+  //                   border: OutlineInputBorder(),
+  //                   hintText: 'Edit remark',
+  //                   labelText: 'Remark',
+  //                 ),
+  //                 keyboardType: TextInputType.text,
+  //                 textCapitalization: TextCapitalization.words,
+  //               ),
+  //             ),
+  //             SizedBox(height: 10),
+  //             Padding(
+  //               padding: EdgeInsets.symmetric(horizontal: 15),
+  //               child: TextFormField(
+  //                 controller: _editStockWeight,
+  //                 decoration: InputDecoration(
+  //                     contentPadding: EdgeInsets.symmetric(horizontal: 10),
+  //                     border: OutlineInputBorder(),
+  //                     hintText: '0.0',
+  //                     labelText: 'Reduce Weight',
+  //                     prefixText:
+  //                         stkTxnMap['activity'] == "Reduce Stock" ? '- ' : '+ ',
+  //                     suffixText: itemMap['unit']),
+  //                 inputFormatters: [
+  //                   FilteringTextInputFormatter.allow(
+  //                       RegExp(r'^\d+\.?\d{0,3}')),
+  //                 ],
+  //                 keyboardType: TextInputType.numberWithOptions(decimal: true),
+  //                 validator: (value) {
+  //                   if (value == null || value.isEmpty) {
+  //                     return "This is required";
+  //                   }
+  //                   if (double.parse(value) < 0.0) {
+  //                     return 'Keep positive';
+  //                   }
+  //                   return null;
+  //                 },
+  //               ),
+  //             ),
+  //             SizedBox(height: 10),
+  //             Padding(
+  //               padding: EdgeInsets.symmetric(horizontal: 15),
+  //               child: TextFormField(
+  //                 controller: _editStockPiece,
+  //                 decoration: InputDecoration(
+  //                   contentPadding: EdgeInsets.symmetric(horizontal: 10),
+  //                   border: OutlineInputBorder(),
+  //                   hintText: '0',
+  //                   labelText: 'Reduce Piece',
+  //                   prefixText:
+  //                       stkTxnMap['activity'] == "Reduce Stock" ? '- ' : '+ ',
+  //                   suffixText: "PCS",
+  //                 ),
+  //                 keyboardType: TextInputType.number,
+  //                 validator: (value) {
+  //                   if (value == null || value.isEmpty) {
+  //                     return "This is required";
+  //                   }
+  //                   if (int.parse(value) < 0) {
+  //                     return 'Keep positive';
+  //                   }
+  //                   return null;
+  //                 },
+  //               ),
+  //             ),
+  //             SizedBox(
+  //               height: 10,
+  //             ),
+  //             Center(
+  //               child: MaterialButton(
+  //                 onPressed: () async {
+  //                   // createItemCategory();
+  //                 },
+  //                 child: Container(
+  //                   padding: EdgeInsets.symmetric(vertical: 15, horizontal: 25),
+  //                   decoration: BoxDecoration(
+  //                     color: primaryColor,
+  //                     borderRadius: BorderRadius.circular(8),
+  //                   ),
+  //                   width: double.infinity,
+  //                   child: Center(
+  //                     child: Text(
+  //                       "Save Changes",
+  //                       style: TextStyle(
+  //                         fontWeight: FontWeight.w600,
+  //                         color: Colors.white,
+  //                         fontSize: 16,
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ),
+  //             ),
+  //             SizedBox(
+  //               height: 30,
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //     );
+  //   });
+  // }
 
   AlertDialog DeleteItemAlertBox() {
     return AlertDialog(

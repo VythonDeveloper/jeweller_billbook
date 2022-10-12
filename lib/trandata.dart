@@ -14,22 +14,20 @@ class _DataTransState extends State<DataTrans> {
     FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
-        .collection('mortgageBill')
-        .where('bookId', isEqualTo: 1665149120214)
+        .collection('transactions')
         .get()
-        .then((value) {
+        .then((value) async {
       if (value.size > 0) {
-        int totalPrinciple = 0;
         for (int i = 0; i < value.size; i++) {
-          int amount = value.docs[i]['amount'];
-          totalPrinciple += amount;
+          String txnId = value.docs[i]['id'].toString();
+
+          // await FirebaseFirestore.instance
+          //     .collection('users')
+          //     .doc(uid)
+          //     .collection('transactions')
+          //     .doc(txnId)
+          //     .update({'remark': ''});
         }
-        FirebaseFirestore.instance
-            .collection('users')
-            .doc(uid)
-            .collection('mortgageBook')
-            .doc('1665149120214')
-            .update({'totalPrinciple': totalPrinciple});
       }
     });
   }

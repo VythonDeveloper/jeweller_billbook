@@ -340,12 +340,14 @@ class _DashboardUiState extends State<DashboardUi> {
         padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Expanded(
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
@@ -376,6 +378,32 @@ class _DashboardUiState extends State<DashboardUi> {
                 ),
                 Expanded(
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Remark",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: primaryColor,
+                          fontSize: 13,
+                        ),
+                      ),
+                      Text(
+                        txnMap['remark'].isEmpty ? 'NA' : txnMap['remark'],
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
                         "Change",
@@ -386,44 +414,23 @@ class _DashboardUiState extends State<DashboardUi> {
                         ),
                       ),
                       Text(
-                        txnMap['change'].toString().replaceAll('#', '\n'),
+                        txnMap['changeWeight'].toString() +
+                            " " +
+                            txnMap['unit'],
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
+                          fontSize: 13,
+                        ),
+                      ),
+                      Text(
+                        txnMap['changePiece'].toString() + " PCS",
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
                           color: Colors.black,
                           fontSize: 13,
                         ),
                       )
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        "Final",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: primaryColor,
-                          fontSize: 13,
-                        ),
-                      ),
-                      Text(
-                        "${txnMap['finalStockWeight']} ${txnMap['unit']}",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black,
-                          fontSize: 13,
-                        ),
-                      ),
-                      Text(
-                        "${txnMap['finalStockPiece']} pcs",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black,
-                          fontSize: 13,
-                        ),
-                      ),
                     ],
                   ),
                 ),
