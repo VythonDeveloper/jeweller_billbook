@@ -24,6 +24,8 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
   final _formKey2 = GlobalKey<FormState>();
   final _addStockWeight = TextEditingController();
   final _addStockPiece = TextEditingController();
+  final _addStockRemark = new TextEditingController();
+  final _reduceStockRemark = new TextEditingController();
   final _reduceStockWeight = TextEditingController();
   final _reduceStockPiece = TextEditingController();
   final _transactionType = "StockTransaction";
@@ -31,8 +33,10 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
   @override
   void dispose() {
     super.dispose();
+    _addStockRemark.dispose();
     _addStockWeight.dispose();
     _addStockPiece.dispose();
+    _reduceStockRemark.dispose();
     _reduceStockWeight.dispose();
     _reduceStockPiece.dispose();
   }
@@ -678,6 +682,19 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               TextFormField(
+                controller: _addStockRemark,
+                autofocus: true,
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                  border: OutlineInputBorder(),
+                  hintText: 'Add remark',
+                  labelText: 'Remark',
+                ),
+                keyboardType: TextInputType.text,
+                textCapitalization: TextCapitalization.words,
+              ),
+              SizedBox(height: 10),
+              TextFormField(
                 controller: _addStockWeight,
                 autofocus: true,
                 decoration: InputDecoration(
@@ -753,6 +770,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                 'itemCategory': itemMap['category'],
                 'itemId': itemMap['id'],
                 'unit': itemMap['unit'],
+                'remark': _addStockRemark.text,
                 'change': '+ ' +
                     double.parse(_addStockWeight.text).toStringAsFixed(3) +
                     ' ' +
@@ -787,6 +805,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                   'leftStockWeight': stkTxnMap['finalStockWeight'],
                   'leftStockPiece': stkTxnMap['finalStockPiece']
                 });
+                _addStockRemark.clear();
                 _addStockWeight.clear();
                 _addStockPiece.clear();
                 PageRouteTransition.pop(context);
