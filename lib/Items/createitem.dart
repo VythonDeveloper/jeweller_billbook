@@ -147,15 +147,9 @@ class _CreateItemUiState extends State<CreateItemUi> {
                   'itemCategory': itemMap['category'],
                   'itemId': itemMap['id'],
                   'unit': itemMap['unit'],
-                  'change': '+ ' +
-                      itemMap['openingStockWeight'].toStringAsFixed(3) +
-                      ' ' +
-                      itemMap['unit'] +
-                      '#+ ' +
-                      itemMap['openingStockPiece'].toString() +
-                      ' PCS',
-                  'finalStockWeight': itemMap['leftStockWeight'],
-                  'finalStockPiece': itemMap['leftStockPiece'],
+                  'remark': "NA",
+                  'changeWeight': double.parse(itemMap['openingStockWeight']),
+                  'changePiece': int.parse(itemMap['openingStockPiece']),
                   'date': uniqueId
                 };
 

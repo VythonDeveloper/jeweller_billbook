@@ -814,30 +814,25 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
 
               Map<String, dynamic> stkTxnMap = {
                 'id': uniqueId,
+                'type': 'StockTransaction',
                 'activity': "Add Stock",
                 'itemName': itemMap['name'],
                 'itemCategory': itemMap['category'],
                 'itemId': itemMap['id'],
                 'unit': itemMap['unit'],
                 'remark': _addStockRemark.text,
-                'change': '+ ' +
-                    double.parse(_addStockWeight.text).toStringAsFixed(3) +
-                    ' ' +
-                    itemMap['unit'] +
-                    '#+ ' +
-                    _addStockPiece.text +
-                    ' PCS',
-                'finalStockWeight': double.parse((itemMap['leftStockWeight'] +
-                        double.parse(_addStockWeight.text))
-                    .toStringAsFixed(3)),
-                'finalStockPiece':
-                    itemMap['leftStockPiece'] + int.parse(_addStockPiece.text),
-                'type': _transactionType,
+                'changeWeight': double.parse(_addStockWeight.text),
+                'changePiece': int.parse(_addStockPiece.text),
                 'date': uniqueId
               };
 
-              itemMap['leftStockWeight'] = stkTxnMap['finalStockWeight'];
-              itemMap['leftStockPiece'] = stkTxnMap['finalStockPiece'];
+              itemMap['leftStockWeight'] = double.parse(
+                  (itemMap['leftStockWeight'] -
+                          double.parse(_addStockWeight.text))
+                      .toStringAsFixed(3));
+              itemMap['leftStockPiece'] =
+                  itemMap['leftStockPiece'] - int.parse(_addStockPiece.text);
+
               await FirebaseFirestore.instance
                   .collection('users')
                   .doc(UserData.uid)
@@ -851,8 +846,8 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                     .collection('items')
                     .doc(itemMap['id'].toString())
                     .update({
-                  'leftStockWeight': stkTxnMap['finalStockWeight'],
-                  'leftStockPiece': stkTxnMap['finalStockPiece']
+                  'leftStockWeight': itemMap['leftStockWeight'],
+                  'leftStockPiece': itemMap['leftStockPiece']
                 });
                 _addStockRemark.clear();
                 _addStockWeight.clear();
@@ -975,23 +970,18 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                 'itemId': itemMap['id'],
                 'unit': itemMap['unit'],
                 'remark': _reduceStockRemark.text,
-                'change': '- ' +
-                    double.parse(_reduceStockWeight.text).toStringAsFixed(3) +
-                    ' ' +
-                    itemMap['unit'] +
-                    '#- ' +
-                    _reduceStockPiece.text +
-                    ' PCS',
-                'finalStockWeight': double.parse((itemMap['leftStockWeight'] -
-                        double.parse(_reduceStockWeight.text))
-                    .toStringAsFixed(3)),
-                'finalStockPiece': itemMap['leftStockPiece'] -
-                    int.parse(_reduceStockPiece.text),
+                'changeWeight': double.parse(_reduceStockWeight.text),
+                'changePiece': int.parse(_reduceStockPiece.text),
                 'date': uniqueId
               };
 
-              itemMap['leftStockWeight'] = stkTxnMap['finalStockWeight'];
-              itemMap['leftStockPiece'] = stkTxnMap['finalStockPiece'];
+              itemMap['leftStockWeight'] = double.parse(
+                  (itemMap['leftStockWeight'] -
+                          double.parse(_reduceStockWeight.text))
+                      .toStringAsFixed(3));
+              itemMap['leftStockPiece'] =
+                  itemMap['leftStockPiece'] - int.parse(_reduceStockPiece.text);
+
               await FirebaseFirestore.instance
                   .collection('users')
                   .doc(UserData.uid)
@@ -1005,8 +995,8 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                     .collection('items')
                     .doc(itemMap['id'].toString())
                     .update({
-                  'leftStockWeight': stkTxnMap['finalStockWeight'],
-                  'leftStockPiece': stkTxnMap['finalStockPiece']
+                  'leftStockWeight': itemMap['leftStockWeight'],
+                  'leftStockPiece': itemMap['leftStockPiece']
                 });
                 _reduceStockRemark.clear();
                 _reduceStockWeight.clear();

@@ -278,7 +278,7 @@ class _ItemsUiState extends State<ItemsUi> {
             ),
           ),
           Text(
-            "Wt. " + totalWeight.toStringAsFixed(3) + " GMS",
+            "Wt. " + totalWeight.toString() + " GMS",
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w500,
