@@ -142,7 +142,7 @@ class _MoreUIState extends State<MoreUI> {
                     Align(
                       alignment: Alignment.topRight,
                       child: MaterialButton(
-                        onPressed: () {
+                        onPressed: () async {
                           if (_formKey.currentState!.validate() && !isLoading) {
                             FocusScope.of(context).unfocus();
 
@@ -153,7 +153,7 @@ class _MoreUIState extends State<MoreUI> {
                                 ? 0
                                 : int.parse(_goldRate.text);
 
-                            FirebaseFirestore.instance
+                            await FirebaseFirestore.instance
                                 .collection('users')
                                 .doc(UserData.uid)
                                 .update({

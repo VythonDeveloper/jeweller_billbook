@@ -6,6 +6,7 @@ import 'package:jeweller_stockbook/Mortage/mrtgBill.dart';
 import 'package:jeweller_stockbook/colors.dart';
 import 'package:jeweller_stockbook/constants.dart';
 import 'package:page_route_transition/page_route_transition.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../components.dart';
 
@@ -196,7 +197,15 @@ class _MortgageUiState extends State<MortgageUi> {
                   radius: 18,
                   backgroundColor: primaryColor,
                   child: IconButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      Uri url = Uri.parse("tel:${mrtgBookMap['phone']}");
+                      if (await canLaunchUrl(url)) {
+                        launchUrl(url);
+                      } else {
+                        showSnackBar(context,
+                            'Unable to place call to ${mrtgBookMap['name']}');
+                      }
+                    },
                     icon: Icon(
                       Icons.call,
                       color: primaryAccentColor,
