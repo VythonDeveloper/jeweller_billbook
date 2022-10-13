@@ -11,25 +11,8 @@ class DataTrans extends StatefulWidget {
 class _DataTransState extends State<DataTrans> {
   String uid = "YD4UvVlgsjhcc0aiC29JVmHw7UC3";
   doTask() {
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .collection('transactions')
-        .get()
-        .then((value) async {
-      if (value.size > 0) {
-        for (int i = 0; i < value.size; i++) {
-          String txnId = value.docs[i]['id'].toString();
-
-          // await FirebaseFirestore.instance
-          //     .collection('users')
-          //     .doc(uid)
-          //     .collection('transactions')
-          //     .doc(txnId)
-          //     .update({'remark': ''});
-        }
-      }
-    });
+    num num1 = 12.369;
+    print(num1.toDouble());
   }
 
   @override
