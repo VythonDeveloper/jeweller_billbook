@@ -229,10 +229,11 @@ class _ItemsUiState extends State<ItemsUi> {
               var itemMap = snapshot.data.docs[i];
               if (totalWeightMap[itemMap['category']] != null) {
                 totalWeightMap[itemMap['category']] +=
-                    itemMap['leftStockWeight'];
+                    double.parse(itemMap['leftStockWeight'].toStringAsFixed(3));
+                ;
               } else {
                 totalWeightMap[itemMap['category']] =
-                    itemMap['leftStockWeight'];
+                    double.parse(itemMap['leftStockWeight'].toStringAsFixed(3));
               }
             }
             return Padding(
@@ -278,7 +279,7 @@ class _ItemsUiState extends State<ItemsUi> {
             ),
           ),
           Text(
-            "Wt. " + totalWeight.toString() + " GMS",
+            "Wt. " + totalWeight.toStringAsFixed(3) + " GMS",
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w500,
