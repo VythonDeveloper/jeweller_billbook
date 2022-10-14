@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:jeweller_stockbook/Helper/sdp.dart';
 import 'package:jeweller_stockbook/Items/editItem.dart';
 import 'package:jeweller_stockbook/colors.dart';
 import 'package:jeweller_stockbook/components.dart';
@@ -22,7 +23,6 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
   _ItemDetailsUIState({this.itemId});
   final _formKey1 = GlobalKey<FormState>();
   final _formKey2 = GlobalKey<FormState>();
-  final _formKey3 = GlobalKey<FormState>();
   final _addStockWeight = TextEditingController();
   final _addStockPiece = TextEditingController();
   final _addStockRemark = new TextEditingController();
@@ -420,6 +420,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                           double.parse(itemMap['leftStockWeight'].toString());
                       return ListView.builder(
                         shrinkWrap: true,
+                        padding: EdgeInsets.only(bottom: 50),
                         itemCount: snapshot.data.docs.length,
                         itemBuilder: (context, index) {
                           var stkTxnMap = snapshot.data.docs[index];

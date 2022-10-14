@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:jeweller_stockbook/Helper/sdp.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:jeweller_stockbook/Items/itemDetails.dart';
 import 'package:jeweller_stockbook/Stock/lowStock.dart';
@@ -87,13 +88,17 @@ class _DashboardUiState extends State<DashboardUi> {
                         return Text(
                           "₹ " + Constants.cFInt.format(totalPrinciple),
                           style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
+                            fontSize: sdp(context, 13),
+                            fontWeight: FontWeight.bold,
+                          ),
                         );
                       }
                       return Text(
                         "₹ 0",
                         style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
+                          fontSize: sdp(context, 13),
+                          fontWeight: FontWeight.bold,
+                        ),
                       );
                     }
                     return Transform.scale(
@@ -113,7 +118,8 @@ class _DashboardUiState extends State<DashboardUi> {
                 label: 'Mortgage Interest',
                 amount: Text(
                   "0",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      fontSize: sdp(context, 12), fontWeight: FontWeight.bold),
                 ),
               ),
             ],
@@ -132,7 +138,8 @@ class _DashboardUiState extends State<DashboardUi> {
                 label: 'Value of Items',
                 amount: Text(
                   "Low Stocks",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      fontSize: sdp(context, 12), fontWeight: FontWeight.bold),
                 ),
               ),
               SizedBox(
@@ -147,7 +154,10 @@ class _DashboardUiState extends State<DashboardUi> {
                 label: 'Mortgage Bills',
                 amount: Text(
                   "In Loss",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: sdp(context, 12),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],
@@ -169,31 +179,42 @@ class _DashboardUiState extends State<DashboardUi> {
           ),
           child: Row(
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  amount,
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    children: [
-                      Text(label),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Icon(
-                        icon,
-                        size: 18,
-                      ),
-                    ],
-                  )
-                ],
-              ),
-              Spacer(),
-              Icon(
-                Icons.arrow_forward_ios_sharp,
-                size: 15,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Flexible(child: amount),
+                        Icon(
+                          Icons.arrow_forward_ios_sharp,
+                          size: sdp(context, 12),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: sdp(context, 10),
+                    ),
+                    Row(
+                      children: [
+                        FittedBox(
+                          child: Text(
+                            label,
+                            style: TextStyle(fontSize: sdp(context, 10)),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Icon(
+                          icon,
+                          size: sdp(context, 15),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
               ),
             ],
           ),

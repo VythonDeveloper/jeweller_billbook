@@ -87,7 +87,7 @@ class PdfInvoiceApi {
   static Widget buildHeader(companyLogo) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
+          // =========================  Header  =======================
           SizedBox(height: 1 * PdfPageFormat.cm),
           Row(
             children: [
