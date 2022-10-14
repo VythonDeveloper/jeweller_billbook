@@ -828,11 +828,11 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
               };
 
               itemMap['leftStockWeight'] = double.parse(
-                  (itemMap['leftStockWeight'] -
+                  (itemMap['leftStockWeight'] +
                           double.parse(_addStockWeight.text))
                       .toStringAsFixed(3));
               itemMap['leftStockPiece'] =
-                  itemMap['leftStockPiece'] - int.parse(_addStockPiece.text);
+                  itemMap['leftStockPiece'] + int.parse(_addStockPiece.text);
 
               await FirebaseFirestore.instance
                   .collection('users')
