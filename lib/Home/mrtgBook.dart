@@ -8,6 +8,7 @@ import 'package:jeweller_stockbook/constants.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../Helper/sdp.dart';
 import '../components.dart';
 
 class MortgageUi extends StatefulWidget {
@@ -222,9 +223,49 @@ class _MortgageUiState extends State<MortgageUi> {
                   child: mrtgBookStatsCard(
                       label: 'Total Principle',
                       cardColor: Colors.blueGrey.shade500,
-                      content: "₹ " +
-                          Constants.cFDecimal
-                              .format(mrtgBookMap['totalPrinciple']),
+                      content: FutureBuilder<dynamic>(
+                        future: FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(UserData.uid)
+                            .collection('mortgageBill')
+                            .where('status', isEqualTo: 'Active')
+                            .where('bookId', isEqualTo: mrtgBookMap['id'])
+                            .get(),
+                        builder: ((context, snapshot) {
+                          if (snapshot.hasData) {
+                            if (snapshot.data.docs.length > 0) {
+                              int totalPrinciple = 0;
+                              var dataMap = snapshot.data.docs;
+                              for (int index = 0;
+                                  index < snapshot.data.docs.length;
+                                  index++) {
+                                totalPrinciple += int.parse(
+                                    dataMap[index]['amount'].toString());
+                              }
+                              return Text(
+                                "₹ " + Constants.cFInt.format(totalPrinciple),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                  fontSize: sdp(context, 10),
+                                ),
+                              );
+                            }
+                            return Text(
+                              "₹ 0",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                fontSize: sdp(context, 10),
+                              ),
+                            );
+                          }
+                          return Transform.scale(
+                            scale: 0.5,
+                            child: CircularProgressIndicator(),
+                          );
+                        }),
+                      ),
                       mrtgBookMap: mrtgBookMap),
                 ),
                 SizedBox(
@@ -232,12 +273,59 @@ class _MortgageUiState extends State<MortgageUi> {
                 ),
                 Expanded(
                   child: mrtgBookStatsCard(
-                      label: 'Total Interest',
-                      cardColor: Colors.blueGrey.shade700,
-                      content: "₹ " +
-                          Constants.cFDecimal
-                              .format(mrtgBookMap['totalInterest']),
-                      mrtgBookMap: mrtgBookMap),
+                    label: 'Total Interest',
+                    cardColor: Colors.blueGrey.shade700,
+                    content: FutureBuilder<dynamic>(
+                        future: FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(UserData.uid)
+                            .collection('mortgageBill')
+                            .where('status', isEqualTo: 'Active')
+                            .where('bookId', isEqualTo: mrtgBookMap['id'])
+                            .get(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            if (snapshot.data.docs.length == 0) {
+                              return Text(
+                                "₹ 0",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  fontSize: sdp(context, 10),
+                                ),
+                              );
+                            }
+                            double totalInterestAmount = 0.0;
+                            for (int i = 0;
+                                i < snapshot.data.docs.length;
+                                i++) {
+                              DocumentSnapshot txnMap = snapshot.data.docs[i];
+                              var _calculatedResult =
+                                  Constants.calculateMortgage(
+                                txnMap['weight'],
+                                txnMap['purity'],
+                                txnMap['amount'],
+                                txnMap['interestPerMonth'],
+                                txnMap['lastPaymentDate'],
+                              );
+                              totalInterestAmount +=
+                                  _calculatedResult['interestAmount'];
+                            }
+                            return Text(
+                              "₹ " +
+                                  Constants.cFDecimal
+                                      .format(totalInterestAmount),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                fontSize: sdp(context, 10),
+                              ),
+                            );
+                          }
+                          return SizedBox();
+                        }),
+                    mrtgBookMap: mrtgBookMap,
+                  ),
                 ),
                 SizedBox(
                   width: 5,
@@ -246,8 +334,16 @@ class _MortgageUiState extends State<MortgageUi> {
                   child: mrtgBookStatsCard(
                       label: 'Total Paid',
                       cardColor: Colors.blueGrey.shade900,
-                      content: "₹ " +
-                          Constants.cFDecimal.format(mrtgBookMap['totalPaid']),
+                      content: Text(
+                        "₹ " +
+                            Constants.cFDecimal
+                                .format(mrtgBookMap['totalPaid']),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          fontSize: sdp(context, 10),
+                        ),
+                      ),
                       mrtgBookMap: mrtgBookMap),
                 ),
               ],
@@ -258,7 +354,8 @@ class _MortgageUiState extends State<MortgageUi> {
     );
   }
 
-  Container mrtgBookStatsCard({final mrtgBookMap, label, cardColor, content}) {
+  Container mrtgBookStatsCard(
+      {final mrtgBookMap, label, cardColor, required Widget content}) {
     return Container(
       padding: EdgeInsets.all(8),
       decoration: BoxDecoration(
@@ -279,15 +376,8 @@ class _MortgageUiState extends State<MortgageUi> {
             ),
           ),
           FittedBox(
-            child: Text(
-              content,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                fontSize: 15,
-              ),
-            ),
-          )
+            child: content,
+          ),
         ],
       ),
     );

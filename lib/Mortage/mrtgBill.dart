@@ -24,6 +24,13 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
   final _searchKey = TextEditingController();
   List<String> statusList = ['All', 'Active', 'Closed'];
   String _selectedStatus = "All";
+  Map<String, dynamic> _calculatedResult = {
+    "daysSince": 0,
+    "interestAmount": 0.0,
+    "totalDue": 0.0,
+    "valuation": 0.0,
+    "profitLoss": 'NA'
+  };
 
   QuerySnapshot<Map<String, dynamic>>? initData;
 
@@ -546,6 +553,14 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
   }
 
   Widget mrtgBillCard({required var txnMap}) {
+    _calculatedResult = Constants.calculateMortgage(
+      txnMap['weight'],
+      txnMap['purity'],
+      txnMap['amount'],
+      txnMap['interestPerMonth'],
+      txnMap['lastPaymentDate'],
+    );
+
     return GestureDetector(
       onTap: () {
         PageRouteTransition.push(
@@ -620,7 +635,9 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                       ),
                     ),
                     Text(
-                      "₹ " + Constants.cFDecimal.format(txnMap['amount']),
+                      "₹ " +
+                          Constants.cFDecimal
+                              .format(_calculatedResult['totalDue']),
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
                         color: Colors.black,
@@ -638,9 +655,11 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      "In Profit",
+                      "In " + _calculatedResult['profitLoss'],
                       style: TextStyle(
-                        color: profitColor,
+                        color: _calculatedResult['profitLoss'] == 'Profit'
+                            ? profitColor
+                            : lossColor,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -656,7 +675,9 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                       ),
                     ),
                     Text(
-                      "₹ " + Constants.cFDecimal.format(txnMap['amount']),
+                      "₹ " +
+                          Constants.cFDecimal
+                              .format(_calculatedResult['valuation']),
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
                         color: Colors.black,

@@ -37,12 +37,14 @@ class _DashboardUiState extends State<DashboardUi> {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: textColor,
+                fontSize: sdp(context, 15),
               ),
             ),
           ],
         ),
         systemOverlayStyle: SystemUiOverlayStyle(
           systemNavigationBarColor: primaryAccentColor,
+          statusBarIconBrightness: Brightness.dark,
         ),
       ),
       body: SafeArea(
@@ -72,7 +74,8 @@ class _DashboardUiState extends State<DashboardUi> {
                   future: FirebaseFirestore.instance
                       .collection('users')
                       .doc(UserData.uid)
-                      .collection('mortgageBook')
+                      .collection('mortgageBill')
+                      .where('status', isEqualTo: 'Active')
                       .get(),
                   builder: ((context, snapshot) {
                     if (snapshot.hasData) {
@@ -82,8 +85,8 @@ class _DashboardUiState extends State<DashboardUi> {
                         for (int index = 0;
                             index < snapshot.data.docs.length;
                             index++) {
-                          totalPrinciple += int.parse(
-                              dataMap[index]['totalPrinciple'].toString());
+                          totalPrinciple +=
+                              int.parse(dataMap[index]['amount'].toString());
                         }
                         return Text(
                           "₹ " + Constants.cFInt.format(totalPrinciple),
@@ -116,11 +119,46 @@ class _DashboardUiState extends State<DashboardUi> {
                 icon: Icons.file_download_outlined,
                 cardColor: Color.fromARGB(255, 217, 241, 218),
                 label: 'Mortgage Interest',
-                amount: Text(
-                  "0",
-                  style: TextStyle(
-                      fontSize: sdp(context, 12), fontWeight: FontWeight.bold),
-                ),
+                amount: FutureBuilder<dynamic>(
+                    future: FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(UserData.uid)
+                        .collection('mortgageBill')
+                        .where('status', isEqualTo: 'Active')
+                        .get(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        if (snapshot.data.docs.length == 0) {
+                          return Text(
+                            "₹ 0",
+                            style: TextStyle(
+                                fontSize: sdp(context, 12),
+                                fontWeight: FontWeight.bold),
+                          );
+                        }
+                        double totalInterestAmount = 0.0;
+                        for (int i = 0; i < snapshot.data.docs.length; i++) {
+                          DocumentSnapshot txnMap = snapshot.data.docs[i];
+                          var _calculatedResult = Constants.calculateMortgage(
+                            txnMap['weight'],
+                            txnMap['purity'],
+                            txnMap['amount'],
+                            txnMap['interestPerMonth'],
+                            txnMap['lastPaymentDate'],
+                          );
+                          totalInterestAmount +=
+                              _calculatedResult['interestAmount'];
+                        }
+                        return Text(
+                          "₹ " +
+                              Constants.cFDecimal.format(totalInterestAmount),
+                          style: TextStyle(
+                              fontSize: sdp(context, 12),
+                              fontWeight: FontWeight.bold),
+                        );
+                      }
+                      return SizedBox();
+                    }),
               ),
             ],
           ),

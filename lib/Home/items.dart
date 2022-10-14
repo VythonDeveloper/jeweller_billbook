@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:jeweller_stockbook/Helper/sdp.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:jeweller_stockbook/Items/createitem.dart';
 import 'package:jeweller_stockbook/Category/itemcategory.dart';
@@ -307,6 +308,7 @@ class _ItemsUiState extends State<ItemsUi> {
               return ListView.builder(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.only(bottom: sdp(context, 70)),
                 itemCount: snapshot.data.docs.length,
                 itemBuilder: (context, index) {
                   loopCounter += 1;
