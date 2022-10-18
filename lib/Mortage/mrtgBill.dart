@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:jeweller_stockbook/Helper/sdp.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:jeweller_stockbook/Mortage/createMrtgBill.dart';
 import 'package:jeweller_stockbook/Mortage/mrtgBillDetails.dart';
@@ -23,6 +24,13 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
   final _searchKey = TextEditingController();
   List<String> statusList = ['All', 'Active', 'Closed'];
   String _selectedStatus = "All";
+  Map<String, dynamic> _calculatedResult = {
+    "daysSince": 0,
+    "interestAmount": 0.0,
+    "totalDue": 0.0,
+    "valuation": 0.0,
+    "profitLoss": 'NA'
+  };
 
   QuerySnapshot<Map<String, dynamic>>? initData;
 
@@ -54,75 +62,111 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          IconButton(
-                            padding: EdgeInsets.zero,
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            icon: Icon(
-                              Icons.arrow_back,
+                      Expanded(
+                        flex: 6,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            IconButton(
+                              padding: EdgeInsets.zero,
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              icon: Icon(
+                                Icons.arrow_back,
+                              ),
                             ),
-                          ),
-                          Text(
-                            mrtgBook['name'],
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.person,
+                                  color: primaryColor,
+                                  size: sdp(context, 15),
+                                ),
+                                SizedBox(
+                                  width: sdp(context, 5),
+                                ),
+                                Text(
+                                  mrtgBook['name'],
+                                  style: TextStyle(
+                                    fontSize: sdp(context, 12),
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                          Text(
-                            mrtgBook['phone'],
-                            style: TextStyle(
-                              fontSize: 15,
-                              color: textColor,
-                              fontWeight: FontWeight.w600,
+                            SizedBox(
+                              height: sdp(context, 5),
                             ),
-                          ),
-                        ],
-                      ),
-                      Spacer(),
-                      CircleAvatar(
-                        radius: 18,
-                        backgroundColor: primaryColor,
-                        child: FittedBox(
-                          child: IconButton(
-                            onPressed: () {
-                              showModalBottomSheet<void>(
-                                  context: context,
-                                  isDismissible: false,
-                                  builder: (BuildContext context) {
-                                    return mrtgBillfilterModal();
-                                  }).then((value) {
-                                if (mounted) {
-                                  setState(() {});
-                                }
-                              });
-                            },
-                            icon: Icon(
-                              Icons.filter_list_sharp,
-                              color: primaryAccentColor,
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.phone,
+                                  color: primaryColor,
+                                  size: sdp(context, 15),
+                                ),
+                                SizedBox(
+                                  width: sdp(context, 5),
+                                ),
+                                Text(
+                                  mrtgBook['phone'],
+                                  style: TextStyle(
+                                    fontSize: sdp(context, 11),
+                                    color: textColor,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
+                          ],
                         ),
                       ),
                       SizedBox(
-                        width: 10,
+                        width: sdp(context, 15),
                       ),
-                      CircleAvatar(
-                        radius: 18,
-                        backgroundColor: primaryColor,
-                        child: FittedBox(
-                          child: IconButton(
-                            onPressed: () {},
-                            icon: Icon(
-                              Icons.call,
-                              color: primaryAccentColor,
+                      Column(
+                        children: [
+                          CircleAvatar(
+                            radius: 18,
+                            backgroundColor: primaryColor,
+                            child: FittedBox(
+                              child: IconButton(
+                                onPressed: () {
+                                  showModalBottomSheet<void>(
+                                      context: context,
+                                      isDismissible: false,
+                                      builder: (BuildContext context) {
+                                        return mrtgBillfilterModal();
+                                      }).then((value) {
+                                    if (mounted) {
+                                      setState(() {});
+                                    }
+                                  });
+                                },
+                                icon: Icon(
+                                  Icons.filter_list_sharp,
+                                  color: primaryAccentColor,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          CircleAvatar(
+                            radius: 18,
+                            backgroundColor: primaryColor,
+                            child: FittedBox(
+                              child: IconButton(
+                                onPressed: () {},
+                                icon: Icon(
+                                  Icons.call,
+                                  color: primaryAccentColor,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -509,6 +553,14 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
   }
 
   Widget mrtgBillCard({required var txnMap}) {
+    _calculatedResult = Constants.calculateMortgage(
+      txnMap['weight'],
+      txnMap['purity'],
+      txnMap['amount'],
+      txnMap['interestPerMonth'],
+      txnMap['lastPaymentDate'],
+    );
+
     return GestureDetector(
       onTap: () {
         PageRouteTransition.push(
@@ -583,7 +635,9 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                       ),
                     ),
                     Text(
-                      "₹ " + Constants.cFDecimal.format(txnMap['amount']),
+                      "₹ " +
+                          Constants.cFDecimal
+                              .format(_calculatedResult['totalDue']),
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
                         color: Colors.black,
@@ -601,9 +655,11 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      "In Profit",
+                      "In " + _calculatedResult['profitLoss'],
                       style: TextStyle(
-                        color: profitColor,
+                        color: _calculatedResult['profitLoss'] == 'Profit'
+                            ? profitColor
+                            : lossColor,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -619,7 +675,9 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                       ),
                     ),
                     Text(
-                      "₹ " + Constants.cFDecimal.format(txnMap['amount']),
+                      "₹ " +
+                          Constants.cFDecimal
+                              .format(_calculatedResult['valuation']),
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
                         color: Colors.black,

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:jeweller_stockbook/Helper/sdp.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:jeweller_stockbook/Items/itemDetails.dart';
 import 'package:jeweller_stockbook/Stock/lowStock.dart';
@@ -36,12 +37,14 @@ class _DashboardUiState extends State<DashboardUi> {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: textColor,
+                fontSize: sdp(context, 15),
               ),
             ),
           ],
         ),
         systemOverlayStyle: SystemUiOverlayStyle(
           systemNavigationBarColor: primaryAccentColor,
+          statusBarIconBrightness: Brightness.dark,
         ),
       ),
       body: SafeArea(
@@ -71,7 +74,8 @@ class _DashboardUiState extends State<DashboardUi> {
                   future: FirebaseFirestore.instance
                       .collection('users')
                       .doc(UserData.uid)
-                      .collection('mortgageBook')
+                      .collection('mortgageBill')
+                      .where('status', isEqualTo: 'Active')
                       .get(),
                   builder: ((context, snapshot) {
                     if (snapshot.hasData) {
@@ -81,19 +85,23 @@ class _DashboardUiState extends State<DashboardUi> {
                         for (int index = 0;
                             index < snapshot.data.docs.length;
                             index++) {
-                          totalPrinciple += int.parse(
-                              dataMap[index]['totalPrinciple'].toString());
+                          totalPrinciple +=
+                              int.parse(dataMap[index]['amount'].toString());
                         }
                         return Text(
                           "₹ " + Constants.cFInt.format(totalPrinciple),
                           style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
+                            fontSize: sdp(context, 13),
+                            fontWeight: FontWeight.bold,
+                          ),
                         );
                       }
                       return Text(
                         "₹ 0",
                         style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
+                          fontSize: sdp(context, 13),
+                          fontWeight: FontWeight.bold,
+                        ),
                       );
                     }
                     return Transform.scale(
@@ -111,10 +119,46 @@ class _DashboardUiState extends State<DashboardUi> {
                 icon: Icons.file_download_outlined,
                 cardColor: Color.fromARGB(255, 217, 241, 218),
                 label: 'Mortgage Interest',
-                amount: Text(
-                  "0",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
+                amount: FutureBuilder<dynamic>(
+                    future: FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(UserData.uid)
+                        .collection('mortgageBill')
+                        .where('status', isEqualTo: 'Active')
+                        .get(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        if (snapshot.data.docs.length == 0) {
+                          return Text(
+                            "₹ 0",
+                            style: TextStyle(
+                                fontSize: sdp(context, 12),
+                                fontWeight: FontWeight.bold),
+                          );
+                        }
+                        double totalInterestAmount = 0.0;
+                        for (int i = 0; i < snapshot.data.docs.length; i++) {
+                          DocumentSnapshot txnMap = snapshot.data.docs[i];
+                          var _calculatedResult = Constants.calculateMortgage(
+                            txnMap['weight'],
+                            txnMap['purity'],
+                            txnMap['amount'],
+                            txnMap['interestPerMonth'],
+                            txnMap['lastPaymentDate'],
+                          );
+                          totalInterestAmount +=
+                              _calculatedResult['interestAmount'];
+                        }
+                        return Text(
+                          "₹ " +
+                              Constants.cFDecimal.format(totalInterestAmount),
+                          style: TextStyle(
+                              fontSize: sdp(context, 12),
+                              fontWeight: FontWeight.bold),
+                        );
+                      }
+                      return SizedBox();
+                    }),
               ),
             ],
           ),
@@ -132,7 +176,8 @@ class _DashboardUiState extends State<DashboardUi> {
                 label: 'Value of Items',
                 amount: Text(
                   "Low Stocks",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      fontSize: sdp(context, 12), fontWeight: FontWeight.bold),
                 ),
               ),
               SizedBox(
@@ -147,7 +192,10 @@ class _DashboardUiState extends State<DashboardUi> {
                 label: 'Mortgage Bills',
                 amount: Text(
                   "In Loss",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: sdp(context, 12),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],
@@ -169,31 +217,42 @@ class _DashboardUiState extends State<DashboardUi> {
           ),
           child: Row(
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  amount,
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    children: [
-                      Text(label),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Icon(
-                        icon,
-                        size: 18,
-                      ),
-                    ],
-                  )
-                ],
-              ),
-              Spacer(),
-              Icon(
-                Icons.arrow_forward_ios_sharp,
-                size: 15,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Flexible(child: amount),
+                        Icon(
+                          Icons.arrow_forward_ios_sharp,
+                          size: sdp(context, 12),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: sdp(context, 10),
+                    ),
+                    Row(
+                      children: [
+                        FittedBox(
+                          child: Text(
+                            label,
+                            style: TextStyle(fontSize: sdp(context, 10)),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Icon(
+                          icon,
+                          size: sdp(context, 15),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
               ),
             ],
           ),

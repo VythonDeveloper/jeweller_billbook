@@ -5,6 +5,7 @@ import 'package:jeweller_stockbook/colors.dart';
 import 'package:page_route_transition/page_route_transition.dart';
 
 import '../Helper/auth.dart';
+import '../Helper/sdp.dart';
 
 class LoginUI extends StatefulWidget {
   const LoginUI({super.key});
@@ -39,7 +40,7 @@ class _LoginUIState extends State<LoginUI> {
                                 Text(
                                   'STOCK',
                                   style: TextStyle(
-                                    fontSize: 100,
+                                    fontSize: sdp(context, 80),
                                     fontWeight: FontWeight.bold,
                                     color: primaryAccentColor,
                                   ),
@@ -47,7 +48,7 @@ class _LoginUIState extends State<LoginUI> {
                                 Text(
                                   'Book',
                                   style: TextStyle(
-                                    fontSize: 50,
+                                    fontSize: sdp(context, 40),
                                     fontWeight: FontWeight.bold,
                                     color: primaryColor,
                                   ),
@@ -62,6 +63,7 @@ class _LoginUIState extends State<LoginUI> {
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 color: textColor,
+                                fontSize: sdp(context, 10),
                               ),
                             )
                           ],
@@ -72,10 +74,11 @@ class _LoginUIState extends State<LoginUI> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Login safely with',
+                          'Login Safely with',
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
                             color: textColor,
+                            fontSize: sdp(context, 10),
                           ),
                         ),
                         SizedBox(
@@ -113,6 +116,7 @@ class _LoginUIState extends State<LoginUI> {
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
                             color: textColor,
+                            fontSize: sdp(context, 10),
                           ),
                         ),
                         SizedBox(
