@@ -45,16 +45,18 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: FutureBuilder(
-        future: AuthMethods().getCurrentuser(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return SplashUI();
-          } else {
-            return LoginUI();
-          }
-        },
-      ),
+      home: AuthMethods().getCurrentuser() != null ? SplashUI() : LoginUI(),
+
+      // FutureBuilder(
+      //   future: AuthMethods().getCurrentuser(),
+      //   builder: (context, snapshot) {
+      //     if (snapshot.hasData) {
+      //       return SplashUI();
+      //     } else {
+      //       return LoginUI();
+      //     }
+      //   },
+      // ),
     );
   }
 }
