@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_share/flutter_share.dart';
 import 'package:jeweller_stockbook/Mortage/editMrtgBill.dart';
 import 'package:jeweller_stockbook/colors.dart';
 import 'package:jeweller_stockbook/components.dart';
