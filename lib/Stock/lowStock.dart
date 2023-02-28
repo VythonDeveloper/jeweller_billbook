@@ -21,7 +21,7 @@ class _LowStockUIState extends State<LowStockUI> {
           IconButton(
             onPressed: () {},
             icon: Icon(
-              Icons.whatsapp_rounded,
+              Icons.ios_share,
               color: Colors.green.shade600,
             ),
           ),

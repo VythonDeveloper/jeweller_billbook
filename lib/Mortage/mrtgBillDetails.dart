@@ -140,7 +140,7 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                 PdfInvoiceApi.shareFile(pdfFile);
               },
               icon: Icon(
-                Icons.whatsapp,
+                Icons.ios_share,
                 color: profitColor,
               ),
             ),
