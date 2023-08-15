@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jeweller_stockbook/Helper/sdp.dart';
@@ -90,11 +91,11 @@ showSnackBar(BuildContext context, String msg) {
     content: Text(
       msg,
       style: TextStyle(
-        color: kLightPrimaryColor,
+        color: Colors.white,
         fontWeight: FontWeight.w600,
       ),
     ),
-    backgroundColor: kPrimaryColor,
+    backgroundColor: Colors.blue.shade900,
   ));
 }
 

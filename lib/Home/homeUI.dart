@@ -89,7 +89,6 @@ class _HomeUIState extends State<HomeUI> {
                       .doc(UserData.uid)
                       .collection('mortgageBill')
                       .where('status', isEqualTo: 'Active')
-                      .limit(5)
                       .get(),
                   builder: ((context, snapshot) {
                     if (snapshot.hasData) {
@@ -139,7 +138,6 @@ class _HomeUIState extends State<HomeUI> {
                         .doc(UserData.uid)
                         .collection('mortgageBill')
                         .where('status', isEqualTo: 'Active')
-                        .limit(5)
                         .get(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {

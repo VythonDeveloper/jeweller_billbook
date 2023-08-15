@@ -44,7 +44,7 @@ class _LoginUIState extends State<LoginUI> {
 
   logIn(String pin) async {
     setState(() => isLoading = true);
-
+    print(pin);
     String encrypted_password = encryptPassword(pin);
 
     await FirebaseFirestore.instance
@@ -69,11 +69,11 @@ class _LoginUIState extends State<LoginUI> {
           'password': pin,
         });
 
-        // box.close();
-
+        setState(() => isLoading = false);
         navPushReplacement(context, DashboardUI());
       } else {
-        showSnackBar(context, 'Invalid User');
+        setState(() => isLoading = false);
+        showSnackBar(context, 'Invalid PIN. Try again ...');
       }
     });
   }
@@ -93,44 +93,48 @@ class _LoginUIState extends State<LoginUI> {
                   Text(
                     'Welcome,',
                     style: TextStyle(
-                      fontSize: sdp(context, 20),
-                      color: kPrimaryColor,
+                      fontSize: sdp(context, 15),
+                      color: Colors.black,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   Text(
                     Constants.shopName,
                     style: TextStyle(
-                      fontSize: sdp(context, 20),
-                      color: kPrimaryColor,
-                    ),
+                        fontSize: sdp(context, 20),
+                        color: Colors.blue.shade800,
+                        fontWeight: FontWeight.w700),
                   ),
                   SizedBox(
                     height: 100,
                   ),
-                  Text(
-                    'Enter PIN',
-                    style: TextStyle(
-                      fontSize: sdp(context, 20),
-                      color: kPrimaryColor,
+                  // Text(
+                  //   'Enter PIN',
+                  //   style: TextStyle(
+                  //     fontSize: sdp(context, 20),
+                  //     color: kPrimaryColor,
+                  //   ),
+                  // ),
+                  // SizedBox(
+                  //   height: 20,
+                  // ),
+                  FittedBox(
+                    child: Center(
+                      child: OtpTextField(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        numberOfFields: 5,
+                        borderColor: Colors.grey.shade600,
+                        focusedBorderColor: Colors.blue,
+                        showFieldAsBox: true,
+                        fieldWidth: sdp(context, 50),
+                        obscureText: true,
+                        autoFocus: true,
+                        onSubmit: (value) {
+                          pin = value;
+                        },
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  OtpTextField(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    numberOfFields: 5,
-                    focusedBorderColor: kPrimaryColor,
-                    showFieldAsBox: true,
-                    obscureText: true,
-                    autoFocus: true,
-                    onCodeChanged: (String code) {
-                      setState(() {
-                        pin += code;
-                      });
-                    },
                   ),
                   height50,
                   ElevatedButton(

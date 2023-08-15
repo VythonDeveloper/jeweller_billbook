@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:jeweller_stockbook/Helper/sdp.dart';
 import 'package:jeweller_stockbook/Mortage/editMrtgBill.dart';
 import 'package:jeweller_stockbook/utils/colors.dart';
 import 'package:jeweller_stockbook/utils/components.dart';
@@ -194,16 +195,14 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
-          backgroundColor: kPrimaryColor,
+          backgroundColor: kCardCOlor,
           extendedIconLabelSpacing: 10,
           icon: Icon(
             Icons.add,
-            color: kLightPrimaryColor,
           ),
           label: Text(
             'Payment',
             style: TextStyle(
-              color: kLightPrimaryColor,
               fontWeight: FontWeight.w500,
               fontSize: 16,
               letterSpacing: 0.5,
@@ -253,7 +252,7 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                   padding: EdgeInsets.symmetric(horizontal: 14, vertical: 5),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(50),
-                    color: kPrimaryColor,
+                    color: kAccentColor,
                   ),
                   child: Row(
                     children: [
@@ -261,8 +260,8 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                         'View Report',
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
-                          color: kLightPrimaryColor,
-                          fontSize: 15,
+                          color: Colors.black,
+                          fontSize: sdp(context, 10),
                         ),
                       ),
                       SizedBox(
@@ -270,7 +269,6 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                       ),
                       Icon(
                         Icons.picture_as_pdf_outlined,
-                        color: kLightPrimaryColor,
                         size: 15,
                       ),
                     ],
@@ -325,7 +323,7 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
           //           fontWeight: FontWeight.w600,
           //           letterSpacing: 0.5,
           //           fontSize: 15,
-          //           fontFamily: 'San',
+          //           fontFamily: 'Product',
           //         ),
           //         indicatorSize: TabBarIndicatorSize.label,
           //         indicatorColor: kPrimaryColor,
@@ -346,24 +344,24 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
             ),
             child: TabBar(
               splashBorderRadius: BorderRadius.circular(40),
-              labelColor: kPrimaryColor,
-              unselectedLabelColor: Colors.blueGrey.shade200,
+              labelColor: Colors.black,
+              unselectedLabelColor: Colors.black.withOpacity(0.3),
               automaticIndicatorColorAdjustment: true,
               indicatorWeight: 2,
               labelStyle: TextStyle(
                 fontWeight: FontWeight.w600,
                 letterSpacing: 0.5,
                 fontSize: 15,
-                fontFamily: 'San',
+                fontFamily: 'Product',
               ),
               unselectedLabelStyle: TextStyle(
                 fontWeight: FontWeight.w500,
                 letterSpacing: 0.5,
                 fontSize: 15,
-                fontFamily: 'San',
+                fontFamily: 'Product',
               ),
               indicatorSize: TabBarIndicatorSize.label,
-              indicatorColor: kPrimaryColor,
+              indicatorColor: Colors.black,
               tabs: [
                 Tab(text: "Details"),
                 Tab(text: "Payment Timeline"),
@@ -706,7 +704,7 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
-                          color: kPrimaryColor,
+                          color: Colors.black,
                         ),
                       ),
                     ),
@@ -718,7 +716,7 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
-                            color: kPrimaryColor,
+                            color: Colors.black,
                           ),
                         ),
                       ),
@@ -731,7 +729,7 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
-                            color: kPrimaryColor,
+                            color: Colors.black,
                           ),
                         ),
                       ),
