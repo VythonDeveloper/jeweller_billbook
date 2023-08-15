@@ -1,20 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:jeweller_stockbook/colors.dart';
-import 'package:jeweller_stockbook/components.dart';
-import 'package:jeweller_stockbook/Helper/auth.dart';
-import 'package:jeweller_stockbook/constants.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:jeweller_stockbook/Login/loginUI.dart';
+import 'package:jeweller_stockbook/utils/colors.dart';
+import 'package:jeweller_stockbook/utils/components.dart';
+import 'package:jeweller_stockbook/utils/constants.dart';
 
 import '../Helper/user.dart';
 
-class MoreUI extends StatefulWidget {
-  const MoreUI({super.key});
+class SettingsUI extends StatefulWidget {
+  const SettingsUI({super.key});
 
   @override
-  State<MoreUI> createState() => _MoreUIState();
+  State<SettingsUI> createState() => _SettingsUIState();
 }
 
-class _MoreUIState extends State<MoreUI> {
+class _SettingsUIState extends State<SettingsUI> {
   final _formKey = GlobalKey<FormState>();
   final _goldRate = new TextEditingController();
   int _updatedOn = 0;
@@ -210,9 +211,10 @@ class _MoreUIState extends State<MoreUI> {
                 height: 50,
               ),
               MaterialButton(
-                onPressed: () {
+                onPressed: () async {
                   if (!isLoading) {
-                    AuthMethods().signOut(context);
+                    await Hive.deleteBoxFromDisk('userBox');
+                    navPopUntilPush(context, LoginUI());
                   }
                 },
                 color: Color.fromARGB(255, 255, 239, 241),

@@ -66,7 +66,6 @@ class PdfInvoiceApi {
   }
 
   static Future<void> openFile(File file) async {
-    print(file.path);
     final url = file.path;
     await OpenFile.open(url);
   }

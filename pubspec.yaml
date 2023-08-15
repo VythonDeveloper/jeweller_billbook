@@ -37,8 +37,6 @@ dependencies:
   firebase_auth: ^4.2.9 
   firebase_core: ^2.7.0
   cloud_firestore: ^4.4.3
-  page_route_transition: ^3.1.2
-  shared_preferences: ^2.0.13
   intl: ^0.17.0
   pdf: ^3.8.1
   path_provider: ^2.0.11
@@ -49,6 +47,9 @@ dependencies:
   animated_text_kit: ^4.2.2
   url_launcher: ^6.1.6
   flutter_share: ^2.0.0
+  flutter_otp_text_field: ^1.1.1
+  crypto: ^3.0.3
+  hive_flutter: ^1.1.0
 
 dev_dependencies:
   flutter_test:
@@ -87,26 +88,34 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-    - family: San
+    - family: Product
       fonts:
-        - asset: lib/assets/font/SFUIDisplay-Black.otf
+        - asset: lib\assets\fonts\Product-Sans\ProductSans-Black.ttf
           weight: 900
-        - asset: lib/assets/font/SFUIDisplay-Bold.ttf
-          weight: 700
-        - asset: lib/assets/font/SFUIDisplay-Heavy.otf
-          weight: 800
-        - asset: lib/assets/font/SFUIDisplay-Light.ttf
-          weight: 200
-        - asset: lib/assets/font/SFUIDisplay-Medium.otf
+        - asset: lib\assets\fonts\Product-Sans\ProductSans-BlackItalic.ttf
+          weight: 900
+          style: italic
+        - asset: lib\assets\fonts\Product-Sans\ProductSans-Bold.ttf
+          weight: 900
+        - asset: lib\assets\fonts\Product-Sans\ProductSans-Italic.ttf
+          style: italic
+        - asset: lib\assets\fonts\Product-Sans\ProductSans-Light.ttf
           weight: 500
-        - asset: lib/assets/font/SFUIDisplay-Regular.otf
-          weight: 400
-        - asset: lib/assets/font/SFUIDisplay-Semibold.otf
+        - asset: lib\assets\fonts\Product-Sans\ProductSans-LightItalic.ttf
+          weight: 500
+          style: italic
+        - asset: lib\assets\fonts\Product-Sans\ProductSans-Medium.ttf
+          weight: 700
+        - asset: lib\assets\fonts\Product-Sans\ProductSans-MediumItalic.ttf
+          weight: 700
+          style: italic
+        - asset: lib\assets\fonts\Product-Sans\ProductSans-Regular.ttf
           weight: 600
-        - asset: lib/assets/font/SFUIDisplay-Thin.otf
-          weight: 300
-        - asset: lib/assets/font/SFUIDisplay-Ultralight.otf
-          weight: 100
+        - asset: lib\assets\fonts\Product-Sans\ProductSans-Thin.ttf
+          weight: 400
+        - asset: lib\assets\fonts\Product-Sans\ProductSans-ThinItalic.ttf
+          weight: 400
+          style: italic
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf

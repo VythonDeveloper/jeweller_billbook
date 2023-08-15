@@ -1,12 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:jeweller_stockbook/components.dart';
-import 'package:jeweller_stockbook/constants.dart';
-import 'package:page_route_transition/page_route_transition.dart';
+import 'package:jeweller_stockbook/utils/components.dart';
+import 'package:jeweller_stockbook/utils/constants.dart';
 
 import '../Helper/user.dart';
-import '../colors.dart';
+import '../utils/colors.dart';
 
 class EditItemUI extends StatefulWidget {
   final itemMap;
@@ -134,8 +133,8 @@ class _EditItemUIState extends State<EditItemUI> {
                 .doc(itemMap['id'].toString())
                 .update(updatedItemMap)
                 .then((value) {
-              PageRouteTransition.pop(context);
-              PageRouteTransition.pop(context);
+              Navigator.pop(context);
+              Navigator.pop(context);
             });
           }
         },

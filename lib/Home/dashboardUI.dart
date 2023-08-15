@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:jeweller_stockbook/Home/dashboard.dart';
+import 'package:jeweller_stockbook/Home/homeUI.dart';
 import 'package:jeweller_stockbook/Home/items.dart';
-import 'package:jeweller_stockbook/Home/more.dart';
+import 'package:jeweller_stockbook/Home/settingsUI.dart';
 import 'package:jeweller_stockbook/Home/mrtgBook.dart';
-import 'package:jeweller_stockbook/colors.dart';
-import 'package:jeweller_stockbook/components.dart';
+import 'package:jeweller_stockbook/utils/animated_indexed_stack.dart';
+import 'package:jeweller_stockbook/utils/colors.dart';
+import 'package:jeweller_stockbook/utils/components.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class DashboardUI extends StatefulWidget {
+  const DashboardUI({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<DashboardUI> createState() => _DashboardUIState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _DashboardUIState extends State<DashboardUI> {
   int _selectedbottomNavIndex = 0;
   DateTime? currentBackPressTime;
 
@@ -40,13 +41,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget Body() {
-    return IndexedStack(
+    return AnimatedIndexedStack(
       index: _selectedbottomNavIndex,
       children: [
-        DashboardUi(),
+        HomeUI(),
         ItemsUi(),
         MortgageUi(),
-        MoreUI(),
+        SettingsUI(),
       ],
     );
   }

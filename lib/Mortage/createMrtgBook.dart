@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_contacts/contact.dart';
 import 'package:jeweller_stockbook/Helper/select_Contacts.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
-import 'package:jeweller_stockbook/components.dart';
-import 'package:jeweller_stockbook/constants.dart';
+import 'package:jeweller_stockbook/utils/components.dart';
+import 'package:jeweller_stockbook/utils/constants.dart';
 
-import '../colors.dart';
+import '../utils/colors.dart';
 
 class CreateMrtgBookUi extends StatefulWidget {
   const CreateMrtgBookUi({super.key});
@@ -142,9 +142,13 @@ class _CreateMrtgBookUiState extends State<CreateMrtgBookUi> {
         backgroundColor: primaryColor,
         child: Text(
           contact.displayName[0],
+          style: TextStyle(color: Colors.white),
         ),
       ),
-      title: Text(contact.displayName),
+      title: Text(
+        contact.displayName,
+        style: TextStyle(fontWeight: FontWeight.w500),
+      ),
       subtitle: Text(contact.phones[0].number),
     );
   }
@@ -155,27 +159,7 @@ class _CreateMrtgBookUiState extends State<CreateMrtgBookUi> {
       padding: EdgeInsets.symmetric(horizontal: 15),
       child: Column(
         children: [
-          TextField(
-            controller: _searchKey,
-            decoration: InputDecoration(
-              prefixIcon: Icon(
-                Icons.search,
-                color: primaryColor,
-              ),
-              contentPadding: EdgeInsets.symmetric(horizontal: 10),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              hintText: 'Search Name, Phone .etc',
-              hintStyle: TextStyle(
-                color: Colors.grey.shade500,
-                fontSize: 16,
-              ),
-            ),
-            onChanged: (value) {
-              setState(() {});
-            },
-          ),
+          searchBar(),
           GestureDetector(
             onTap: () {
               SelectContact().createContact().then((value) {
@@ -214,6 +198,33 @@ class _CreateMrtgBookUiState extends State<CreateMrtgBookUi> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Container searchBar() {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: primaryAccentColor,
+      ),
+      child: TextField(
+        controller: _searchKey,
+        decoration: InputDecoration(
+          prefixIcon: Icon(
+            Icons.search,
+            color: primaryColor,
+          ),
+          border: InputBorder.none,
+          hintText: 'Search Name, Phone .etc',
+          hintStyle: TextStyle(
+            color: Colors.grey.shade500,
+            fontSize: 16,
+          ),
+        ),
+        onChanged: (value) {
+          setState(() {});
+        },
       ),
     );
   }

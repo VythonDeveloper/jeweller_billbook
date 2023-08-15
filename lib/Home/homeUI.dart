@@ -5,18 +5,18 @@ import 'package:jeweller_stockbook/Helper/sdp.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:jeweller_stockbook/Items/itemDetails.dart';
 import 'package:jeweller_stockbook/Stock/lowStock.dart';
-import 'package:jeweller_stockbook/colors.dart';
-import 'package:jeweller_stockbook/constants.dart';
-import 'package:page_route_transition/page_route_transition.dart';
+import 'package:jeweller_stockbook/utils/colors.dart';
+import 'package:jeweller_stockbook/utils/components.dart';
+import 'package:jeweller_stockbook/utils/constants.dart';
 
-class DashboardUi extends StatefulWidget {
-  const DashboardUi({Key? key}) : super(key: key);
+class HomeUI extends StatefulWidget {
+  const HomeUI({Key? key}) : super(key: key);
 
   @override
-  State<DashboardUi> createState() => _DashboardUiState();
+  State<HomeUI> createState() => _HomeUIState();
 }
 
-class _DashboardUiState extends State<DashboardUi> {
+class _HomeUIState extends State<HomeUI> {
   List<dynamic> transactionsMap = [];
   String timelineDateTitle = '';
   bool showDateWidget = false;
@@ -48,11 +48,28 @@ class _DashboardUiState extends State<DashboardUi> {
         ),
       ),
       body: SafeArea(
-        child: ListView(
-          children: [
-            statusBlocks(),
-            itemTimeline(),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              statusBlocks(),
+              itemTimeline(),
+              height10,
+              Align(
+                alignment: Alignment.topRight,
+                child: Padding(
+                  padding: EdgeInsets.only(right: 10.0),
+                  child: seeMoreButton(
+                    context,
+                    onTap: () {
+                      setState(() {
+                        timelineHistoryCounter += 5;
+                      });
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -169,7 +186,7 @@ class _DashboardUiState extends State<DashboardUi> {
             children: [
               statsCard(
                 onPress: () {
-                  PageRouteTransition.push(context, LowStockUI());
+                  navPush(context, LowStockUI());
                 },
                 icon: null,
                 cardColor: Color.fromARGB(255, 255, 194, 194),
@@ -185,7 +202,7 @@ class _DashboardUiState extends State<DashboardUi> {
               ),
               statsCard(
                 onPress: () {
-                  PageRouteTransition.push(context, LowStockUI());
+                  navPush(context, LowStockUI());
                 },
                 icon: null,
                 cardColor: Color.fromARGB(255, 255, 194, 194),
@@ -261,6 +278,7 @@ class _DashboardUiState extends State<DashboardUi> {
     );
   }
 
+  int timelineHistoryCounter = 10;
   Widget itemTimeline() {
     return FutureBuilder<dynamic>(
       future: FirebaseFirestore.instance
@@ -268,6 +286,7 @@ class _DashboardUiState extends State<DashboardUi> {
           .doc(UserData.uid)
           .collection('transactions')
           .orderBy('id', descending: true)
+          .limit(timelineHistoryCounter)
           .get(),
       builder: ((context, snapshot) {
         if (snapshot.hasData) {
@@ -389,8 +408,7 @@ class _DashboardUiState extends State<DashboardUi> {
   Widget stockTxnCard({required var txnMap}) {
     return GestureDetector(
       onTap: () {
-        PageRouteTransition.push(
-                context, ItemDetailsUI(itemId: txnMap['itemId']))
+        navPush(context, ItemDetailsUI(itemId: txnMap['itemId']))
             .then((value) => setState(() {}));
       },
       child: Container(

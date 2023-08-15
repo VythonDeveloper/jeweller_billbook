@@ -1,10 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:jeweller_stockbook/Mortage/editMrtgBill.dart';
-import 'package:jeweller_stockbook/colors.dart';
-import 'package:jeweller_stockbook/components.dart';
-import 'package:jeweller_stockbook/constants.dart';
-import 'package:page_route_transition/page_route_transition.dart';
+import 'package:jeweller_stockbook/utils/colors.dart';
+import 'package:jeweller_stockbook/utils/components.dart';
+import 'package:jeweller_stockbook/utils/constants.dart';
 
 import '../Helper/pdf_invoice_api.dart';
 import '../Helper/user.dart';
@@ -146,7 +145,7 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
             ),
             IconButton(
               onPressed: () {
-                PageRouteTransition.push(
+                navPush(
                         context,
                         EditMrtgBillUi(
                             customerName: customerName,
@@ -844,7 +843,7 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
             style: TextStyle(color: Colors.red),
           ),
           onPressed: () {
-            PageRouteTransition.pop(context);
+            Navigator.pop(context);
           },
         ),
         TextButton(
@@ -891,9 +890,9 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                   });
                 }
               });
-              PageRouteTransition.pop(context);
-              PageRouteTransition.pop(context);
-              PageRouteTransition.pop(context);
+              Navigator.pop(context);
+              Navigator.pop(context);
+              Navigator.pop(context);
             });
           },
         ),
@@ -915,7 +914,7 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
             style: TextStyle(color: Colors.red),
           ),
           onPressed: () {
-            PageRouteTransition.pop(context);
+            Navigator.pop(context);
           },
         ),
         TextButton(
@@ -945,8 +944,8 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                   .update({"totalPaid": FieldValue.increment(-paidAmount)});
               mrtgBillMap['totalPaid'] -= paidAmount;
 
-              PageRouteTransition.pop(context);
-              PageRouteTransition.pop(context);
+              Navigator.pop(context);
+              Navigator.pop(context);
             });
             setState(() {});
           },
@@ -1086,8 +1085,8 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                         });
                         mrtgBillMap['totalPaid'] += int.parse(_paidAmount.text);
                         _paidAmount.clear();
-                        PageRouteTransition.pop(context);
-                        PageRouteTransition.pop(context);
+                        Navigator.pop(context);
+                        Navigator.pop(context);
                       });
                       setState(() {});
                     }

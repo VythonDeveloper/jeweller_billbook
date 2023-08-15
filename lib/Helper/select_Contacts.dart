@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
@@ -10,7 +12,7 @@ class SelectContact {
         contacts = await FlutterContacts.getContacts(withProperties: true);
       }
     } catch (e) {
-      debugPrint(e.toString());
+      log(e.toString());
     }
     return contacts;
   }
@@ -22,7 +24,7 @@ class SelectContact {
         await FlutterContacts.openExternalInsert();
       }
     } catch (e) {
-      debugPrint(e.toString());
+      log(e.toString());
     }
   }
 }

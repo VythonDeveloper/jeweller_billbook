@@ -1,14 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:jeweller_stockbook/Helper/sdp.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:jeweller_stockbook/Items/createitem.dart';
 import 'package:jeweller_stockbook/Category/itemcategory.dart';
 import 'package:jeweller_stockbook/Items/itemDetails.dart';
 import 'package:jeweller_stockbook/Stock/lowStock.dart';
-import 'package:jeweller_stockbook/colors.dart';
-import 'package:jeweller_stockbook/components.dart';
-import 'package:page_route_transition/page_route_transition.dart';
+import 'package:jeweller_stockbook/utils/colors.dart';
+import 'package:jeweller_stockbook/utils/components.dart';
 
 class ItemsUi extends StatefulWidget {
   const ItemsUi({Key? key}) : super(key: key);
@@ -25,6 +25,11 @@ class _ItemsUiState extends State<ItemsUi> {
   QuerySnapshot<Map<String, dynamic>>? initData;
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   void dispose() {
     super.dispose();
     _searchKey.dispose();
@@ -34,77 +39,62 @@ class _ItemsUiState extends State<ItemsUi> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Items'),
+        surfaceTintColor: Colors.white,
+        toolbarHeight: sdp(context, 75),
+        title: appBarItems(),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ItemsAppbar(),
-          SizedBox(
-            height: 3,
-          ),
-          itemsSortingBar(),
-          SizedBox(
-            height: 10,
-          ),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(10.0),
+        child: Column(
+          children: [
+            Row(
               children: [
-                Container(
-                  height: 40,
-                  width: 40,
-                  margin: EdgeInsets.only(left: 15),
-                  decoration: BoxDecoration(
-                    color: primaryAccentColor,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: primaryColor),
-                  ),
-                  child: FittedBox(
-                    child: IconButton(
-                      onPressed: () {
-                        PageRouteTransition.push(context, ItemCategoryUi())
-                            .then((value) => setState(() {}));
-                      },
-                      icon: Icon(Icons.add),
-                    ),
+                CircleAvatar(
+                  child: IconButton(
+                    onPressed: () {},
+                    icon: Icon(Icons.add),
                   ),
                 ),
-                SizedBox(
-                  width: 10,
+                width10,
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: totalWeightList(),
+                  ),
                 ),
-                totalWeightList(),
               ],
             ),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Expanded(
-            child: ListView(
-              children: [
-                SizedBox(
-                  height: 10,
-                ),
-                itemsList(),
-              ],
-            ),
-          ),
-        ],
+            height10,
+            itemsList(),
+          ],
+        ),
       ),
       floatingActionButton: CustomFABButton(
           onPressed: () {
-            PageRouteTransition.push(context, CreateItemUi())
-                .then((value) => setState(() {}));
+            navPush(context, CreateItemUi()).then((value) => setState(() {}));
           },
           icon: Icons.add,
           label: 'Add Item'),
     );
   }
 
-  Widget ItemsAppbar() {
+  Widget appBarItems() {
+    return Column(
+      children: [
+        Text('Items'),
+        // searchBar(),
+        height10,
+        itemsSortingBar(),
+      ],
+    );
+  }
+
+  Widget searchBar() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 15),
+      decoration: BoxDecoration(
+        color: primaryAccentColor,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: primaryColor.withOpacity(0.5)),
+      ),
       child: TextField(
         controller: _searchKey,
         decoration: InputDecoration(
@@ -112,105 +102,107 @@ class _ItemsUiState extends State<ItemsUi> {
             Icons.search,
             color: primaryColor,
           ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(100),
-          ),
-          contentPadding: EdgeInsets.symmetric(horizontal: 10),
+          border: InputBorder.none,
           hintText: 'Search by Name',
           hintStyle: TextStyle(
-            color: Colors.grey.shade500,
-            fontSize: 16,
+            color: Colors.grey.shade700,
+            fontSize: sdp(context, 10),
           ),
         ),
         onChanged: (value) {
-          setState(() {});
+          // setState(() {});
         },
       ),
     );
   }
 
   Widget itemsSortingBar() {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 3, horizontal: 15),
-      child: Row(
-        children: [
-          Expanded(
-            child: GestureDetector(
-              onTap: () {
-                showModalBottomSheet<void>(
-                    context: context,
-                    isDismissible: false,
-                    builder: (BuildContext context) {
-                      return selectCategoryModal();
-                    }).then((value) {
-                  setState(() {});
-                });
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: primaryColor,
+    return Row(
+      children: [
+        Expanded(
+          child: GestureDetector(
+            onTap: () {
+              showModalBottomSheet<void>(
+                  context: context,
+                  isDismissible: false,
+                  builder: (BuildContext context) {
+                    return selectCategoryModal();
+                  }).then((value) {
+                setState(() {});
+              });
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+              decoration: BoxDecoration(
+                color: primaryColor,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: primaryColor,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Expanded(
+                    child: Text(
+                      _selectedCategory,
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: sdp(context, 10)),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Expanded(
+                  Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    size: 15,
+                    color: Colors.white,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        SizedBox(
+          width: 10,
+        ),
+        Expanded(
+          child: GestureDetector(
+            onTap: () {
+              navPush(context, LowStockUI());
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+              decoration: BoxDecoration(
+                color: Colors.red.shade800,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.warning,
+                    color: Colors.white,
+                    size: 15,
+                  ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.topRight,
                       child: Text(
-                        _selectedCategory,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                        'Low Stock',
+                        style: TextStyle(
+                            fontSize: sdp(context, 10),
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600),
                       ),
                     ),
-                    Icon(
-                      Icons.keyboard_arrow_down_rounded,
-                      size: 15,
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
-          SizedBox(
-            width: 10,
-          ),
-          Expanded(
-            child: GestureDetector(
-              onTap: () {
-                PageRouteTransition.push(context, LowStockUI());
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.production_quantity_limits,
-                      color: Colors.redAccent,
-                      size: 15,
-                    ),
-                    Expanded(
-                      child: Align(
-                        alignment: Alignment.topRight,
-                        child: Text(
-                          'Low Stock',
-                          style: TextStyle(color: Colors.redAccent),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -308,7 +300,7 @@ class _ItemsUiState extends State<ItemsUi> {
               return ListView.builder(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
-                padding: EdgeInsets.only(bottom: sdp(context, 70)),
+                padding: EdgeInsets.zero,
                 itemCount: snapshot.data.docs.length,
                 itemBuilder: (context, index) {
                   loopCounter += 1;
@@ -365,14 +357,14 @@ class _ItemsUiState extends State<ItemsUi> {
     return InkWell(
       onTap: () {
         FocusScope.of(context).unfocus();
-        PageRouteTransition.push(context, ItemDetailsUI(itemId: itemMap['id']))
+        navPush(context, ItemDetailsUI(itemId: itemMap['id']))
             .then((value) => setState(() {}));
       },
       child: Container(
-        margin: EdgeInsets.only(bottom: 10, left: 10, right: 10),
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        margin: EdgeInsets.only(bottom: 10),
+        padding: EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: primaryAccentColor,
+          color: Colors.blueGrey.shade100.withOpacity(0.3),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Row(
@@ -384,6 +376,7 @@ class _ItemsUiState extends State<ItemsUi> {
               child: Text(
                 itemMap['name'][0],
                 style: TextStyle(
+                  color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -447,24 +440,23 @@ class _ItemsUiState extends State<ItemsUi> {
                 ],
               ),
             ),
-            Spacer(),
-            IconButton(
-              onPressed: () {
-                FocusScope.of(context).unfocus();
-                PageRouteTransition.push(
-                        context, ItemDetailsUI(itemId: itemMap['id']))
-                    .then((value) {
-                  if (mounted) {
-                    setState(() {});
-                  }
-                });
-              },
-              icon: Icon(
-                Icons.tune,
-                size: 17,
-                color: Colors.black,
-              ),
-            ),
+            // Spacer(),
+            // IconButton(
+            //   onPressed: () {
+            //     FocusScope.of(context).unfocus();
+            //     navPush(context, ItemDetailsUI(itemId: itemMap['id']))
+            //         .then((value) {
+            //       if (mounted) {
+            //         setState(() {});
+            //       }
+            //     });
+            //   },
+            //   icon: Icon(
+            //     Icons.settings,
+            //     size: 17,
+            //     color: Colors.black,
+            //   ),
+            // ),
           ],
         ),
       ),
@@ -508,7 +500,7 @@ class _ItemsUiState extends State<ItemsUi> {
                   children: [
                     MaterialButton(
                       onPressed: () {
-                        PageRouteTransition.push(context, ItemCategoryUi())
+                        navPush(context, ItemCategoryUi())
                             .then((value) => setModalState(() {}));
                       },
                       shape: RoundedRectangleBorder(
@@ -590,7 +582,6 @@ class _ItemsUiState extends State<ItemsUi> {
                         value: categoryName,
                         groupValue: _selectedCategory,
                         onChanged: (value) {
-                          // print(value.toString());
                           setModalState(() {
                             _selectedCategory = value.toString();
                             Navigator.pop(context);

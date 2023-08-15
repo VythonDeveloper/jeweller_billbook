@@ -1,12 +1,17 @@
+import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
-import 'package:jeweller_stockbook/Home/home.dart';
-import 'package:jeweller_stockbook/colors.dart';
-import 'package:jeweller_stockbook/components.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hive/hive.dart';
+import 'package:jeweller_stockbook/Helper/user.dart';
+import 'package:jeweller_stockbook/Home/dashboardUI.dart';
+import 'package:jeweller_stockbook/Login/loginUI.dart';
+import 'package:jeweller_stockbook/utils/colors.dart';
+import 'package:jeweller_stockbook/utils/components.dart';
 
 import '../Helper/select_Contacts.dart';
-import '../Helper/user.dart';
-import '../constants.dart';
+import '../utils/constants.dart';
 
 class SplashUI extends StatefulWidget {
   const SplashUI({Key? key}) : super(key: key);
@@ -25,44 +30,50 @@ class _SplashUIState extends State<SplashUI> with WidgetsBindingObserver {
   }
 
   fetchPreData() async {
-    await userDetails();
     await getContacts();
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => HomePage()));
+    await authUserDetails();
   }
 
   Future<void> getContacts() async {
-    setState(() {});
     Constants.myContacts = await SelectContact().getContacts();
-    // Constants.myContacts.addAll(contactsList);
     setState(() {});
   }
 
-  Future<void> userDetails() async {
-    if (UserData.uid == '') {
-      Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-      final SharedPreferences prefs = await _prefs;
-      UserData.uid = prefs.getString('USERKEY')!;
-      UserData.username = prefs.getString('USERNAMEKEY')!;
-      UserData.userDisplayName = prefs.getString('USERDISPLAYNAMEKEY')!;
-      UserData.email = prefs.getString('USEREMAILKEY')!;
-      UserData.profileUrl = prefs.getString('USERPROFILEKEY')!;
-      setState(() {});
+  String encryptPassword(String password) {
+    final bytes = utf8.encode(password);
+    final hash = sha256.convert(bytes);
+    return hash.toString();
+  }
+
+  Future<void> authUserDetails() async {
+    var userBox = await Hive.openBox('userBox');
+
+    if (userBox.get('uid') != null && userBox.get('password') != null) {
+      String encrypted_password = encryptPassword(userBox.get('password'));
+      await FirebaseFirestore.instance
+          .collection('users')
+          .where('uid', isEqualTo: UserData.uid)
+          .where('password', isEqualTo: encrypted_password)
+          .get()
+          .then((value) async {
+        if (value.docs.length > 0) {
+          var data = value.docs[0].data();
+
+          UserData.email = data['email'];
+          UserData.userDisplayName = data['name'];
+          UserData.username = data['username'];
+          UserData.profileUrl = data['imgUrl'];
+          UserData.goldRate = data['goldDetails']['rate'];
+
+          navPushReplacement(context, DashboardUI());
+        } else {
+          navPushReplacement(context, LoginUI());
+        }
+      });
+    } else {
+      navPushReplacement(context, LoginUI());
     }
   }
-
-  // getMyTokenID() async {
-  //   var status = await OneSignal.shared.getDeviceState();
-  //   tokenId = status!.userId!;
-
-  //   await FirebaseFirestore.instance
-  //       .collection('users')
-  //       .doc(Userdetails.uid)
-  //       .update({'tokenId': tokenId});
-
-  //   Userdetails.myTokenId = tokenId;
-  //   setState(() {});
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -72,9 +83,7 @@ class _SplashUIState extends State<SplashUI> with WidgetsBindingObserver {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CustomLoading(),
-            SizedBox(
-              height: 10,
-            ),
+            height10,
             Text(
               'Fetching Details',
               style: TextStyle(

@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:jeweller_stockbook/components.dart';
-import 'package:jeweller_stockbook/constants.dart';
-import 'package:page_route_transition/page_route_transition.dart';
+import 'package:jeweller_stockbook/utils/components.dart';
+import 'package:jeweller_stockbook/utils/constants.dart';
+
 import '../Helper/user.dart';
-import '../colors.dart';
+import '../utils/colors.dart';
 
 class EditMrtgBillUi extends StatefulWidget {
   final customerName;
@@ -185,8 +185,8 @@ class _EditMrtgBillUiState extends State<EditMrtgBillUi> {
                   .collection('mortgageBook')
                   .doc(mrtgBillMap['bookId'].toString())
                   .update({'totalPrinciple': FieldValue.increment(diffAmount)});
-              PageRouteTransition.pop(context);
-              PageRouteTransition.pop(context);
+              Navigator.pop(context);
+              Navigator.pop(context);
             });
           }
         },

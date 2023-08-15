@@ -2,7 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:jeweller_stockbook/Items/itemDetails.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
-import 'package:page_route_transition/page_route_transition.dart';
+
+import '../utils/components.dart';
 
 class LowStockUI extends StatefulWidget {
   const LowStockUI({super.key});
@@ -191,8 +192,7 @@ class _LowStockUIState extends State<LowStockUI> {
           IconButton(
             onPressed: () {
               FocusScope.of(context).unfocus();
-              PageRouteTransition.push(
-                      context, ItemDetailsUI(itemId: itemMap['id']))
+              navPush(context, ItemDetailsUI(itemId: itemMap['id']))
                   .then((value) => setState(() {}));
             },
             icon: Icon(

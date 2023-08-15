@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'user.dart';
@@ -59,7 +61,7 @@ class DatabaseMethods {
       });
       return 'success';
     } catch (e) {
-      print(e);
+      log(e.toString());
       return 'fail';
     }
   }

@@ -4,10 +4,10 @@ import 'package:jeweller_stockbook/Helper/sdp.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:jeweller_stockbook/Mortage/createMrtgBill.dart';
 import 'package:jeweller_stockbook/Mortage/mrtgBillDetails.dart';
-import 'package:jeweller_stockbook/colors.dart';
-import 'package:jeweller_stockbook/constants.dart';
-import 'package:page_route_transition/page_route_transition.dart';
-import '../components.dart';
+import 'package:jeweller_stockbook/utils/colors.dart';
+import 'package:jeweller_stockbook/utils/constants.dart';
+
+import '../utils/components.dart';
 
 class MrtgBillUi extends StatefulWidget {
   final mrtgBook;
@@ -563,7 +563,7 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
 
     return GestureDetector(
       onTap: () {
-        PageRouteTransition.push(
+        navPush(
             context,
             MrtgBillDetailsUi(
               mrtgBookId: txnMap['bookId'],

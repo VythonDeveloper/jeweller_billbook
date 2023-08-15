@@ -1,9 +1,10 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
-import 'package:jeweller_stockbook/colors.dart';
-import 'package:jeweller_stockbook/components.dart';
-import 'package:page_route_transition/page_route_transition.dart';
+import 'package:jeweller_stockbook/utils/colors.dart';
+import 'package:jeweller_stockbook/utils/components.dart';
 
 class ItemCategoryUi extends StatefulWidget {
   const ItemCategoryUi({Key? key}) : super(key: key);
@@ -35,13 +36,13 @@ class _ItemCategoryUiState extends State<ItemCategoryUi> {
             .set(categoryMap)
             .then((value) {
           _categoryName.clear();
-          PageRouteTransition.pop(context);
-          PageRouteTransition.pop(context);
+          Navigator.pop(context);
+          Navigator.pop(context);
         });
       }
       setState(() {});
     } catch (e) {
-      print(e);
+      log(e.toString());
     }
   }
 
@@ -260,8 +261,8 @@ class _ItemCategoryUiState extends State<ItemCategoryUi> {
                 .doc(id.toString())
                 .delete()
                 .then((value) {
-              PageRouteTransition.pop(context);
-              PageRouteTransition.pop(context);
+              Navigator.pop(context);
+              Navigator.pop(context);
             });
             setState(() {});
           },

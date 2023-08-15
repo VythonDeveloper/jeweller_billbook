@@ -2,10 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
-import 'package:jeweller_stockbook/colors.dart';
-import 'package:jeweller_stockbook/components.dart';
-import 'package:jeweller_stockbook/constants.dart';
-import 'package:page_route_transition/page_route_transition.dart';
+import 'package:jeweller_stockbook/utils/colors.dart';
+import 'package:jeweller_stockbook/utils/components.dart';
+import 'package:jeweller_stockbook/utils/constants.dart';
 
 class CreateItemUi extends StatefulWidget {
   const CreateItemUi({Key? key}) : super(key: key);
@@ -160,8 +159,8 @@ class _CreateItemUiState extends State<CreateItemUi> {
                     .doc(uniqueId.toString())
                     .set(stkTxnMap);
 
-                PageRouteTransition.pop(context);
-                PageRouteTransition.pop(context);
+                Navigator.pop(context);
+                Navigator.pop(context);
               });
             }
           },

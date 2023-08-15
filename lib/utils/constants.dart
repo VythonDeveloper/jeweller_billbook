@@ -3,6 +3,9 @@ import 'package:intl/intl.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
 
 class Constants {
+  static String shopName = 'Arya Gold & Jewellery';
+  // static String uid = 'eEa9Z0PupqNulh4k9VxyiaUkZDw2';
+
   static String dateFormat(millisecond) {
     var dt = DateTime.fromMillisecondsSinceEpoch(millisecond);
     var date = DateFormat('dd MMM, yyyy').format(dt);

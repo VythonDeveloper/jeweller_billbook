@@ -3,13 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:jeweller_stockbook/Mortage/createMrtgBook.dart';
 import 'package:jeweller_stockbook/Mortage/mrtgBill.dart';
-import 'package:jeweller_stockbook/colors.dart';
-import 'package:jeweller_stockbook/constants.dart';
-import 'package:page_route_transition/page_route_transition.dart';
+import 'package:jeweller_stockbook/utils/colors.dart';
+import 'package:jeweller_stockbook/utils/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../Helper/sdp.dart';
-import '../components.dart';
+import '../utils/components.dart';
 
 class MortgageUi extends StatefulWidget {
   const MortgageUi({Key? key}) : super(key: key);
@@ -24,6 +23,23 @@ class _MortgageUiState extends State<MortgageUi> {
   QuerySnapshot<Map<String, dynamic>>? initData;
 
   @override
+  void initState() {
+    // fetchData();
+    super.initState();
+  }
+
+  // fetchData() async {
+  //   QuerySnapshot<Map<String, dynamic>> data = await FirebaseFirestore.instance
+  //       .collection('users')
+  //       .doc(UserData.uid)
+  //       .collection("mortgageBook")
+  //       .orderBy('id', descending: true)
+  //       .get();
+
+  //   print(data.docs[0].data());
+  // }
+
+  @override
   void dispose() {
     super.dispose();
     _searchKey.dispose();
@@ -32,30 +48,15 @@ class _MortgageUiState extends State<MortgageUi> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Mortgage'),
-      ),
+      appBar: AppBar(title: appBarItems()),
       body: SafeArea(
-        child: Column(
-          children: [
-            mrtgBookSearchbar(),
-            SizedBox(
-              height: 3,
-            ),
-            Expanded(
-              child: ListView(
-                children: [
-                  SizedBox(
-                    height: 10,
-                  ),
-                  mrtgBookList(),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.1,
-                  ),
-                ],
-              ),
-            ),
-          ],
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(10.0),
+          child: Column(
+            children: [
+              mrtgBookList(),
+            ],
+          ),
         ),
       ),
       floatingActionButton: CustomFABButton(
@@ -74,9 +75,30 @@ class _MortgageUiState extends State<MortgageUi> {
     );
   }
 
-  Widget mrtgBookSearchbar() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 15),
+  Widget appBarItems() {
+    return Row(
+      children: [
+        Text(
+          'Mortgage',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: sdp(context, 12),
+          ),
+        ),
+        width5,
+        Flexible(
+          child: searchBar(),
+        ),
+      ],
+    );
+  }
+
+  Widget searchBar() {
+    return Container(
+      decoration: BoxDecoration(
+        color: primaryAccentColor,
+        borderRadius: BorderRadius.circular(10),
+      ),
       child: TextField(
         controller: _searchKey,
         decoration: InputDecoration(
@@ -84,18 +106,15 @@ class _MortgageUiState extends State<MortgageUi> {
             Icons.search,
             color: primaryColor,
           ),
-          contentPadding: EdgeInsets.symmetric(horizontal: 10),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(100),
-          ),
+          border: InputBorder.none,
           hintText: 'Search by Name',
           hintStyle: TextStyle(
-            color: Colors.grey.shade500,
-            fontSize: 16,
+            color: Colors.grey.shade700,
+            fontSize: sdp(context, 10),
           ),
         ),
         onChanged: (value) {
-          setState(() {});
+          // setState(() {});
         },
       ),
     );
@@ -158,7 +177,7 @@ class _MortgageUiState extends State<MortgageUi> {
   Widget mrtgBookCard({required var mrtgBookMap}) {
     return GestureDetector(
       onTap: () {
-        PageRouteTransition.push(context, MrtgBillUi(mrtgBook: mrtgBookMap))
+        navPush(context, MrtgBillUi(mrtgBook: mrtgBookMap))
             .then((value) => setState(() {}));
       },
       child: Container(
@@ -217,7 +236,6 @@ class _MortgageUiState extends State<MortgageUi> {
               ],
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
                   child: mrtgBookStatsCard(
@@ -354,8 +372,12 @@ class _MortgageUiState extends State<MortgageUi> {
     );
   }
 
-  Container mrtgBookStatsCard(
-      {final mrtgBookMap, label, cardColor, required Widget content}) {
+  Container mrtgBookStatsCard({
+    final mrtgBookMap,
+    label,
+    cardColor,
+    required Widget content,
+  }) {
     return Container(
       padding: EdgeInsets.all(8),
       decoration: BoxDecoration(
@@ -365,19 +387,16 @@ class _MortgageUiState extends State<MortgageUi> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          FittedBox(
-            child: Text(
-              label,
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-                fontSize: 13,
-              ),
+          Text(
+            label,
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+              fontSize: sdp(context, 10),
             ),
+            maxLines: 1,
           ),
-          FittedBox(
-            child: content,
-          ),
+          content,
         ],
       ),
     );

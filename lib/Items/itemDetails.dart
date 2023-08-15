@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:jeweller_stockbook/Items/editItem.dart';
-import 'package:jeweller_stockbook/colors.dart';
-import 'package:jeweller_stockbook/components.dart';
-import 'package:jeweller_stockbook/constants.dart';
-import 'package:page_route_transition/page_route_transition.dart';
+import 'package:jeweller_stockbook/utils/colors.dart';
+import 'package:jeweller_stockbook/utils/components.dart';
+import 'package:jeweller_stockbook/utils/constants.dart';
+
 import 'package:flutter/services.dart';
 
 import '../Helper/user.dart';
@@ -95,8 +95,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
           actions: [
             IconButton(
               onPressed: () {
-                PageRouteTransition.push(context, EditItemUI(itemMap: itemMap))
-                    .then((value) {
+                navPush(context, EditItemUI(itemMap: itemMap)).then((value) {
                   fetchitemDetails();
                 });
               },
@@ -231,32 +230,6 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                   fontSize: 14,
                 ),
               ),
-              GestureDetector(
-                onTap: () {},
-                child: Container(
-                  color: Colors.transparent,
-                  child: Row(
-                    children: [
-                      Text(
-                        'View Report',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          color: primaryColor,
-                          fontSize: 15,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Icon(
-                        Icons.arrow_forward_ios_rounded,
-                        color: primaryColor,
-                        size: 15,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
             ],
           ),
           Column(
@@ -347,21 +320,33 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
     );
   }
 
+  int itemHistoryCounter = 5;
   Widget ItemTimeline() {
     return Container(
       padding: EdgeInsets.only(top: 10),
-      child: ListView(
-        children: [
-          Column(
-            children: [
-              Container(
-                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 12),
-                color: Colors.grey.shade100,
-                child: Row(
-                  children: [
-                    Expanded(
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 12),
+              color: Colors.grey.shade100,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Activity',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: primaryColor,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center,
                       child: Text(
-                        'Activity',
+                        'Change',
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
@@ -369,80 +354,87 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                         ),
                       ),
                     ),
-                    Expanded(
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          'Change',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: primaryColor,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Align(
-                        alignment: Alignment.topRight,
-                        child: Text(
-                          'Final Stock',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: primaryColor,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              FutureBuilder<dynamic>(
-                future: FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(UserData.uid)
-                    .collection('transactions')
-                    .where('itemId', isEqualTo: itemMap['id'])
-                    .where('type', isEqualTo: _transactionType)
-                    .orderBy('id', descending: true)
-                    .get(),
-                builder: ((context, snapshot) {
-                  if (snapshot.hasData) {
-                    if (snapshot.data.docs.length > 0) {
-                      finalStockPiece =
-                          double.parse(itemMap['leftStockPiece'].toString());
-                      finalStockWeight =
-                          double.parse(itemMap['leftStockWeight'].toString());
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        padding: EdgeInsets.only(bottom: 50),
-                        itemCount: snapshot.data.docs.length,
-                        itemBuilder: (context, index) {
-                          var stkTxnMap = snapshot.data.docs[index];
-                          return TimelineCard(stkTxnMap: stkTxnMap);
-                        },
-                      );
-                    }
-                    return Center(
+                  ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.topRight,
                       child: Text(
-                        "No Data",
+                        'Final Stock',
                         style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.w700),
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: primaryColor,
+                        ),
                       ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            FutureBuilder<dynamic>(
+              future: FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(UserData.uid)
+                  .collection('transactions')
+                  .where('itemId', isEqualTo: itemMap['id'])
+                  .where('type', isEqualTo: _transactionType)
+                  .orderBy('id', descending: true)
+                  .limit(itemHistoryCounter)
+                  .get(),
+              builder: ((context, snapshot) {
+                if (snapshot.hasData) {
+                  if (snapshot.data.docs.length > 0) {
+                    finalStockPiece =
+                        double.parse(itemMap['leftStockPiece'].toString());
+                    finalStockWeight =
+                        double.parse(itemMap['leftStockWeight'].toString());
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      padding: EdgeInsets.zero,
+                      itemCount: snapshot.data.docs.length,
+                      itemBuilder: (context, index) {
+                        var stkTxnMap = snapshot.data.docs[index];
+                        return TimelineCard(stkTxnMap: stkTxnMap);
+                      },
                     );
                   }
-                  return LinearProgressIndicator(
-                    minHeight: 3,
+                  return Center(
+                    child: Text(
+                      "No Data",
+                      style:
+                          TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                    ),
                   );
-                }),
+                }
+                return LinearProgressIndicator(
+                  minHeight: 3,
+                );
+              }),
+            ),
+            // height20,
+            Align(
+              alignment: Alignment.topRight,
+              child: Padding(
+                padding: EdgeInsets.only(right: 10.0),
+                child: seeMoreButton(
+                  context,
+                  onTap: () {
+                    setState(() {
+                      itemHistoryCounter += 5;
+                    });
+                  },
+                ),
               ),
-            ],
-          ),
-        ],
+            ),
+            SizedBox(
+              height: 120,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -801,7 +793,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
             style: TextStyle(color: Colors.red),
           ),
           onPressed: () {
-            PageRouteTransition.pop(context);
+            Navigator.pop(context);
           },
         ),
         TextButton(
@@ -852,8 +844,8 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                 _addStockRemark.clear();
                 _addStockWeight.clear();
                 _addStockPiece.clear();
-                PageRouteTransition.pop(context);
-                PageRouteTransition.pop(context);
+                Navigator.pop(context);
+                Navigator.pop(context);
               });
             }
           },
@@ -950,7 +942,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
             style: TextStyle(color: Colors.red),
           ),
           onPressed: () {
-            PageRouteTransition.pop(context);
+            Navigator.pop(context);
           },
         ),
         TextButton(
@@ -1001,8 +993,8 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                 _reduceStockRemark.clear();
                 _reduceStockWeight.clear();
                 _reduceStockPiece.clear();
-                PageRouteTransition.pop(context);
-                PageRouteTransition.pop(context);
+                Navigator.pop(context);
+                Navigator.pop(context);
               });
             }
           },
@@ -1172,7 +1164,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
             style: TextStyle(color: Colors.red),
           ),
           onPressed: () {
-            PageRouteTransition.pop(context);
+            Navigator.pop(context);
           },
         ),
         TextButton(
@@ -1206,9 +1198,9 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                   });
                 }
               });
-              PageRouteTransition.pop(context);
-              PageRouteTransition.pop(context);
-              PageRouteTransition.pop(context);
+              Navigator.pop(context);
+              Navigator.pop(context);
+              Navigator.pop(context);
             });
           },
         ),
