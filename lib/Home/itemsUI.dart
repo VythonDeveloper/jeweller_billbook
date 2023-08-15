@@ -1,6 +1,7 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:jeweller_stockbook/Helper/sdp.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:jeweller_stockbook/Items/createitem.dart';
@@ -10,19 +11,21 @@ import 'package:jeweller_stockbook/Stock/lowStock.dart';
 import 'package:jeweller_stockbook/utils/colors.dart';
 import 'package:jeweller_stockbook/utils/components.dart';
 
-class ItemsUi extends StatefulWidget {
-  const ItemsUi({Key? key}) : super(key: key);
+class ItemsUI extends StatefulWidget {
+  const ItemsUI({Key? key}) : super(key: key);
 
   @override
-  State<ItemsUi> createState() => _ItemsUiState();
+  State<ItemsUI> createState() => _ItemsUIState();
 }
 
-class _ItemsUiState extends State<ItemsUi> {
+class _ItemsUIState extends State<ItemsUI> {
   final _searchKey = TextEditingController();
   List<String> categoryList = ['All Categories'];
   String _selectedCategory = "All Categories";
 
   QuerySnapshot<Map<String, dynamic>>? initData;
+  bool _isSearching = false;
+  QuerySnapshot<Map<String, dynamic>>? searchedItemList;
 
   @override
   void initState() {
@@ -64,7 +67,18 @@ class _ItemsUiState extends State<ItemsUi> {
               ],
             ),
             height10,
-            itemsList(),
+            _isSearching
+                ? searchedItemList != null
+                    ? searchedList()
+                    : SizedBox()
+                : itemsList(),
+            seeMoreButton(context, onTap: () {
+              setState(() {
+                itemsCounter += 5;
+              });
+            }),
+            height50,
+            height50,
           ],
         ),
       ),
@@ -77,11 +91,22 @@ class _ItemsUiState extends State<ItemsUi> {
     );
   }
 
+  Widget searchedList() {
+    return ListView.builder(
+      itemCount: searchedItemList!.size,
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemBuilder: (context, index) {
+        return itemsCard(itemMap: searchedItemList!.docs[index].data());
+      },
+    );
+  }
+
   Widget appBarItems() {
     return Column(
       children: [
-        Text('Items'),
-        // searchBar(),
+        // Text('Items'),
+        searchBar(),
         height10,
         itemsSortingBar(),
       ],
@@ -91,26 +116,33 @@ class _ItemsUiState extends State<ItemsUi> {
   Widget searchBar() {
     return Container(
       decoration: BoxDecoration(
-        color: primaryAccentColor,
+        color: kPrimaryColor,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: primaryColor.withOpacity(0.5)),
       ),
       child: TextField(
         controller: _searchKey,
+        textCapitalization: TextCapitalization.words,
         decoration: InputDecoration(
           prefixIcon: Icon(
             Icons.search,
-            color: primaryColor,
           ),
           border: InputBorder.none,
           hintText: 'Search by Name',
-          hintStyle: TextStyle(
-            color: Colors.grey.shade700,
-            fontSize: sdp(context, 10),
-          ),
         ),
-        onChanged: (value) {
-          // setState(() {});
+        onChanged: (value) async {
+          if (value.length >= 3) {
+            _isSearching = true;
+            searchedItemList = await FirebaseFirestore.instance
+                .collection('users')
+                .doc(UserData.uid)
+                .collection("items")
+                .where('name', isGreaterThanOrEqualTo: value)
+                .where('name', isLessThanOrEqualTo: value + '\uf8ff')
+                .get();
+          } else {
+            _isSearching = false;
+          }
+          setState(() {});
         },
       ),
     );
@@ -134,11 +166,8 @@ class _ItemsUiState extends State<ItemsUi> {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
               decoration: BoxDecoration(
-                color: primaryColor,
+                color: kCardCOlor,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: primaryColor,
-                ),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -147,7 +176,6 @@ class _ItemsUiState extends State<ItemsUi> {
                     child: Text(
                       _selectedCategory,
                       style: TextStyle(
-                          color: Colors.white,
                           fontWeight: FontWeight.w600,
                           fontSize: sdp(context, 10)),
                       maxLines: 1,
@@ -157,7 +185,6 @@ class _ItemsUiState extends State<ItemsUi> {
                   Icon(
                     Icons.keyboard_arrow_down_rounded,
                     size: 15,
-                    color: Colors.white,
                   ),
                 ],
               ),
@@ -257,7 +284,7 @@ class _ItemsUiState extends State<ItemsUi> {
       margin: EdgeInsets.only(right: 5),
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: primaryColor,
+        color: kAccentColor,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -266,9 +293,9 @@ class _ItemsUiState extends State<ItemsUi> {
           Text(
             key,
             style: TextStyle(
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w500,
               fontSize: 17,
-              color: Colors.white,
+              color: Colors.black,
             ),
           ),
           Text(
@@ -276,7 +303,7 @@ class _ItemsUiState extends State<ItemsUi> {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w500,
-              color: Colors.white,
+              color: Colors.black,
             ),
           ),
         ],
@@ -284,6 +311,7 @@ class _ItemsUiState extends State<ItemsUi> {
     );
   }
 
+  int itemsCounter = 5;
   Widget itemsList() {
     return FutureBuilder<dynamic>(
         future: FirebaseFirestore.instance
@@ -291,6 +319,7 @@ class _ItemsUiState extends State<ItemsUi> {
             .doc(UserData.uid)
             .collection("items")
             .orderBy('id', descending: true)
+            .limit(itemsCounter)
             .get(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
@@ -364,19 +393,19 @@ class _ItemsUiState extends State<ItemsUi> {
         margin: EdgeInsets.only(bottom: 10),
         padding: EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: Colors.blueGrey.shade100.withOpacity(0.3),
+          color: kTileColor,
           borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: kTileBorderColor),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CircleAvatar(
-              backgroundColor: primaryColor,
+              backgroundColor: kCardCOlor,
               radius: 18,
               child: Text(
                 itemMap['name'][0],
                 style: TextStyle(
-                  color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -440,23 +469,6 @@ class _ItemsUiState extends State<ItemsUi> {
                 ],
               ),
             ),
-            // Spacer(),
-            // IconButton(
-            //   onPressed: () {
-            //     FocusScope.of(context).unfocus();
-            //     navPush(context, ItemDetailsUI(itemId: itemMap['id']))
-            //         .then((value) {
-            //       if (mounted) {
-            //         setState(() {});
-            //       }
-            //     });
-            //   },
-            //   icon: Icon(
-            //     Icons.settings,
-            //     size: 17,
-            //     color: Colors.black,
-            //   ),
-            // ),
           ],
         ),
       ),
@@ -489,7 +501,7 @@ class _ItemsUiState extends State<ItemsUi> {
                         Navigator.pop(context);
                       },
                       child: Icon(Icons.close),
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -498,33 +510,18 @@ class _ItemsUiState extends State<ItemsUi> {
                 padding: EdgeInsets.only(bottom: 15, left: 15, right: 15),
                 child: Column(
                   children: [
-                    MaterialButton(
-                      onPressed: () {
-                        navPush(context, ItemCategoryUi())
-                            .then((value) => setModalState(() {}));
-                      },
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      color: primaryColor,
-                      elevation: 0,
-                      padding:
-                          EdgeInsets.symmetric(vertical: 12, horizontal: 15),
-                      child: Text(
-                        "Manage Categories",
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 15,
-                    ),
+                    ElevatedButton(
+                        onPressed: () {
+                          navPush(context, ItemCategoryUi())
+                              .then((value) => setModalState(() {}));
+                        },
+                        child: Text('Manage Categories')),
+                    height15,
                     Container(
                       margin: EdgeInsets.only(bottom: 10),
                       decoration: BoxDecoration(
                         color: _selectedCategory == 'All Categories'
-                            ? primaryAccentColor
+                            ? kLightPrimaryColor
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -558,6 +555,7 @@ class _ItemsUiState extends State<ItemsUi> {
           .doc(UserData.uid)
           .collection('categories')
           .orderBy('id')
+          .limit(5)
           .get(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
@@ -573,7 +571,7 @@ class _ItemsUiState extends State<ItemsUi> {
                       margin: EdgeInsets.only(bottom: 10),
                       decoration: BoxDecoration(
                         color: _selectedCategory == categoryName
-                            ? primaryAccentColor
+                            ? kLightPrimaryColor
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -598,7 +596,7 @@ class _ItemsUiState extends State<ItemsUi> {
         }
         return Padding(
           padding: EdgeInsets.symmetric(vertical: 10.0),
-          child: CustomLoading(indicatorColor: primaryColor),
+          child: CustomLoading(indicatorColor: kPrimaryColor),
         );
       },
     );

@@ -65,10 +65,10 @@ class _SettingsUIState extends State<SettingsUI> {
               Container(
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: primaryAccentColor,
+                  color: kPrimaryColor,
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                    color: primaryColor,
+                    color: Colors.orangeAccent,
                   ),
                 ),
                 child: Column(
@@ -176,10 +176,10 @@ class _SettingsUIState extends State<SettingsUI> {
                             });
                           }
                         },
-                        color: primaryColor,
+                        color: Color(0xFF845104),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5),
+                          borderRadius: BorderRadius.circular(10),
                         ),
                         padding: EdgeInsets.all(10),
                         child: Row(
@@ -217,61 +217,33 @@ class _SettingsUIState extends State<SettingsUI> {
                     navPopUntilPush(context, LoginUI());
                   }
                 },
-                color: Color.fromARGB(255, 255, 239, 241),
+                color: Colors.red.shade700,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5),
-                  side: BorderSide(
-                    color: Colors.red,
-                  ),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 padding: EdgeInsets.all(15),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.power_settings_new),
-                    SizedBox(
-                      width: 10,
+                    Icon(
+                      Icons.power_settings_new,
+                      color: Colors.white,
                     ),
+                    width10,
                     Text(
                       'Logout',
-                      style: TextStyle(fontSize: 20, color: Colors.red),
+                      style: TextStyle(fontSize: 20, color: Colors.white),
                     ),
                   ],
                 ),
               ),
             ],
           ),
-          CustomLoadingScreen(msg: 'UPDATING RATE ...'),
+          isLoading
+              ? fullScreenLoading(context, loadingText: 'Updating Rate ...')
+              : SizedBox(),
         ],
-      ),
-    );
-  }
-
-  Widget CustomLoadingScreen({final msg}) {
-    return Visibility(
-      visible: isLoading,
-      child: Container(
-        color: Colors.white.withOpacity(0.8),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CustomLoading(),
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                msg,
-                style: TextStyle(
-                  letterSpacing: 0.5,
-                  color: textColor,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

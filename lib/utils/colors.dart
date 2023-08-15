@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 
-//  OLD Colors
-// Color primaryColor = Colors.indigo;
-// Color primaryAccentColor = Color.fromARGB(255, 226, 230, 250);
-
-//  NEW Colors
-Color primaryColor = Color(0xFF3A4E5F);
-Color primaryAccentColor = Color(0xFFE6F4FF);
+Color kPrimaryColor = Color(0xFFFAF0D7);
+Color kLightPrimaryColor = Color(0xFFFFD9C0);
+Color kAccentColor = Color.fromARGB(255, 188, 227, 250);
+Color kCardCOlor = Color(0xFFCCEEBC);
+Color kTileBorderColor = Color(0xFFA2ECF7);
+Color kTileColor = Color(0xFFEFFDFF);
 
 Color profitColor = Colors.green.shade700;
 Color lossColor = Colors.red;
@@ -14,10 +13,10 @@ Color textColor = Colors.grey.shade700;
 
 ThemeData kThemeData() => ThemeData(
       fontFamily: 'Product',
-      colorSchemeSeed: primaryColor,
+      colorSchemeSeed: kPrimaryColor,
       scaffoldBackgroundColor: Colors.white,
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        backgroundColor: primaryAccentColor,
+        backgroundColor: kLightPrimaryColor,
       ),
       useMaterial3: true,
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -26,7 +25,7 @@ ThemeData kThemeData() => ThemeData(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
-          backgroundColor: primaryColor,
+          backgroundColor: Colors.blue.shade800,
           foregroundColor: Colors.white,
         ),
       ),

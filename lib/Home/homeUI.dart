@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:jeweller_stockbook/Helper/sdp.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:jeweller_stockbook/Items/itemDetails.dart';
@@ -42,10 +41,6 @@ class _HomeUIState extends State<HomeUI> {
             ),
           ],
         ),
-        systemOverlayStyle: SystemUiOverlayStyle(
-          systemNavigationBarColor: primaryAccentColor,
-          statusBarIconBrightness: Brightness.dark,
-        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -68,6 +63,7 @@ class _HomeUIState extends State<HomeUI> {
                   ),
                 ),
               ),
+              height20,
             ],
           ),
         ),
@@ -85,7 +81,7 @@ class _HomeUIState extends State<HomeUI> {
               statsCard(
                 onPress: () {},
                 icon: Icons.file_upload_outlined,
-                cardColor: Color.fromARGB(255, 255, 223, 227),
+                cardColor: kPrimaryColor,
                 label: 'Mortage Principle',
                 amount: FutureBuilder<dynamic>(
                   future: FirebaseFirestore.instance
@@ -93,6 +89,7 @@ class _HomeUIState extends State<HomeUI> {
                       .doc(UserData.uid)
                       .collection('mortgageBill')
                       .where('status', isEqualTo: 'Active')
+                      .limit(5)
                       .get(),
                   builder: ((context, snapshot) {
                     if (snapshot.hasData) {
@@ -134,7 +131,7 @@ class _HomeUIState extends State<HomeUI> {
               statsCard(
                 onPress: () {},
                 icon: Icons.file_download_outlined,
-                cardColor: Color.fromARGB(255, 217, 241, 218),
+                cardColor: kAccentColor,
                 label: 'Mortgage Interest',
                 amount: FutureBuilder<dynamic>(
                     future: FirebaseFirestore.instance
@@ -142,6 +139,7 @@ class _HomeUIState extends State<HomeUI> {
                         .doc(UserData.uid)
                         .collection('mortgageBill')
                         .where('status', isEqualTo: 'Active')
+                        .limit(5)
                         .get(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
@@ -189,7 +187,7 @@ class _HomeUIState extends State<HomeUI> {
                   navPush(context, LowStockUI());
                 },
                 icon: null,
-                cardColor: Color.fromARGB(255, 255, 194, 194),
+                cardColor: kCardCOlor,
                 label: 'Value of Items',
                 amount: Text(
                   "Low Stocks",
@@ -205,7 +203,7 @@ class _HomeUIState extends State<HomeUI> {
                   navPush(context, LowStockUI());
                 },
                 icon: null,
-                cardColor: Color.fromARGB(255, 255, 194, 194),
+                cardColor: kLightPrimaryColor,
                 label: 'Mortgage Bills',
                 amount: Text(
                   "In Loss",
@@ -299,13 +297,13 @@ class _HomeUIState extends State<HomeUI> {
                   padding: EdgeInsets.only(bottom: 15, left: 0, top: 15),
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                    color: primaryColor,
+                    color: kPrimaryColor,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Icon(
                           Icons.timeline,
-                          color: Colors.white,
+                          color: Colors.black,
                           size: 15,
                         ),
                         SizedBox(
@@ -316,7 +314,7 @@ class _HomeUIState extends State<HomeUI> {
                           style: TextStyle(
                             fontSize: 15,
                             letterSpacing: 0.7,
-                            color: Colors.white,
+                            color: Colors.black,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -412,7 +410,7 @@ class _HomeUIState extends State<HomeUI> {
             .then((value) => setState(() {}));
       },
       child: Container(
-        color: Colors.grey.shade100,
+        color: kTileColor,
         margin: EdgeInsets.only(bottom: 10),
         padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         child: Column(
@@ -431,7 +429,7 @@ class _HomeUIState extends State<HomeUI> {
                         "${txnMap['itemCategory']}",
                         style: TextStyle(
                           fontWeight: FontWeight.w700,
-                          color: primaryColor,
+                          color: Colors.black,
                           fontSize: 13,
                         ),
                       ),
@@ -462,7 +460,7 @@ class _HomeUIState extends State<HomeUI> {
                         "Remark",
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
-                          color: primaryColor,
+                          color: Colors.black,
                           fontSize: 13,
                         ),
                       ),
@@ -486,7 +484,7 @@ class _HomeUIState extends State<HomeUI> {
                         "Change",
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
-                          color: primaryColor,
+                          color: Colors.black,
                           fontSize: 13,
                         ),
                       ),
@@ -521,7 +519,7 @@ class _HomeUIState extends State<HomeUI> {
 
   Widget mrtgTxnCard({required var txnMap}) {
     return Container(
-      color: Colors.grey.shade100,
+      color: Color(0xFFFDEEFF),
       margin: EdgeInsets.only(bottom: 10),
       padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       child: Column(
@@ -569,7 +567,7 @@ class _HomeUIState extends State<HomeUI> {
                       "Amount Paid",
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
-                        color: primaryColor,
+                        color: Colors.black,
                         fontSize: 13,
                       ),
                     ),

@@ -194,16 +194,16 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
-          backgroundColor: primaryColor,
+          backgroundColor: kPrimaryColor,
           extendedIconLabelSpacing: 10,
           icon: Icon(
             Icons.add,
-            color: primaryAccentColor,
+            color: kLightPrimaryColor,
           ),
           label: Text(
             'Payment',
             style: TextStyle(
-              color: primaryAccentColor,
+              color: kLightPrimaryColor,
               fontWeight: FontWeight.w500,
               fontSize: 16,
               letterSpacing: 0.5,
@@ -253,7 +253,7 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                   padding: EdgeInsets.symmetric(horizontal: 14, vertical: 5),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(50),
-                    color: primaryColor,
+                    color: kPrimaryColor,
                   ),
                   child: Row(
                     children: [
@@ -261,7 +261,7 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                         'View Report',
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
-                          color: primaryAccentColor,
+                          color: kLightPrimaryColor,
                           fontSize: 15,
                         ),
                       ),
@@ -270,7 +270,7 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                       ),
                       Icon(
                         Icons.picture_as_pdf_outlined,
-                        color: primaryAccentColor,
+                        color: kLightPrimaryColor,
                         size: 15,
                       ),
                     ],
@@ -314,10 +314,10 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
           //   child: Padding(
           //     padding: EdgeInsets.symmetric(horizontal: 8.0),
           //     child: AppBar(
-          //       backgroundColor: primaryAccentColor,
+          //       backgroundColor: kLightPrimaryColor,
           //       bottom: TabBar(
           //         splashBorderRadius: BorderRadius.circular(40),
-          //         labelColor: primaryColor,
+          //         labelColor: kPrimaryColor,
           //         unselectedLabelColor: Colors.grey,
           //         automaticIndicatorColorAdjustment: true,
           //         indicatorWeight: 2,
@@ -328,7 +328,7 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
           //           fontFamily: 'San',
           //         ),
           //         indicatorSize: TabBarIndicatorSize.label,
-          //         indicatorColor: primaryColor,
+          //         indicatorColor: kPrimaryColor,
           //         tabs: [
           //           Tab(text: "Details"),
           //           Tab(text: "Payment Timeline"),
@@ -341,12 +341,12 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
             margin: EdgeInsets.symmetric(horizontal: 10),
             padding: EdgeInsets.symmetric(horizontal: 10),
             decoration: BoxDecoration(
-              color: primaryAccentColor,
+              color: kLightPrimaryColor,
               borderRadius: BorderRadius.circular(10),
             ),
             child: TabBar(
               splashBorderRadius: BorderRadius.circular(40),
-              labelColor: primaryColor,
+              labelColor: kPrimaryColor,
               unselectedLabelColor: Colors.blueGrey.shade200,
               automaticIndicatorColorAdjustment: true,
               indicatorWeight: 2,
@@ -363,7 +363,7 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                 fontFamily: 'San',
               ),
               indicatorSize: TabBarIndicatorSize.label,
-              indicatorColor: primaryColor,
+              indicatorColor: kPrimaryColor,
               tabs: [
                 Tab(text: "Details"),
                 Tab(text: "Payment Timeline"),
@@ -706,7 +706,7 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
-                          color: primaryColor,
+                          color: kPrimaryColor,
                         ),
                       ),
                     ),
@@ -718,7 +718,7 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
-                            color: primaryColor,
+                            color: kPrimaryColor,
                           ),
                         ),
                       ),
@@ -731,7 +731,7 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
-                            color: primaryColor,
+                            color: kPrimaryColor,
                           ),
                         ),
                       ),
@@ -797,7 +797,7 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: primaryColor,
+                  color: kPrimaryColor,
                 ),
               ),
             ),
@@ -1094,7 +1094,7 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: 15, horizontal: 25),
                     decoration: BoxDecoration(
-                      color: primaryColor,
+                      color: kPrimaryColor,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     width: double.infinity,

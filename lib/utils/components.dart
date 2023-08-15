@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:jeweller_stockbook/Helper/sdp.dart';
 import 'package:jeweller_stockbook/utils/colors.dart';
 
@@ -12,6 +13,20 @@ SizedBox get width5 => SizedBox(width: 5);
 SizedBox get width10 => SizedBox(width: 10);
 SizedBox get width15 => SizedBox(width: 15);
 SizedBox get width20 => SizedBox(width: 20);
+
+defaultSystemColors() => {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
+          overlays: [SystemUiOverlay.top]),
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle.light.copyWith(
+          statusBarBrightness: Brightness.light,
+          statusBarIconBrightness: Brightness.dark,
+          statusBarColor: Colors.transparent,
+          systemNavigationBarColor: kCardCOlor,
+          systemNavigationBarIconBrightness: Brightness.dark,
+        ),
+      ),
+    };
 
 Future<void> navPush(BuildContext context, Widget screen) {
   return Navigator.push(
@@ -30,18 +45,20 @@ Future<void> navPopUntilPush(BuildContext context, Widget screen) {
 
 Widget seeMoreButton(BuildContext context, {void Function()? onTap}) {
   return InkWell(
-    onTap: () {},
+    borderRadius: BorderRadius.circular(100),
+    onTap: onTap,
     child: Container(
       padding: EdgeInsets.symmetric(vertical: 7, horizontal: 15),
       decoration: BoxDecoration(
-        color: primaryColor,
+        color: kAccentColor,
         borderRadius: BorderRadius.circular(100),
       ),
       child: Text(
         'See More',
         style: TextStyle(
+          fontWeight: FontWeight.w600,
           fontSize: sdp(context, 10),
-          color: Colors.white,
+          color: Colors.black,
         ),
       ),
     ),
@@ -73,11 +90,11 @@ showSnackBar(BuildContext context, String msg) {
     content: Text(
       msg,
       style: TextStyle(
-        color: primaryAccentColor,
+        color: kLightPrimaryColor,
         fontWeight: FontWeight.w600,
       ),
     ),
-    backgroundColor: primaryColor,
+    backgroundColor: kPrimaryColor,
   ));
 }
 
@@ -130,15 +147,27 @@ Center PlaceholderText({final text1, text2}) {
   );
 }
 
-Container fullScreenLoading(BuildContext context) {
+Container fullScreenLoading(BuildContext context,
+    {String? loadingText = 'Loading...'}) {
   return Container(
     height: double.infinity,
     width: double.infinity,
     alignment: Alignment.center,
     color: Colors.white.withOpacity(0.7),
-    child: Transform.scale(
-      scale: 0.8,
-      child: CircularProgressIndicator(),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Transform.scale(
+          scale: 0.8,
+          child: CircularProgressIndicator(),
+        ),
+        loadingText != null
+            ? Padding(
+                padding: EdgeInsets.only(top: 10.0),
+                child: Text(loadingText),
+              )
+            : SizedBox(),
+      ],
     ),
   );
 }

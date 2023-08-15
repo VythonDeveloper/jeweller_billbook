@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jeweller_stockbook/Home/homeUI.dart';
-import 'package:jeweller_stockbook/Home/items.dart';
+import 'package:jeweller_stockbook/Home/itemsUI.dart';
 import 'package:jeweller_stockbook/Home/settingsUI.dart';
 import 'package:jeweller_stockbook/Home/mrtgBook.dart';
 import 'package:jeweller_stockbook/utils/animated_indexed_stack.dart';
@@ -45,7 +45,7 @@ class _DashboardUIState extends State<DashboardUI> {
       index: _selectedbottomNavIndex,
       children: [
         HomeUI(),
-        ItemsUi(),
+        ItemsUI(),
         MortgageUi(),
         SettingsUI(),
       ],
@@ -56,11 +56,11 @@ class _DashboardUIState extends State<DashboardUI> {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
       currentIndex: _selectedbottomNavIndex,
-      backgroundColor: primaryAccentColor,
-      selectedItemColor: primaryColor,
-      unselectedItemColor: Colors.grey.withOpacity(0.5),
+      backgroundColor: kCardCOlor,
+      selectedItemColor: Colors.black,
+      unselectedItemColor: Colors.black.withOpacity(0.3),
       unselectedIconTheme: IconThemeData(
-        color: Colors.grey.withOpacity(0.5),
+        color: Colors.black.withOpacity(0.3),
       ),
       selectedLabelStyle: TextStyle(
         fontWeight: FontWeight.w500,

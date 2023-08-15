@@ -189,7 +189,7 @@ class _CreateMrtgBillUiState extends State<CreateMrtgBillUi> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           CircleAvatar(
-            backgroundColor: primaryColor,
+            backgroundColor: kPrimaryColor,
             child: Text(customerName[0]),
           ),
           SizedBox(
@@ -279,7 +279,7 @@ class _CreateMrtgBillUiState extends State<CreateMrtgBillUi> {
                     color: Colors.grey.shade100,
                     borderRadius: BorderRadius.circular(5),
                     border: Border.all(
-                      color: primaryColor,
+                      color: kPrimaryColor,
                     ),
                   ),
                   child: Column(
@@ -289,7 +289,7 @@ class _CreateMrtgBillUiState extends State<CreateMrtgBillUi> {
                         "Purity",
                         style: TextStyle(
                           fontSize: 12,
-                          color: primaryColor,
+                          color: kPrimaryColor,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -432,7 +432,7 @@ class _CreateMrtgBillUiState extends State<CreateMrtgBillUi> {
                     color: Colors.grey.shade100,
                     borderRadius: BorderRadius.circular(5),
                     border: Border.all(
-                      color: primaryColor,
+                      color: kPrimaryColor,
                     ),
                   ),
                   child: Column(
@@ -442,7 +442,7 @@ class _CreateMrtgBillUiState extends State<CreateMrtgBillUi> {
                         "Status",
                         style: TextStyle(
                           fontSize: 12,
-                          color: primaryColor,
+                          color: kPrimaryColor,
                           fontWeight: FontWeight.w700,
                         ),
                       ),

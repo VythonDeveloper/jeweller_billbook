@@ -80,14 +80,6 @@ class _LoginUIState extends State<LoginUI> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle.dark.copyWith(
-        statusBarIconBrightness: Brightness.dark,
-        statusBarColor: Colors.transparent,
-        systemNavigationBarColor: Colors.transparent,
-        systemNavigationBarIconBrightness: Brightness.dark,
-      ),
-    );
     return Scaffold(
       body: Stack(
         children: [
@@ -102,7 +94,7 @@ class _LoginUIState extends State<LoginUI> {
                     'Welcome,',
                     style: TextStyle(
                       fontSize: sdp(context, 20),
-                      color: primaryColor,
+                      color: kPrimaryColor,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -110,7 +102,7 @@ class _LoginUIState extends State<LoginUI> {
                     Constants.shopName,
                     style: TextStyle(
                       fontSize: sdp(context, 20),
-                      color: primaryColor,
+                      color: kPrimaryColor,
                     ),
                   ),
                   SizedBox(
@@ -120,7 +112,7 @@ class _LoginUIState extends State<LoginUI> {
                     'Enter PIN',
                     style: TextStyle(
                       fontSize: sdp(context, 20),
-                      color: primaryColor,
+                      color: kPrimaryColor,
                     ),
                   ),
                   SizedBox(
@@ -130,7 +122,7 @@ class _LoginUIState extends State<LoginUI> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     numberOfFields: 5,
-                    focusedBorderColor: primaryColor,
+                    focusedBorderColor: kPrimaryColor,
                     showFieldAsBox: true,
                     obscureText: true,
                     autoFocus: true,

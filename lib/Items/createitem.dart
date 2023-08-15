@@ -97,9 +97,7 @@ class _CreateItemUiState extends State<CreateItemUi> {
           padding: EdgeInsets.all(12),
           children: [
             basicItemDetails(),
-            SizedBox(
-              height: 20,
-            ),
+            height20,
             categoryTabBar(),
             stockTabBar(),
           ],
@@ -224,8 +222,8 @@ class _CreateItemUiState extends State<CreateItemUi> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(50),
                     color: _selectedItemType == "Product"
-                        ? primaryColor
-                        : primaryAccentColor,
+                        ? Colors.blue.shade800
+                        : Colors.blue.shade100,
                   ),
                   child: Text(
                     "Product",
@@ -233,7 +231,7 @@ class _CreateItemUiState extends State<CreateItemUi> {
                       fontWeight: FontWeight.w500,
                       color: _selectedItemType == "Product"
                           ? Colors.white
-                          : primaryColor,
+                          : Colors.black,
                     ),
                   ),
                 ),
@@ -252,8 +250,8 @@ class _CreateItemUiState extends State<CreateItemUi> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(50),
                     color: _selectedItemType == "Service"
-                        ? primaryColor
-                        : primaryAccentColor,
+                        ? Colors.blue.shade800
+                        : Colors.blue.shade100,
                   ),
                   child: Text(
                     "Service",
@@ -261,7 +259,7 @@ class _CreateItemUiState extends State<CreateItemUi> {
                       fontWeight: FontWeight.w500,
                       color: _selectedItemType == "Service"
                           ? Colors.white
-                          : primaryColor,
+                          : Colors.black,
                     ),
                   ),
                 ),
@@ -474,7 +472,7 @@ class _CreateItemUiState extends State<CreateItemUi> {
                     )
                   : BorderRadius.circular(10),
               color: _lowStockToggle.value
-                  ? primaryColor.withOpacity(0.3)
+                  ? kPrimaryColor.withOpacity(0.3)
                   : Colors.grey.shade100,
             ),
             width: double.infinity,
@@ -498,8 +496,8 @@ class _CreateItemUiState extends State<CreateItemUi> {
                       });
                     },
                     value: _lowStockToggle.value,
-                    activeColor: primaryColor,
-                    activeTrackColor: primaryAccentColor,
+                    activeColor: kPrimaryColor,
+                    activeTrackColor: kLightPrimaryColor,
                     inactiveThumbColor: Colors.grey,
                     inactiveTrackColor: Colors.grey.shade700,
                   ),
@@ -517,7 +515,7 @@ class _CreateItemUiState extends State<CreateItemUi> {
                   ? Container(
                       padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: primaryAccentColor,
+                        color: kLightPrimaryColor,
                         borderRadius: BorderRadius.only(
                           bottomLeft: Radius.circular(10),
                           bottomRight: Radius.circular(10),

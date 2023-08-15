@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:jeweller_stockbook/Signin/splashUI.dart';
 import 'package:jeweller_stockbook/utils/colors.dart';
+import 'package:jeweller_stockbook/utils/components.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,23 +18,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
-        overlays: [SystemUiOverlay.top]);
-
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle.light.copyWith(
-        statusBarBrightness: Brightness.light,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarColor: Colors.transparent,
-        systemNavigationBarColor: primaryAccentColor,
-        systemNavigationBarIconBrightness: Brightness.dark,
-      ),
-    );
+    defaultSystemColors();
 
     return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'StockBook',
-        theme: kThemeData(),
-        home: SplashUI());
+      debugShowCheckedModeBanner: false,
+      title: 'StockBook',
+      theme: kThemeData(),
+      home: SplashUI(),
+    );
   }
 }

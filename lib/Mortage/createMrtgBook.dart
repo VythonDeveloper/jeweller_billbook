@@ -139,7 +139,7 @@ class _CreateMrtgBookUiState extends State<CreateMrtgBookUi> {
         Navigator.pop(context);
       },
       leading: CircleAvatar(
-        backgroundColor: primaryColor,
+        backgroundColor: kPrimaryColor,
         child: Text(
           contact.displayName[0],
           style: TextStyle(color: Colors.white),
@@ -171,7 +171,7 @@ class _CreateMrtgBookUiState extends State<CreateMrtgBookUi> {
               margin: EdgeInsets.symmetric(vertical: 10),
               width: double.infinity,
               decoration: BoxDecoration(
-                color: primaryAccentColor,
+                color: kLightPrimaryColor,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Row(
@@ -180,7 +180,7 @@ class _CreateMrtgBookUiState extends State<CreateMrtgBookUi> {
                 children: [
                   Icon(
                     Icons.add_circle_outline_outlined,
-                    color: primaryColor,
+                    color: kPrimaryColor,
                   ),
                   SizedBox(
                     width: 10,
@@ -189,7 +189,7 @@ class _CreateMrtgBookUiState extends State<CreateMrtgBookUi> {
                     'Create Contact',
                     style: TextStyle(
                       fontSize: 17,
-                      color: primaryColor,
+                      color: kPrimaryColor,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -206,14 +206,14 @@ class _CreateMrtgBookUiState extends State<CreateMrtgBookUi> {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        color: primaryAccentColor,
+        color: kLightPrimaryColor,
       ),
       child: TextField(
         controller: _searchKey,
         decoration: InputDecoration(
           prefixIcon: Icon(
             Icons.search,
-            color: primaryColor,
+            color: kPrimaryColor,
           ),
           border: InputBorder.none,
           hintText: 'Search Name, Phone .etc',

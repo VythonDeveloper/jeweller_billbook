@@ -23,23 +23,6 @@ class _MortgageUiState extends State<MortgageUi> {
   QuerySnapshot<Map<String, dynamic>>? initData;
 
   @override
-  void initState() {
-    // fetchData();
-    super.initState();
-  }
-
-  // fetchData() async {
-  //   QuerySnapshot<Map<String, dynamic>> data = await FirebaseFirestore.instance
-  //       .collection('users')
-  //       .doc(UserData.uid)
-  //       .collection("mortgageBook")
-  //       .orderBy('id', descending: true)
-  //       .get();
-
-  //   print(data.docs[0].data());
-  // }
-
-  @override
   void dispose() {
     super.dispose();
     _searchKey.dispose();
@@ -48,13 +31,25 @@ class _MortgageUiState extends State<MortgageUi> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: appBarItems()),
+      appBar: AppBar(
+        title: Text('Mortgage'),
+        surfaceTintColor: Colors.transparent,
+        // toolbarHeight: sdp(context, 50),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.all(10.0),
           child: Column(
             children: [
               mrtgBookList(),
+              height10,
+              seeMoreButton(context, onTap: () {
+                setState(() {
+                  mortgageItemCounter += 5;
+                });
+              }),
+              height50,
+              height50,
             ],
           ),
         ),
@@ -85,10 +80,10 @@ class _MortgageUiState extends State<MortgageUi> {
             fontSize: sdp(context, 12),
           ),
         ),
-        width5,
-        Flexible(
-          child: searchBar(),
-        ),
+        // width5,
+        // Flexible(
+        //   child: searchBar(),
+        // ),
       ],
     );
   }
@@ -96,7 +91,7 @@ class _MortgageUiState extends State<MortgageUi> {
   Widget searchBar() {
     return Container(
       decoration: BoxDecoration(
-        color: primaryAccentColor,
+        color: kPrimaryColor,
         borderRadius: BorderRadius.circular(10),
       ),
       child: TextField(
@@ -104,14 +99,14 @@ class _MortgageUiState extends State<MortgageUi> {
         decoration: InputDecoration(
           prefixIcon: Icon(
             Icons.search,
-            color: primaryColor,
+            color: Colors.black,
           ),
           border: InputBorder.none,
-          hintText: 'Search by Name',
-          hintStyle: TextStyle(
-            color: Colors.grey.shade700,
-            fontSize: sdp(context, 10),
-          ),
+          hintText: 'Search by name',
+          // hintStyle: TextStyle(
+          //   color: Colors.grey.shade700,
+          //   fontSize: sdp(context, 10),
+          // ),
         ),
         onChanged: (value) {
           // setState(() {});
@@ -120,58 +115,61 @@ class _MortgageUiState extends State<MortgageUi> {
     );
   }
 
+  int mortgageItemCounter = 5;
   Widget mrtgBookList() {
     return FutureBuilder<dynamic>(
-        future: FirebaseFirestore.instance
-            .collection('users')
-            .doc(UserData.uid)
-            .collection("mortgageBook")
-            .orderBy('id', descending: true)
-            .get(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            if (snapshot.data.docs.length > 0) {
-              return ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: snapshot.data.docs.length,
-                itemBuilder: (context, index) {
-                  DocumentSnapshot _mrtgBookMap = snapshot.data.docs[index];
-                  return mrtgBookCard(mrtgBookMap: _mrtgBookMap);
-                },
-              );
-            }
-            return Center(
-              child: Padding(
-                padding: EdgeInsets.only(top: 100),
-                child: Column(
-                  children: [
-                    Text(
-                      "No Mortgage",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.grey.shade400,
-                      ),
-                    ),
-                    Text(
-                      "CREATE",
-                      style: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.grey.shade400,
-                        letterSpacing: 5,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+      future: FirebaseFirestore.instance
+          .collection('users')
+          .doc(UserData.uid)
+          .collection("mortgageBook")
+          .orderBy('id', descending: true)
+          .limit(mortgageItemCounter)
+          .get(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          if (snapshot.data.docs.length > 0) {
+            return ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: snapshot.data.docs.length,
+              itemBuilder: (context, index) {
+                DocumentSnapshot _mrtgBookMap = snapshot.data.docs[index];
+                return mrtgBookCard(mrtgBookMap: _mrtgBookMap);
+              },
             );
           }
-          return LinearProgressIndicator(
-            minHeight: 3,
+          return Center(
+            child: Padding(
+              padding: EdgeInsets.only(top: 100),
+              child: Column(
+                children: [
+                  Text(
+                    "No Mortgage",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.grey.shade400,
+                    ),
+                  ),
+                  Text(
+                    "CREATE",
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.grey.shade400,
+                      letterSpacing: 5,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           );
-        });
+        }
+        return LinearProgressIndicator(
+          minHeight: 3,
+        );
+      },
+    );
   }
 
   Widget mrtgBookCard({required var mrtgBookMap}) {
@@ -189,6 +187,7 @@ class _MortgageUiState extends State<MortgageUi> {
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -215,7 +214,7 @@ class _MortgageUiState extends State<MortgageUi> {
                 ),
                 CircleAvatar(
                   radius: 18,
-                  backgroundColor: primaryColor,
+                  backgroundColor: Colors.blue.shade700,
                   child: IconButton(
                     onPressed: () async {
                       Uri url = Uri.parse("tel:${mrtgBookMap['phone']}");
@@ -228,7 +227,7 @@ class _MortgageUiState extends State<MortgageUi> {
                     },
                     icon: Icon(
                       Icons.call,
-                      color: primaryAccentColor,
+                      color: Colors.white,
                       size: 15,
                     ),
                   ),
@@ -240,7 +239,6 @@ class _MortgageUiState extends State<MortgageUi> {
                 Expanded(
                   child: mrtgBookStatsCard(
                       label: 'Total Principle',
-                      cardColor: Colors.blueGrey.shade500,
                       content: FutureBuilder<dynamic>(
                         future: FirebaseFirestore.instance
                             .collection('users')
@@ -264,7 +262,6 @@ class _MortgageUiState extends State<MortgageUi> {
                                 "₹ " + Constants.cFInt.format(totalPrinciple),
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.white,
                                   fontSize: sdp(context, 10),
                                 ),
                               );
@@ -273,7 +270,6 @@ class _MortgageUiState extends State<MortgageUi> {
                               "₹ 0",
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white,
                                 fontSize: sdp(context, 10),
                               ),
                             );
@@ -292,7 +288,6 @@ class _MortgageUiState extends State<MortgageUi> {
                 Expanded(
                   child: mrtgBookStatsCard(
                     label: 'Total Interest',
-                    cardColor: Colors.blueGrey.shade700,
                     content: FutureBuilder<dynamic>(
                         future: FirebaseFirestore.instance
                             .collection('users')
@@ -308,7 +303,6 @@ class _MortgageUiState extends State<MortgageUi> {
                                 "₹ 0",
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white,
                                   fontSize: sdp(context, 10),
                                 ),
                               );
@@ -335,7 +329,6 @@ class _MortgageUiState extends State<MortgageUi> {
                                       .format(totalInterestAmount),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white,
                                 fontSize: sdp(context, 10),
                               ),
                             );
@@ -350,29 +343,27 @@ class _MortgageUiState extends State<MortgageUi> {
                 ),
                 Expanded(
                   child: mrtgBookStatsCard(
-                      label: 'Total Paid',
-                      cardColor: Colors.blueGrey.shade900,
-                      content: Text(
-                        "₹ " +
-                            Constants.cFDecimal
-                                .format(mrtgBookMap['totalPaid']),
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: sdp(context, 10),
-                        ),
+                    label: 'Total Paid',
+                    content: Text(
+                      "₹ " +
+                          Constants.cFDecimal.format(mrtgBookMap['totalPaid']),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: sdp(context, 10),
                       ),
-                      mrtgBookMap: mrtgBookMap),
+                    ),
+                    mrtgBookMap: mrtgBookMap,
+                  ),
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),
     );
   }
 
-  Container mrtgBookStatsCard({
+  Widget mrtgBookStatsCard({
     final mrtgBookMap,
     label,
     cardColor,
@@ -382,7 +373,8 @@ class _MortgageUiState extends State<MortgageUi> {
       padding: EdgeInsets.all(8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5),
-        color: cardColor,
+        color: kPrimaryColor,
+        border: Border.all(color: Colors.amber.shade600),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -391,7 +383,6 @@ class _MortgageUiState extends State<MortgageUi> {
             label,
             style: TextStyle(
               fontWeight: FontWeight.w600,
-              color: Colors.white,
               fontSize: sdp(context, 10),
             ),
             maxLines: 1,

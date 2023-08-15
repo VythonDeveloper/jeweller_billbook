@@ -90,7 +90,7 @@ class _ItemCategoryUiState extends State<ItemCategoryUi> {
     return Flexible(
       child: Container(
         decoration: BoxDecoration(
-          color: primaryAccentColor,
+          color: kLightPrimaryColor,
           borderRadius: BorderRadius.circular(10),
         ),
         child: TextField(
@@ -98,7 +98,7 @@ class _ItemCategoryUiState extends State<ItemCategoryUi> {
           decoration: InputDecoration(
             prefixIcon: Icon(
               Icons.search,
-              color: primaryColor,
+              color: kPrimaryColor,
             ),
             border: InputBorder.none,
             hintText: 'Search by Name',
@@ -160,7 +160,7 @@ class _ItemCategoryUiState extends State<ItemCategoryUi> {
       margin: EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        color: primaryAccentColor,
+        color: kLightPrimaryColor,
       ),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -203,7 +203,7 @@ class _ItemCategoryUiState extends State<ItemCategoryUi> {
             IconButton(
               onPressed: () {},
               icon: CircleAvatar(
-                backgroundColor: primaryColor,
+                backgroundColor: kPrimaryColor,
                 radius: 18,
                 child: Icon(
                   Icons.edit,
@@ -335,7 +335,7 @@ class _ItemCategoryUiState extends State<ItemCategoryUi> {
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: 15, horizontal: 25),
                     decoration: BoxDecoration(
-                      color: primaryColor,
+                      color: kPrimaryColor,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     width: double.infinity,

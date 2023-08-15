@@ -48,18 +48,20 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              color: primaryAccentColor,
-              padding:
-                  EdgeInsets.only(left: 20, right: 20, top: 30, bottom: 10),
+      body: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 15),
+            width: double.infinity,
+            color: kLightPrimaryColor,
+            child: SafeArea(
+              bottom: false,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
+                  height10,
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
@@ -67,20 +69,11 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            IconButton(
-                              padding: EdgeInsets.zero,
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              icon: Icon(
-                                Icons.arrow_back,
-                              ),
-                            ),
                             Row(
                               children: [
                                 Icon(
                                   Icons.person,
-                                  color: primaryColor,
+                                  color: Colors.black,
                                   size: sdp(context, 15),
                                 ),
                                 SizedBox(
@@ -89,8 +82,8 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                                 Text(
                                   mrtgBook['name'],
                                   style: TextStyle(
-                                    fontSize: sdp(context, 12),
-                                    fontWeight: FontWeight.w700,
+                                    fontSize: sdp(context, 15),
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
                               ],
@@ -102,7 +95,7 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                               children: [
                                 Icon(
                                   Icons.phone,
-                                  color: primaryColor,
+                                  color: Colors.black,
                                   size: sdp(context, 15),
                                 ),
                                 SizedBox(
@@ -112,8 +105,7 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                                   mrtgBook['phone'],
                                   style: TextStyle(
                                     fontSize: sdp(context, 11),
-                                    color: textColor,
-                                    fontWeight: FontWeight.w400,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
                               ],
@@ -122,64 +114,72 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                         ),
                       ),
                       SizedBox(
-                        width: sdp(context, 15),
+                        height: 10,
                       ),
-                      Column(
-                        children: [
-                          CircleAvatar(
-                            radius: 18,
-                            backgroundColor: primaryColor,
-                            child: FittedBox(
-                              child: IconButton(
-                                onPressed: () {
-                                  showModalBottomSheet<void>(
-                                      context: context,
-                                      isDismissible: false,
-                                      builder: (BuildContext context) {
-                                        return mrtgBillfilterModal();
-                                      }).then((value) {
-                                    if (mounted) {
-                                      setState(() {});
-                                    }
-                                  });
-                                },
-                                icon: Icon(
-                                  Icons.filter_list_sharp,
-                                  color: primaryAccentColor,
-                                ),
-                              ),
+                      CircleAvatar(
+                        radius: 18,
+                        backgroundColor: Colors.blue.shade700,
+                        child: FittedBox(
+                          child: IconButton(
+                            onPressed: () {},
+                            icon: Icon(
+                              Icons.call,
+                              color: Colors.white,
                             ),
                           ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          CircleAvatar(
-                            radius: 18,
-                            backgroundColor: primaryColor,
-                            child: FittedBox(
-                              child: IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.call,
-                                  color: primaryAccentColor,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ],
                   ),
-                  mrtgBillSearchBar(),
+                  height10,
+                  // InkWell(
+                  //   onTap: () {},
+                  //   borderRadius: BorderRadius.circular(100),
+                  //   child: Container(
+                  //     padding: EdgeInsets.only(right: 10),
+                  //     decoration: BoxDecoration(
+                  //         color: Colors.white,
+                  //         borderRadius: BorderRadius.circular(100)),
+                  //     child: Row(
+                  //       mainAxisSize: MainAxisSize.min,
+                  //       children: [
+                  //         CircleAvatar(
+                  //           radius: 18,
+                  //           backgroundColor: kPrimaryColor,
+                  //           child: FittedBox(
+                  //             child: Icon(
+                  //               Icons.filter_list_sharp,
+                  //               size: 20,
+                  //             ),
+                  //           ),
+                  //         ),
+                  //         width10,
+                  //         Text(
+                  //           'Filter',
+                  //           style: TextStyle(fontWeight: FontWeight.w600),
+                  //         ),
+                  //       ],
+                  //     ),
+                  //   ),
+                  // ),
+                  height10,
+                  // mrtgBillSearchBar(),
                 ],
               ),
             ),
-            mrtgBillList(),
-            SizedBox(
-              height: 100,
+          ),
+          Expanded(
+              child: SingleChildScrollView(
+            child: Column(
+              children: [
+                mrtgBillList(),
+                SizedBox(
+                  height: 100,
+                ),
+              ],
             ),
-          ],
-        ),
+          ))
+        ],
       ),
       floatingActionButton: CustomFABButton(
         onPressed: () {
@@ -215,7 +215,7 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
         decoration: InputDecoration(
           prefixIcon: Icon(
             Icons.search,
-            color: primaryColor,
+            color: kPrimaryColor,
           ),
           border: InputBorder.none,
           hintText: 'Search by description',
@@ -255,38 +255,14 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                     style: headingStyle,
                   ),
                   Spacer(),
-                  MaterialButton(
+                  ElevatedButton.icon(
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    color: primaryColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    elevation: 0,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.done,
-                          color: Colors.white,
-                          size: 16,
-                        ),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        Text(
-                          "Apply",
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
+                    icon: Icon(Icons.done),
+                    label: Text('Apply'),
                   ),
-                  SizedBox(
-                    width: 10,
-                  ),
+                  width10,
                 ],
               ),
             ),
@@ -381,13 +357,13 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                                 //     indicatorColor: Colors.white,
                                 //     // colorScheme: ColorScheme.light(
                                 //     //   primary: Colors.yellow,
-                                //     //   onPrimary: primaryColor,
+                                //     //   onPrimary: kPrimaryColor,
                                 //     //   brightness: Brightness.light,
                                 //     //   onSurface: Colors.green,
                                 //     //   background: Colors.blue,
                                 //     // ),
-                                //     scaffoldBackgroundColor: primaryAccentColor,
-                                //     // primaryColor: primaryColor,
+                                //     scaffoldBackgroundColor: kLightPrimaryColor,
+                                //     // kPrimaryColor: kPrimaryColor,
                                 //     iconTheme: IconThemeData(
                                 //       color: Colors.white,
                                 //     ),
@@ -395,7 +371,7 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                                 //       color: Colors.white,
                                 //     ),
                                 //     appBarTheme: AppBarTheme(
-                                //       backgroundColor: primaryColor,
+                                //       backgroundColor: kPrimaryColor,
                                 //       foregroundColor: Colors.white,
                                 //       actionsIconTheme: IconThemeData(
                                 //         color: Colors.white,
@@ -406,7 +382,7 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                                 //     ),
                                 //     textButtonTheme: TextButtonThemeData(
                                 //         // style: TextButton.styleFrom(
-                                //         //   backgroundColor: primaryColor,
+                                //         //   backgroundColor: kPrimaryColor,
                                 //         // ),
                                 //         ),
                                 //   ),
@@ -468,13 +444,13 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
         padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(50),
-          color: primaryAccentColor,
+          color: kLightPrimaryColor,
         ),
         child: Text(
           label,
           style: TextStyle(
             fontWeight: FontWeight.w500,
-            color: primaryColor,
+            color: kPrimaryColor,
           ),
         ),
       ),
@@ -630,7 +606,7 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                       "Total Due",
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
-                        color: primaryColor,
+                        color: kPrimaryColor,
                         fontSize: 14,
                       ),
                     ),
@@ -670,7 +646,7 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                       "Valuation",
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
-                        color: primaryColor,
+                        color: kPrimaryColor,
                         fontSize: 14,
                       ),
                     ),

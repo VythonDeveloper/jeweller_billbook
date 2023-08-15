@@ -148,16 +148,14 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                       bottomLeft: Radius.circular(10),
                     ),
                   ),
-                  backgroundColor: primaryColor,
+                  backgroundColor: kAccentColor,
                   extendedIconLabelSpacing: 10,
                   icon: Icon(
                     Icons.add,
-                    color: Colors.white,
                   ),
                   label: Text(
                     'Stock',
                     style: TextStyle(
-                      color: Colors.white,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -277,13 +275,13 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
               margin: EdgeInsets.symmetric(horizontal: 10),
               padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
-                color: primaryAccentColor,
+                color: kLightPrimaryColor,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: TabBar(
                 splashBorderRadius: BorderRadius.circular(40),
-                labelColor: primaryColor,
-                unselectedLabelColor: Colors.blueGrey.shade200,
+                labelColor: Colors.black,
+                unselectedLabelColor: Colors.black.withOpacity(0.4),
                 automaticIndicatorColorAdjustment: true,
                 indicatorWeight: 2,
                 labelStyle: TextStyle(
@@ -299,7 +297,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                   fontFamily: 'San',
                 ),
                 indicatorSize: TabBarIndicatorSize.label,
-                indicatorColor: primaryColor,
+                indicatorColor: Colors.black,
                 tabs: [
                   Tab(text: "Timeline"),
                   Tab(text: "Details"),
@@ -329,7 +327,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
           children: [
             Container(
               padding: EdgeInsets.symmetric(vertical: 15, horizontal: 12),
-              color: Colors.grey.shade100,
+              color: kCardCOlor,
               child: Row(
                 children: [
                   Expanded(
@@ -338,7 +336,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
-                        color: primaryColor,
+                        color: Colors.black,
                       ),
                     ),
                   ),
@@ -350,7 +348,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
-                          color: primaryColor,
+                          color: Colors.black,
                         ),
                       ),
                     ),
@@ -363,7 +361,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
-                          color: primaryColor,
+                          color: Colors.black,
                         ),
                       ),
                     ),
@@ -415,7 +413,6 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                 );
               }),
             ),
-            // height20,
             Align(
               alignment: Alignment.topRight,
               child: Padding(
@@ -1123,7 +1120,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
   //                 child: Container(
   //                   padding: EdgeInsets.symmetric(vertical: 15, horizontal: 25),
   //                   decoration: BoxDecoration(
-  //                     color: primaryColor,
+  //                     color: kPrimaryColor,
   //                     borderRadius: BorderRadius.circular(8),
   //                   ),
   //                   width: double.infinity,

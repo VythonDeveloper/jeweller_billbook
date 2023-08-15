@@ -197,8 +197,8 @@ class _EditItemUIState extends State<EditItemUI> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(50),
                     color: _selectedItemType == "Product"
-                        ? primaryColor
-                        : primaryAccentColor,
+                        ? kPrimaryColor
+                        : kLightPrimaryColor,
                   ),
                   child: Text(
                     "Product",
@@ -206,7 +206,7 @@ class _EditItemUIState extends State<EditItemUI> {
                       fontWeight: FontWeight.w500,
                       color: _selectedItemType == "Product"
                           ? Colors.white
-                          : primaryColor,
+                          : kPrimaryColor,
                     ),
                   ),
                 ),
@@ -225,8 +225,8 @@ class _EditItemUIState extends State<EditItemUI> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(50),
                     color: _selectedItemType == "Service"
-                        ? primaryColor
-                        : primaryAccentColor,
+                        ? kPrimaryColor
+                        : kLightPrimaryColor,
                   ),
                   child: Text(
                     "Service",
@@ -234,7 +234,7 @@ class _EditItemUIState extends State<EditItemUI> {
                       fontWeight: FontWeight.w500,
                       color: _selectedItemType == "Service"
                           ? Colors.white
-                          : primaryColor,
+                          : kPrimaryColor,
                     ),
                   ),
                 ),
@@ -453,7 +453,7 @@ class _EditItemUIState extends State<EditItemUI> {
                     )
                   : BorderRadius.circular(10),
               color: _lowStockToggle.value
-                  ? primaryColor.withOpacity(0.3)
+                  ? kPrimaryColor.withOpacity(0.3)
                   : Colors.grey.shade100,
             ),
             width: double.infinity,
@@ -465,7 +465,7 @@ class _EditItemUIState extends State<EditItemUI> {
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 15,
-                    color: _lowStockToggle.value ? primaryColor : Colors.black,
+                    color: _lowStockToggle.value ? kPrimaryColor : Colors.black,
                   ),
                 ),
                 Transform.scale(
@@ -479,8 +479,8 @@ class _EditItemUIState extends State<EditItemUI> {
                       });
                     },
                     value: _lowStockToggle.value,
-                    activeColor: primaryColor,
-                    activeTrackColor: primaryAccentColor,
+                    activeColor: kPrimaryColor,
+                    activeTrackColor: kLightPrimaryColor,
                     inactiveThumbColor: Colors.grey,
                     inactiveTrackColor: Colors.grey.shade700,
                   ),
@@ -498,7 +498,7 @@ class _EditItemUIState extends State<EditItemUI> {
                   ? Container(
                       padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: primaryAccentColor,
+                        color: kLightPrimaryColor,
                         borderRadius: BorderRadius.only(
                           bottomLeft: Radius.circular(10),
                           bottomRight: Radius.circular(10),
