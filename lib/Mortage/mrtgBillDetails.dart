@@ -5,6 +5,7 @@ import 'package:jeweller_stockbook/Mortage/editMrtgBill.dart';
 import 'package:jeweller_stockbook/utils/colors.dart';
 import 'package:jeweller_stockbook/utils/components.dart';
 import 'package:jeweller_stockbook/utils/constants.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../Helper/pdf_invoice_api.dart';
 import '../Helper/user.dart';
@@ -129,47 +130,70 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
         appBar: AppBar(
           backgroundColor: Colors.white,
           actions: [
-            IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.call),
-            ),
-            IconButton(
-              onPressed: () async {
-                final pdfFile = await PdfInvoiceApi.generate(
-                    action: "Share", dataMap: {'': ''});
-                PdfInvoiceApi.shareFile(pdfFile);
-              },
-              icon: Icon(
-                Icons.ios_share,
-                color: profitColor,
+            CircleAvatar(
+              radius: 15,
+              backgroundColor: Colors.blue.shade800,
+              child: FittedBox(
+                child: IconButton(
+                  onPressed: () async {
+                    if (!await launchUrl(Uri.parse('tel:$phone'))) {
+                      throw Exception('Could not launch $phone');
+                    }
+                  },
+                  icon: Icon(
+                    Icons.call,
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ),
-            IconButton(
-              onPressed: () {
-                navPush(
-                        context,
-                        EditMrtgBillUi(
-                            customerName: customerName,
-                            phone: phone,
-                            mrtgBillMap: mrtgBillMap))
-                    .then((value) {
-                  fetchMrtgBillDetails();
-                });
-              },
-              icon: Icon(Icons.edit),
-            ),
-            IconButton(
-              onPressed: () {
-                showDialog<void>(
-                  context: context,
-                  barrierDismissible: false, // user must tap button!
-                  builder: (BuildContext context) {
-                    return deleteMrtgBillAlert();
+            width10,
+            CircleAvatar(
+              radius: 15,
+              backgroundColor: Colors.green,
+              child: FittedBox(
+                child: IconButton(
+                  onPressed: () {
+                    navPush(
+                            context,
+                            EditMrtgBillUi(
+                                customerName: customerName,
+                                phone: phone,
+                                mrtgBillMap: mrtgBillMap))
+                        .then((value) {
+                      fetchMrtgBillDetails();
+                    });
                   },
-                );
-              },
-              icon: Icon(Icons.delete),
+                  icon: Icon(
+                    Icons.edit,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
             ),
+            width10,
+            CircleAvatar(
+              radius: 15,
+              backgroundColor: Colors.red,
+              child: FittedBox(
+                child: IconButton(
+                  onPressed: () {
+                    showDialog<void>(
+                      context: context,
+                      barrierDismissible: false, // user must tap button!
+                      builder: (BuildContext context) {
+                        return deleteMrtgBillAlert();
+                      },
+                    );
+                  },
+                  icon: Icon(
+                    Icons.delete,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+            width10,
           ],
         ),
         body: Column(

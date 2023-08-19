@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts/contact.dart';
+import 'package:jeweller_stockbook/Helper/sdp.dart';
 import 'package:jeweller_stockbook/Helper/select_Contacts.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:jeweller_stockbook/utils/components.dart';
@@ -160,67 +161,56 @@ class _CreateMrtgBookUiState extends State<CreateMrtgBookUi> {
       child: Column(
         children: [
           searchBar(),
-          GestureDetector(
-            onTap: () {
-              SelectContact().createContact().then((value) {
-                getContacts();
-              });
-            },
-            child: Container(
-              padding: EdgeInsets.all(10),
-              margin: EdgeInsets.symmetric(vertical: 10),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: kLightPrimaryColor,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.add_circle_outline_outlined,
-                    color: kPrimaryColor,
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Text(
-                    'Create Contact',
-                    style: TextStyle(
-                      fontSize: 17,
+          height10,
+          ElevatedButton(
+              onPressed: () {
+                SelectContact().createContact().then((value) {
+                  getContacts();
+                });
+              },
+              child: Container(
+                width: double.infinity,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.add_circle_outline_outlined,
                       color: kPrimaryColor,
-                      fontWeight: FontWeight.w600,
+                      size: 17,
                     ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+                    width10,
+                    Text(
+                      'Create Contact',
+                      style: TextStyle(
+                        fontSize: sdp(context, 12),
+                        color: kPrimaryColor,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              )),
         ],
       ),
     );
   }
 
-  Container searchBar() {
+  Widget searchBar() {
     return Container(
       decoration: BoxDecoration(
+        color: kPrimaryColor,
         borderRadius: BorderRadius.circular(10),
-        color: kLightPrimaryColor,
       ),
       child: TextField(
         controller: _searchKey,
+        textCapitalization: TextCapitalization.words,
         decoration: InputDecoration(
           prefixIcon: Icon(
             Icons.search,
-            color: kPrimaryColor,
           ),
           border: InputBorder.none,
-          hintText: 'Search Name, Phone .etc',
-          hintStyle: TextStyle(
-            color: Colors.grey.shade500,
-            fontSize: 16,
-          ),
+          hintText: 'Search by Name',
         ),
         onChanged: (value) {
           setState(() {});

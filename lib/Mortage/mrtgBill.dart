@@ -6,6 +6,7 @@ import 'package:jeweller_stockbook/Mortage/createMrtgBill.dart';
 import 'package:jeweller_stockbook/Mortage/mrtgBillDetails.dart';
 import 'package:jeweller_stockbook/utils/colors.dart';
 import 'package:jeweller_stockbook/utils/constants.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../utils/components.dart';
 
@@ -121,7 +122,13 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                         backgroundColor: Colors.blue.shade700,
                         child: FittedBox(
                           child: IconButton(
-                            onPressed: () {},
+                            onPressed: () async {
+                              if (!await launchUrl(
+                                  Uri.parse('tel:${mrtgBook['phone']}'))) {
+                                throw Exception(
+                                    'Could not launch ${mrtgBook['phone']}');
+                              }
+                            },
                             icon: Icon(
                               Icons.call,
                               color: Colors.white,
@@ -131,39 +138,7 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                       ),
                     ],
                   ),
-                  height10,
-                  // InkWell(
-                  //   onTap: () {},
-                  //   borderRadius: BorderRadius.circular(100),
-                  //   child: Container(
-                  //     padding: EdgeInsets.only(right: 10),
-                  //     decoration: BoxDecoration(
-                  //         color: Colors.white,
-                  //         borderRadius: BorderRadius.circular(100)),
-                  //     child: Row(
-                  //       mainAxisSize: MainAxisSize.min,
-                  //       children: [
-                  //         CircleAvatar(
-                  //           radius: 18,
-                  //           backgroundColor: kPrimaryColor,
-                  //           child: FittedBox(
-                  //             child: Icon(
-                  //               Icons.filter_list_sharp,
-                  //               size: 20,
-                  //             ),
-                  //           ),
-                  //         ),
-                  //         width10,
-                  //         Text(
-                  //           'Filter',
-                  //           style: TextStyle(fontWeight: FontWeight.w600),
-                  //         ),
-                  //       ],
-                  //     ),
-                  //   ),
-                  // ),
-                  height10,
-                  // mrtgBillSearchBar(),
+                  height20,
                 ],
               ),
             ),
@@ -536,7 +511,7 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
       txnMap['interestPerMonth'],
       txnMap['lastPaymentDate'],
     );
-
+    // print(txnMap['amount']);
     return GestureDetector(
       onTap: () {
         navPush(
@@ -603,17 +578,15 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                       height: 5,
                     ),
                     Text(
-                      "Total Due",
+                      "Principle",
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
-                        color: kPrimaryColor,
+                        color: Colors.black,
                         fontSize: 14,
                       ),
                     ),
                     Text(
-                      "₹ " +
-                          Constants.cFDecimal
-                              .format(_calculatedResult['totalDue']),
+                      "₹ " + Constants.cFDecimal.format(txnMap['amount']),
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
                         color: Colors.black,
@@ -643,17 +616,17 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                       height: 5,
                     ),
                     Text(
-                      "Valuation",
+                      "Total Due",
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
-                        color: kPrimaryColor,
+                        color: Colors.black,
                         fontSize: 14,
                       ),
                     ),
                     Text(
                       "₹ " +
                           Constants.cFDecimal
-                              .format(_calculatedResult['valuation']),
+                              .format(_calculatedResult['totalDue']),
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
                         color: Colors.black,
