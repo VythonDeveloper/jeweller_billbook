@@ -1,27 +1,34 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:jeweller_stockbook/Helper/sdp.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:jeweller_stockbook/Items/itemDetails.dart';
+import 'package:jeweller_stockbook/Repository/metal_price_repository.dart';
 import 'package:jeweller_stockbook/Stock/lowStock.dart';
 import 'package:jeweller_stockbook/utils/colors.dart';
 import 'package:jeweller_stockbook/utils/components.dart';
 import 'package:jeweller_stockbook/utils/constants.dart';
 
-class HomeUI extends StatefulWidget {
+class HomeUI extends ConsumerStatefulWidget {
   const HomeUI({Key? key}) : super(key: key);
 
   @override
-  State<HomeUI> createState() => _HomeUIState();
+  ConsumerState<HomeUI> createState() => _HomeUIState();
 }
 
-class _HomeUIState extends State<HomeUI> {
+class _HomeUIState extends ConsumerState<HomeUI> {
+  bool isLoading = false;
   List<dynamic> transactionsMap = [];
   String timelineDateTitle = '';
   bool showDateWidget = false;
+  final oCcy = new NumberFormat("#,##0.00", "en_US");
 
   @override
   Widget build(BuildContext context) {
+    var goldPriceData = ref.watch(goldPriceProvider);
+    var silverPriceData = ref.watch(silverPriceProvider);
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -41,11 +48,105 @@ class _HomeUIState extends State<HomeUI> {
             ),
           ],
         ),
+        actions: [
+          IconButton(
+              onPressed: () async {
+                goldPriceData = ref.refresh(goldPriceProvider);
+              },
+              icon: Icon(Icons.refresh_sharp)),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             children: [
+              Container(
+                width: double.infinity,
+                color: const Color.fromARGB(255, 255, 244, 227),
+                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          'PRICES',
+                          style: TextStyle(
+                            letterSpacing: 5,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        width10,
+                        goldPriceData.when(
+                          data: (data) => data != null
+                              ? Text(
+                                  DateFormat().format(
+                                    DateTime.fromMillisecondsSinceEpoch(
+                                        data.timeStamp),
+                                  ),
+                                  style: TextStyle(
+                                      fontStyle: FontStyle.italic,
+                                      fontSize: sdp(context, 9)),
+                                )
+                              : Text('-'),
+                          error: (error, stackTrace) => Text('-'),
+                          loading: () => Text('-'),
+                        ),
+                      ],
+                    ),
+                    height10,
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Gold Price (24K)',
+                                style: TextStyle(fontSize: 12),
+                              ),
+                              goldPriceData.when(
+                                data: (data) => data != null
+                                    ? Text(
+                                        "₹ ${oCcy.format(data.tenGram24K)}/10g",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600),
+                                      )
+                                    : Text('-'),
+                                error: (error, stackTrace) => Text('-'),
+                                loading: () => SizedBox(),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Silver Price',
+                                style: TextStyle(fontSize: 12),
+                              ),
+                              silverPriceData.when(
+                                data: (data) => data != null
+                                    ? Text(
+                                        "₹ ${oCcy.format(data.tenGm / 10)}/g",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600),
+                                      )
+                                    : Text('-'),
+                                error: (error, stackTrace) => Text('-'),
+                                loading: () => SizedBox(),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
               statusBlocks(),
               itemTimeline(),
               height10,
@@ -291,36 +392,9 @@ class _HomeUIState extends State<HomeUI> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Padding(
-                  padding: EdgeInsets.only(bottom: 15, left: 0, top: 15),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                    color: kPrimaryColor,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Icon(
-                          Icons.timeline,
-                          color: Colors.black,
-                          size: 15,
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Text(
-                          "Timeline",
-                          style: TextStyle(
-                            fontSize: 15,
-                            letterSpacing: 0.7,
-                            color: Colors.black,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                ListView.builder(
+                _timelineBar(),
+                ListView.separated(
+                  separatorBuilder: (context, index) => height10,
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
                   itemCount: snapshot.data.docs.length,
@@ -343,15 +417,17 @@ class _HomeUIState extends State<HomeUI> {
                               Visibility(
                                 visible: showDateWidget,
                                 child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      bottom: 10, top: 5, left: 10),
+                                  padding: EdgeInsets.only(
+                                      bottom: 15, top: 20, left: 10),
                                   child: Text(
                                     timelineDateTitle == todayDate
                                         ? "Today"
                                         : timelineDateTitle,
                                     style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14),
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.grey.shade700,
+                                      fontSize: 20,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -365,14 +441,15 @@ class _HomeUIState extends State<HomeUI> {
                                 visible: showDateWidget,
                                 child: Padding(
                                   padding: const EdgeInsets.only(
-                                      bottom: 10, top: 5, left: 10),
+                                      bottom: 15, top: 20, left: 10),
                                   child: Text(
                                     timelineDateTitle == todayDate
                                         ? "Today"
                                         : timelineDateTitle,
                                     style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14),
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.grey.shade700,
+                                        fontSize: 20),
                                   ),
                                 ),
                               ),
@@ -401,6 +478,34 @@ class _HomeUIState extends State<HomeUI> {
     );
   }
 
+  Container _timelineBar() {
+    return Container(
+      margin: EdgeInsets.only(top: 15),
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      color: kPrimaryColor,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Icon(
+            Icons.timeline,
+            color: Colors.black,
+            size: 15,
+          ),
+          width10,
+          Text(
+            "Timeline",
+            style: TextStyle(
+              fontSize: 15,
+              letterSpacing: 0.7,
+              color: Colors.black,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget stockTxnCard({required var txnMap}) {
     return GestureDetector(
       onTap: () {
@@ -408,8 +513,15 @@ class _HomeUIState extends State<HomeUI> {
             .then((value) => setState(() {}));
       },
       child: Container(
-        color: kTileColor,
-        margin: EdgeInsets.only(bottom: 10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: kTileColor,
+          border: Border.all(
+            color: Colors.blue,
+            width: .7,
+          ),
+        ),
+        margin: EdgeInsets.symmetric(horizontal: 15),
         padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -517,8 +629,11 @@ class _HomeUIState extends State<HomeUI> {
 
   Widget mrtgTxnCard({required var txnMap}) {
     return Container(
-      color: Color(0xFFFDEEFF),
-      margin: EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Color.fromARGB(255, 252, 235, 255),
+      ),
+      margin: EdgeInsets.symmetric(horizontal: 15),
       padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

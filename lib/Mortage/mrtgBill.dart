@@ -22,6 +22,7 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
   final mrtgBook;
   _MrtgBillUiState({this.mrtgBook});
 
+  bool isLoading = false;
   final _searchKey = TextEditingController();
   List<String> statusList = ['All', 'Active', 'Closed'];
   String _selectedStatus = "All";
@@ -42,118 +43,185 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
   }
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
+      body: Stack(
         children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 15),
-            width: double.infinity,
-            color: kLightPrimaryColor,
-            child: SafeArea(
-              bottom: false,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  height10,
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Column(
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 15),
+                width: double.infinity,
+                color: kLightPrimaryColor,
+                child: SafeArea(
+                  bottom: false,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Expanded(
-                        flex: 6,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
+                      height10,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            flex: 6,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Icon(
-                                  Icons.person,
-                                  color: Colors.black,
-                                  size: sdp(context, 15),
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.person,
+                                      color: Colors.black,
+                                      size: sdp(context, 15),
+                                    ),
+                                    SizedBox(
+                                      width: sdp(context, 5),
+                                    ),
+                                    Text(
+                                      mrtgBook['name'],
+                                      style: TextStyle(
+                                        fontSize: sdp(context, 15),
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 SizedBox(
-                                  width: sdp(context, 5),
+                                  height: sdp(context, 5),
                                 ),
-                                Text(
-                                  mrtgBook['name'],
-                                  style: TextStyle(
-                                    fontSize: sdp(context, 15),
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: sdp(context, 5),
-                            ),
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.phone,
-                                  color: Colors.black,
-                                  size: sdp(context, 15),
-                                ),
-                                SizedBox(
-                                  width: sdp(context, 5),
-                                ),
-                                Text(
-                                  mrtgBook['phone'],
-                                  style: TextStyle(
-                                    fontSize: sdp(context, 11),
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.phone,
+                                      color: Colors.black,
+                                      size: sdp(context, 15),
+                                    ),
+                                    SizedBox(
+                                      width: sdp(context, 5),
+                                    ),
+                                    Text(
+                                      mrtgBook['phone'],
+                                      style: TextStyle(
+                                        fontSize: sdp(context, 11),
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      CircleAvatar(
-                        radius: 18,
-                        backgroundColor: Colors.blue.shade700,
-                        child: FittedBox(
-                          child: IconButton(
-                            onPressed: () async {
-                              if (!await launchUrl(
-                                  Uri.parse('tel:${mrtgBook['phone']}'))) {
-                                throw Exception(
-                                    'Could not launch ${mrtgBook['phone']}');
-                              }
-                            },
-                            icon: Icon(
-                              Icons.call,
-                              color: Colors.white,
                             ),
                           ),
-                        ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Column(
+                            children: [
+                              CircleAvatar(
+                                radius: 18,
+                                backgroundColor: Colors.blue.shade700,
+                                child: FittedBox(
+                                  child: IconButton(
+                                    onPressed: () async {
+                                      if (!await launchUrl(Uri.parse(
+                                          'tel:${mrtgBook['phone']}'))) {
+                                        throw Exception(
+                                            'Could not launch ${mrtgBook['phone']}');
+                                      }
+                                    },
+                                    icon: Icon(
+                                      Icons.call,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              height10,
+                              IconButton(
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: Text('Delete this book?'),
+                                      content: Text(
+                                          'Warning! this cannot be undone'),
+                                      contentTextStyle: TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.red,
+                                      ),
+                                      actions: [
+                                        ElevatedButton(
+                                          onPressed: () async {
+                                            Navigator.pop(context);
+
+                                            setState(() {
+                                              isLoading = true;
+                                            });
+                                            await FirebaseFirestore.instance
+                                                .collection('users')
+                                                .doc(UserData.uid)
+                                                .collection("mortgageBook")
+                                                .doc(mrtgBook['id'].toString())
+                                                .delete()
+                                                .then(
+                                              (value) {
+                                                setState(() {
+                                                  isLoading = false;
+                                                });
+                                                Navigator.pop(context);
+                                              },
+                                            );
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                Colors.blue.shade700,
+                                            foregroundColor: Colors.white,
+                                          ),
+                                          child: Text('Yes'),
+                                        ),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                Colors.red.shade700,
+                                            foregroundColor: Colors.white,
+                                          ),
+                                          child: Text('No'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                                icon: Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
+                                ),
+                              )
+                            ],
+                          ),
+                        ],
                       ),
+                      height20,
                     ],
                   ),
-                  height20,
-                ],
-              ),
-            ),
-          ),
-          Expanded(
-              child: SingleChildScrollView(
-            child: Column(
-              children: [
-                mrtgBillList(),
-                SizedBox(
-                  height: 100,
                 ),
-              ],
-            ),
-          ))
+              ),
+              Expanded(
+                  child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    mrtgBillList(),
+                    SizedBox(
+                      height: 100,
+                    ),
+                  ],
+                ),
+              ))
+            ],
+          ),
+          isLoading ? fullScreenLoading(context) : SizedBox()
         ],
       ),
       floatingActionButton: CustomFABButton(

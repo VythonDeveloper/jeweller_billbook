@@ -34,7 +34,6 @@ class _MortgageUiState extends State<MortgageUi> {
       appBar: AppBar(
         title: Text('Mortgage'),
         surfaceTintColor: Colors.transparent,
-        // toolbarHeight: sdp(context, 50),
       ),
       body: SafeArea(
         child: SingleChildScrollView(

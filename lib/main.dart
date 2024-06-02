@@ -4,12 +4,19 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:jeweller_stockbook/Signin/splashUI.dart';
 import 'package:jeweller_stockbook/utils/colors.dart';
 import 'package:jeweller_stockbook/utils/components.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: FirebaseOptions(
+        apiKey: 'AIzaSyBSYGVmRthIIUxsNLwAMlehjzuqZwAvyoM',
+        appId: '1:544489735185:android:e88d7488e386e66990ddb0',
+        messagingSenderId: '',
+        projectId: 'jeweller-billbook'),
+  );
   await Hive.initFlutter();
-  runApp(const MyApp());
+  runApp(ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {

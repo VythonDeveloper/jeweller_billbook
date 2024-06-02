@@ -15,7 +15,6 @@ class SelectContact {
   }
 
   Future<void> createContact() async {
-    // List<Contact> contacts = [];
     try {
       if (await FlutterContacts.requestPermission()) {
         await FlutterContacts.openExternalInsert();

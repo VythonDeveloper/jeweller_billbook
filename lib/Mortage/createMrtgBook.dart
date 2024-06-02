@@ -113,31 +113,114 @@ class _CreateMrtgBookUiState extends State<CreateMrtgBookUi> {
     );
   }
 
-  ListTile ContactCard(Contact contact) {
+  Widget ContactCard(Contact contact) {
     return ListTile(
       onTap: () async {
-        showLoading(context);
-        int uniqueId = DateTime.now().millisecondsSinceEpoch;
-        final formattedNumber = contact.phones[0].number.replaceAll(' ', '');
-        final name = contact.displayName;
+        // showLoading(context);
+        // int uniqueId = DateTime.now().millisecondsSinceEpoch;
+        // final formattedNumber = contact.phones[0].number.replaceAll(' ', '');
+        // final name = contact.displayName;
 
-        Map<String, dynamic> mrtgBook = {
-          'id': uniqueId,
-          'name': name,
-          'phone': formattedNumber,
-          'totalPrinciple': 0,
-          'totalInterest': 0,
-          'totalPaid': 0
-        };
+        // Map<String, dynamic> mrtgBook = {
+        //   'id': uniqueId,
+        //   'name': name,
+        //   'phone': formattedNumber,
+        //   'totalPrinciple': 0,
+        //   'totalInterest': 0,
+        //   'totalPaid': 0
+        // };
 
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(UserData.uid)
-            .collection('mortgageBook')
-            .doc(uniqueId.toString())
-            .set(mrtgBook);
-        Navigator.pop(context);
-        Navigator.pop(context);
+        // await FirebaseFirestore.instance
+        //     .collection('users')
+        //     .doc(UserData.uid)
+        //     .collection('mortgageBook')
+        //     .doc(uniqueId.toString())
+        //     .set(mrtgBook);
+        // Navigator.pop(context);
+        // Navigator.pop(context);
+        showDialog(
+            context: context,
+            builder: (context) => Dialog(
+                  child: Padding(
+                    padding: EdgeInsets.all(15.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text.rich(
+                          TextSpan(
+                            text: 'Create book for ',
+                            style: TextStyle(fontSize: 20),
+                            children: [
+                              TextSpan(
+                                text: contact.displayName + "?",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w600, fontSize: 20),
+                              ),
+                            ],
+                          ),
+                        ),
+                        height20,
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () async {
+                                showLoading(context);
+                                int uniqueId =
+                                    DateTime.now().millisecondsSinceEpoch;
+                                final formattedNumber = contact.phones[0].number
+                                    .replaceAll(' ', '');
+                                final name = contact.displayName;
+
+                                Map<String, dynamic> mrtgBook = {
+                                  'id': uniqueId,
+                                  'name': name,
+                                  'phone': formattedNumber,
+                                  'totalPrinciple': 0,
+                                  'totalInterest': 0,
+                                  'totalPaid': 0
+                                };
+
+                                await FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(UserData.uid)
+                                    .collection('mortgageBook')
+                                    .doc(uniqueId.toString())
+                                    .set(mrtgBook);
+                                Navigator.pop(context);
+                                Navigator.pop(context);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue.shade700,
+                                foregroundColor: Colors.white,
+                              ),
+                              child: Text('Yes'),
+                            ),
+                            width10,
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red.shade700,
+                                foregroundColor: Colors.white,
+                              ),
+                              child: Text('No'),
+                            ),
+                          ],
+                        ),
+                        // Text(
+                        //   'Create mortgage book for ${contact.displayName}?',
+                        //   style: TextStyle(
+                        //     fontSize: 20,
+                        //     fontWeight: FontWeight.w600,
+                        //   ),
+                        // ),
+                      ],
+                    ),
+                  ),
+                ));
       },
       leading: CircleAvatar(
         backgroundColor: kPrimaryColor,

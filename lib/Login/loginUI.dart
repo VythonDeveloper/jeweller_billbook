@@ -79,11 +79,11 @@ class _LoginUIState extends State<LoginUI> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.all(15),
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Padding(
+              padding: EdgeInsets.all(20),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -106,16 +106,6 @@ class _LoginUIState extends State<LoginUI> {
                   SizedBox(
                     height: 100,
                   ),
-                  // Text(
-                  //   'Enter PIN',
-                  //   style: TextStyle(
-                  //     fontSize: sdp(context, 20),
-                  //     color: kPrimaryColor,
-                  //   ),
-                  // ),
-                  // SizedBox(
-                  //   height: 20,
-                  // ),
                   FittedBox(
                     child: Center(
                       child: OtpTextField(
@@ -150,12 +140,12 @@ class _LoginUIState extends State<LoginUI> {
                 ],
               ),
             ),
-          ),
-          Visibility(
-            visible: isLoading,
-            child: fullScreenLoading(context),
-          ),
-        ],
+            Visibility(
+              visible: isLoading,
+              child: fullScreenLoading(context),
+            ),
+          ],
+        ),
       ),
       // floatingActionButton: !isLoading
       //     ? ElevatedButton(

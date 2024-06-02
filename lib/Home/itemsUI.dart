@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:jeweller_stockbook/Helper/sdp.dart';
@@ -42,28 +41,32 @@ class _ItemsUIState extends State<ItemsUI> {
     return Scaffold(
       appBar: AppBar(
         surfaceTintColor: Colors.white,
-        toolbarHeight: sdp(context, 75),
+        toolbarHeight: sdp(context, 78),
         title: appBarItems(),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(10.0),
         child: Column(
           children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  child: IconButton(
-                    onPressed: () {},
-                    icon: Icon(Icons.add),
+            Padding(
+              padding: EdgeInsets.only(left: 10.0),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    child: IconButton(
+                      onPressed: () {},
+                      icon: Icon(Icons.add),
+                    ),
                   ),
-                ),
-                width10,
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: totalWeightList(),
+                  width10,
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.only(right: 10),
+                      scrollDirection: Axis.horizontal,
+                      child: totalWeightList(),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             height10,
             _isSearching
@@ -91,9 +94,11 @@ class _ItemsUIState extends State<ItemsUI> {
   }
 
   Widget searchedList() {
-    return ListView.builder(
+    return ListView.separated(
+      separatorBuilder: (context, index) => height10,
       itemCount: searchedItemList!.size,
       shrinkWrap: true,
+      padding: EdgeInsets.all(10),
       physics: NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
         return itemsCard(itemMap: searchedItemList!.docs[index].data());
@@ -104,46 +109,35 @@ class _ItemsUIState extends State<ItemsUI> {
   Widget appBarItems() {
     return Column(
       children: [
-        // Text('Items'),
-        searchBar(),
+        _searchBar(),
         height10,
         itemsSortingBar(),
       ],
     );
   }
 
-  Widget searchBar() {
-    return Container(
-      decoration: BoxDecoration(
-        color: kPrimaryColor,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: TextField(
-        controller: _searchKey,
-        textCapitalization: TextCapitalization.words,
-        decoration: InputDecoration(
-          prefixIcon: Icon(
-            Icons.search,
-          ),
-          border: InputBorder.none,
-          hintText: 'Search by Name',
-        ),
-        onChanged: (value) async {
-          if (value.length >= 3) {
-            _isSearching = true;
-            searchedItemList = await FirebaseFirestore.instance
-                .collection('users')
-                .doc(UserData.uid)
-                .collection("items")
-                .where('name', isGreaterThanOrEqualTo: value)
-                .where('name', isLessThanOrEqualTo: value + '\uf8ff')
-                .get();
-          } else {
-            _isSearching = false;
-          }
-          setState(() {});
-        },
-      ),
+  Widget _searchBar() {
+    return SearchBar(
+      controller: _searchKey,
+      elevation: WidgetStatePropertyAll(0),
+      padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 15)),
+      leading: Icon(Icons.search),
+      hintText: 'Search',
+      onChanged: (value) async {
+        if (value.length >= 3) {
+          _isSearching = true;
+          searchedItemList = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(UserData.uid)
+              .collection("items")
+              .where('name', isGreaterThanOrEqualTo: value)
+              .where('name', isLessThanOrEqualTo: value + '\uf8ff')
+              .get();
+        } else {
+          _isSearching = false;
+        }
+        setState(() {});
+      },
     );
   }
 
@@ -273,7 +267,10 @@ class _ItemsUIState extends State<ItemsUI> {
           }
           return Text('Create category');
         }
-        return LinearProgressIndicator();
+        return SizedBox(
+          width: MediaQuery.of(context).size.width * .5,
+          child: LinearProgressIndicator(),
+        );
       }),
     );
   }
@@ -328,7 +325,7 @@ class _ItemsUIState extends State<ItemsUI> {
               return ListView.builder(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
-                padding: EdgeInsets.zero,
+                padding: EdgeInsets.all(10),
                 itemCount: snapshot.data.docs.length,
                 itemBuilder: (context, index) {
                   loopCounter += 1;
@@ -559,7 +556,8 @@ class _ItemsUIState extends State<ItemsUI> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           if (snapshot.data.docs.length > 0) {
-            return ListView.builder(
+            return ListView.separated(
+              separatorBuilder: (context, index) => height10,
               shrinkWrap: true,
               itemCount: snapshot.data.docs.length,
               itemBuilder: ((context, index) {
