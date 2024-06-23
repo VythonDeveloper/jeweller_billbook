@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:jeweller_stockbook/Helper/sdp.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:jeweller_stockbook/utils/constants.dart';
+import 'package:jeweller_stockbook/utils/kOTPField.dart';
 import '../Home/dashboardUI.dart';
 import '../utils/components.dart';
 
@@ -86,14 +86,14 @@ class _LoginUIState extends State<LoginUI> {
               padding: EdgeInsets.all(20),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
                     'Welcome,',
                     style: TextStyle(
                       fontSize: sdp(context, 15),
                       color: Colors.black,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                   Text(
@@ -106,24 +106,15 @@ class _LoginUIState extends State<LoginUI> {
                   SizedBox(
                     height: 100,
                   ),
-                  FittedBox(
-                    child: Center(
-                      child: OtpTextField(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        numberOfFields: 5,
-                        borderColor: Colors.grey.shade600,
-                        focusedBorderColor: Colors.blue,
-                        showFieldAsBox: true,
-                        fieldWidth: sdp(context, 50),
-                        obscureText: true,
-                        autoFocus: true,
-                        onSubmit: (value) {
-                          pin = value;
-                        },
-                      ),
-                    ),
-                  ),
+                  Center(
+                      child: KOtpField(
+                    length: 5,
+                    onCompleted: (val) {
+                      setState(() {
+                        pin = val;
+                      });
+                    },
+                  )),
                   height50,
                   ElevatedButton(
                     onPressed: () {
@@ -131,10 +122,12 @@ class _LoginUIState extends State<LoginUI> {
                         logIn(pin);
                       }
                     },
-                    child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 15),
-                      width: double.infinity,
-                      child: Text('Proceed'),
+                    child: SizedBox(
+                      width: double.maxFinite,
+                      child: Text(
+                        'Proceed',
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ),
                 ],

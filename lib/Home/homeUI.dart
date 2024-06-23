@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:jeweller_stockbook/Helper/sdp.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:jeweller_stockbook/Items/itemDetails.dart';
-import 'package:jeweller_stockbook/Repository/metal_price_repository.dart';
 import 'package:jeweller_stockbook/Stock/lowStock.dart';
 import 'package:jeweller_stockbook/utils/colors.dart';
 import 'package:jeweller_stockbook/utils/components.dart';
@@ -27,126 +26,34 @@ class _HomeUIState extends ConsumerState<HomeUI> {
 
   @override
   Widget build(BuildContext context) {
-    var goldPriceData = ref.watch(goldPriceProvider);
-    var silverPriceData = ref.watch(silverPriceProvider);
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
         automaticallyImplyLeading: false,
         title: Row(
           children: [
-            Icon(Icons.storefront),
-            SizedBox(
-              width: 10,
+            Icon(
+              Icons.storefront,
+              size: sdp(context, 12),
             ),
-            Text(
-              UserData.userDisplayName,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: textColor,
-                fontSize: sdp(context, 15),
+            width10,
+            Expanded(
+              child: Text(
+                UserData.userDisplayName,
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: textColor,
+                  fontSize: sdp(context, 12),
+                ),
               ),
             ),
           ],
         ),
-        actions: [
-          IconButton(
-              onPressed: () async {
-                goldPriceData = ref.refresh(goldPriceProvider);
-              },
-              icon: Icon(Icons.refresh_sharp)),
-        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Container(
-                width: double.infinity,
-                color: const Color.fromARGB(255, 255, 244, 227),
-                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          'PRICES',
-                          style: TextStyle(
-                            letterSpacing: 5,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        width10,
-                        goldPriceData.when(
-                          data: (data) => data != null
-                              ? Text(
-                                  DateFormat().format(
-                                    DateTime.fromMillisecondsSinceEpoch(
-                                        data.timeStamp),
-                                  ),
-                                  style: TextStyle(
-                                      fontStyle: FontStyle.italic,
-                                      fontSize: sdp(context, 9)),
-                                )
-                              : Text('-'),
-                          error: (error, stackTrace) => Text('-'),
-                          loading: () => Text('-'),
-                        ),
-                      ],
-                    ),
-                    height10,
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Gold Price (24K)',
-                                style: TextStyle(fontSize: 12),
-                              ),
-                              goldPriceData.when(
-                                data: (data) => data != null
-                                    ? Text(
-                                        "₹ ${oCcy.format(data.tenGram24K)}/10g",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w600),
-                                      )
-                                    : Text('-'),
-                                error: (error, stackTrace) => Text('-'),
-                                loading: () => SizedBox(),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Silver Price',
-                                style: TextStyle(fontSize: 12),
-                              ),
-                              silverPriceData.when(
-                                data: (data) => data != null
-                                    ? Text(
-                                        "₹ ${oCcy.format(data.tenGm / 10)}/g",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w600),
-                                      )
-                                    : Text('-'),
-                                error: (error, stackTrace) => Text('-'),
-                                loading: () => SizedBox(),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
               statusBlocks(),
               itemTimeline(),
               height10,
@@ -319,7 +226,13 @@ class _HomeUIState extends ConsumerState<HomeUI> {
     );
   }
 
-  Widget statsCard({final onPress, label, icon, amount, cardColor}) {
+  Widget statsCard({
+    void Function()? onPress,
+    required String label,
+    IconData? icon,
+    required Widget amount,
+    required Color cardColor,
+  }) {
     return Expanded(
       child: GestureDetector(
         onTap: onPress,
@@ -341,7 +254,7 @@ class _HomeUIState extends ConsumerState<HomeUI> {
                         Flexible(child: amount),
                         Icon(
                           Icons.arrow_forward_ios_sharp,
-                          size: sdp(context, 12),
+                          size: sdp(context, 10),
                         ),
                       ],
                     ),
@@ -356,13 +269,13 @@ class _HomeUIState extends ConsumerState<HomeUI> {
                             style: TextStyle(fontSize: sdp(context, 10)),
                           ),
                         ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Icon(
-                          icon,
-                          size: sdp(context, 15),
-                        ),
+                        Padding(
+                          padding: EdgeInsets.only(left: 10),
+                          child: Icon(
+                            icon,
+                            size: sdp(context, 12),
+                          ),
+                        )
                       ],
                     )
                   ],
@@ -515,36 +428,163 @@ class _HomeUIState extends ConsumerState<HomeUI> {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: kTileColor,
-          border: Border.all(
-            color: Colors.blue,
-            width: .7,
-          ),
+          color: Color(0xFFD7ECFE),
         ),
         margin: EdgeInsets.symmetric(horizontal: 15),
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Row(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      bottomRight: Radius.circular(10),
+                    ),
+                    color: Colors.blue.shade900,
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                  child: Text(
+                    "${txnMap['itemCategory']}",
+                    style: TextStyle(
+                      // fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                      fontSize: 13,
+                    ),
+                  ),
+                ),
+                width10,
+                Text(
+                  Constants.dateFormat(txnMap['date']),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey.shade700,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Text(
+                      "${txnMap['itemName']}",
+                      style: TextStyle(
+                        fontSize: sdp(context, 10),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Remark",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                            fontSize: sdp(context, 10),
+                          ),
+                        ),
+                        Text(
+                          txnMap['remark'].isEmpty ? 'NA' : txnMap['remark'],
+                          style: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            color: Colors.black,
+                            fontSize: sdp(context, 10),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          "Change",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                            fontSize: sdp(context, 10),
+                          ),
+                        ),
+                        Text(
+                          txnMap['changeWeight'].toString() +
+                              " " +
+                              txnMap['unit'],
+                          style: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            color: Colors.black,
+                            fontSize: sdp(context, 10),
+                          ),
+                        ),
+                        Text(
+                          txnMap['changePiece'].toString() + " PCS",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            color: Colors.black,
+                            fontSize: 13,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget mrtgTxnCard({required var txnMap}) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: kColor(context).secondaryContainer,
+      ),
+      margin: EdgeInsets.symmetric(horizontal: 15),
+      // padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: Container(
+              decoration: BoxDecoration(
+                color: kColor(context).secondary,
+                borderRadius: BorderRadius.vertical(
+                  bottom: Radius.circular(10),
+                ),
+              ),
+              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+              child: Text(
+                'Mortgage',
+                style:
+                    TextStyle(color: Colors.white, fontSize: sdp(context, 10)),
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(10.0),
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Expanded(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "${txnMap['itemCategory']}",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          color: Colors.black,
-                          fontSize: 13,
-                        ),
-                      ),
-                      Text(
-                        "${txnMap['itemName']}",
+                        "${txnMap['description']}",
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -563,35 +603,10 @@ class _HomeUIState extends ConsumerState<HomeUI> {
                 ),
                 Expanded(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Remark",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
-                          fontSize: 13,
-                        ),
-                      ),
-                      Text(
-                        txnMap['remark'].isEmpty ? 'NA' : txnMap['remark'],
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        "Change",
+                        "Amount Paid",
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           color: Colors.black,
@@ -599,103 +614,18 @@ class _HomeUIState extends ConsumerState<HomeUI> {
                         ),
                       ),
                       Text(
-                        txnMap['changeWeight'].toString() +
-                            " " +
-                            txnMap['unit'],
+                        "₹ " + Constants.cFDecimal.format(txnMap['paidAmount']),
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
                           color: Colors.black,
                           fontSize: 13,
                         ),
                       ),
-                      Text(
-                        txnMap['changePiece'].toString() + " PCS",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black,
-                          fontSize: 13,
-                        ),
-                      )
                     ],
                   ),
                 ),
               ],
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget mrtgTxnCard({required var txnMap}) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: Color.fromARGB(255, 252, 235, 255),
-      ),
-      margin: EdgeInsets.symmetric(horizontal: 15),
-      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Mortgage",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: Colors.purple,
-                        fontSize: 13,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                    Text(
-                      "${txnMap['description']}",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      Constants.dateFormat(txnMap['date']),
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black,
-                        fontSize: 13,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      "Amount Paid",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black,
-                        fontSize: 13,
-                      ),
-                    ),
-                    Text(
-                      "₹ " + Constants.cFDecimal.format(txnMap['paidAmount']),
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black,
-                        fontSize: 13,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+            ),
           )
         ],
       ),

@@ -14,6 +14,8 @@ SizedBox get width10 => SizedBox(width: 10);
 SizedBox get width15 => SizedBox(width: 15);
 SizedBox get width20 => SizedBox(width: 20);
 
+kRadius(double radius) => BorderRadius.circular(radius);
+
 defaultSystemColors() => {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
           overlays: [SystemUiOverlay.top]),
@@ -22,7 +24,7 @@ defaultSystemColors() => {
           statusBarBrightness: Brightness.light,
           statusBarIconBrightness: Brightness.dark,
           statusBarColor: Colors.transparent,
-          systemNavigationBarColor: kCardCOlor,
+          systemNavigationBarColor: Colors.transparent,
           systemNavigationBarIconBrightness: Brightness.dark,
         ),
       ),
@@ -50,13 +52,12 @@ Widget seeMoreButton(BuildContext context, {void Function()? onTap}) {
     child: Container(
       padding: EdgeInsets.symmetric(vertical: 7, horizontal: 15),
       decoration: BoxDecoration(
-        color: kAccentColor,
+        color: kColor(context).primaryContainer,
         borderRadius: BorderRadius.circular(100),
       ),
       child: Text(
         'See More',
         style: TextStyle(
-          fontWeight: FontWeight.w600,
           fontSize: sdp(context, 10),
           color: Colors.black,
         ),

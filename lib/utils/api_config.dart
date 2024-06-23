@@ -33,4 +33,5 @@ Future<Map<String, dynamic>?> apiCallback({
   } catch (e) {
     log("Error in API - $e");
   }
+  return null;
 }

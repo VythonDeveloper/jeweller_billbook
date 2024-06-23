@@ -4,7 +4,6 @@ import 'package:jeweller_stockbook/Home/itemsUI.dart';
 import 'package:jeweller_stockbook/Home/settingsUI.dart';
 import 'package:jeweller_stockbook/Home/mrtgBook.dart';
 import 'package:jeweller_stockbook/utils/animated_indexed_stack.dart';
-import 'package:jeweller_stockbook/utils/colors.dart';
 import 'package:jeweller_stockbook/utils/components.dart';
 
 class DashboardUI extends StatefulWidget {
@@ -53,44 +52,18 @@ class _DashboardUIState extends State<DashboardUI> {
   }
 
   Widget BottomNavNew() {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      currentIndex: _selectedbottomNavIndex,
-      backgroundColor: kCardCOlor,
-      selectedItemColor: Colors.black,
-      unselectedItemColor: Colors.black.withOpacity(0.3),
-      unselectedIconTheme: IconThemeData(
-        color: Colors.black.withOpacity(0.3),
-      ),
-      selectedLabelStyle: TextStyle(
-        fontWeight: FontWeight.w500,
-        fontSize: 12,
-      ),
-      unselectedLabelStyle: TextStyle(
-        fontWeight: FontWeight.w500,
-        fontSize: 12,
-      ),
-      selectedIconTheme: IconThemeData(size: 28),
-      onTap: (value) {
+    return NavigationBar(
+      backgroundColor: Colors.white,
+      onDestinationSelected: (value) {
         setState(() => _selectedbottomNavIndex = value);
       },
-      items: [
-        BottomNavigationBarItem(
-          label: 'Sales',
-          icon: Icon(Icons.bar_chart),
-        ),
-        BottomNavigationBarItem(
-          label: 'Items',
-          icon: Icon(Icons.inventory_2),
-        ),
-        BottomNavigationBarItem(
-          label: 'Mortgage',
-          icon: Icon(Icons.receipt_long),
-        ),
-        BottomNavigationBarItem(
-          label: 'More',
-          icon: Icon(Icons.apps),
-        ),
+      selectedIndex: _selectedbottomNavIndex,
+      destinations: [
+        NavigationDestination(icon: Icon(Icons.bar_chart), label: "Sales"),
+        NavigationDestination(icon: Icon(Icons.inventory_2), label: "Items"),
+        NavigationDestination(
+            icon: Icon(Icons.receipt_long), label: "Mortgage"),
+        NavigationDestination(icon: Icon(Icons.apps), label: "More"),
       ],
     );
   }

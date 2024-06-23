@@ -39,48 +39,65 @@ class _ItemsUIState extends State<ItemsUI> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        surfaceTintColor: Colors.white,
-        toolbarHeight: sdp(context, 78),
-        title: appBarItems(),
-      ),
-      body: SingleChildScrollView(
+      // appBar: AppBar(
+      //   surfaceTintColor: Colors.white,
+      //   toolbarHeight: sdp(context, 78),
+      //   title: appBarItems(),
+      // ),
+      body: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding: EdgeInsets.only(left: 10.0),
-              child: Row(
+            Container(
+              padding: EdgeInsets.all(10),
+              child: appBarItems(),
+            ),
+            Expanded(
+                child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CircleAvatar(
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: Icon(Icons.add),
+                  Padding(
+                    padding: EdgeInsets.only(left: 10.0),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          child: IconButton(
+                            onPressed: () {},
+                            icon: Icon(Icons.add),
+                          ),
+                        ),
+                        width10,
+                        Expanded(
+                          child: SingleChildScrollView(
+                            padding: EdgeInsets.only(right: 10),
+                            scrollDirection: Axis.horizontal,
+                            child: totalWeightList(),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  width10,
-                  Expanded(
-                    child: SingleChildScrollView(
-                      padding: EdgeInsets.only(right: 10),
-                      scrollDirection: Axis.horizontal,
-                      child: totalWeightList(),
+                  height10,
+                  _isSearching
+                      ? searchedItemList != null
+                          ? searchedList()
+                          : SizedBox()
+                      : itemsList(),
+                  Center(
+                    child: seeMoreButton(
+                      context,
+                      onTap: () {
+                        setState(() {
+                          itemsCounter += 5;
+                        });
+                      },
                     ),
                   ),
+                  height50,
+                  height50,
                 ],
               ),
-            ),
-            height10,
-            _isSearching
-                ? searchedItemList != null
-                    ? searchedList()
-                    : SizedBox()
-                : itemsList(),
-            seeMoreButton(context, onTap: () {
-              setState(() {
-                itemsCounter += 5;
-              });
-            }),
-            height50,
-            height50,
+            ))
           ],
         ),
       ),
