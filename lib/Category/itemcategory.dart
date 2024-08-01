@@ -147,7 +147,7 @@ class _ItemCategoryUiState extends State<ItemCategoryUi> {
             } else {
               return Padding(
                 padding: EdgeInsets.only(top: 100.0),
-                child: PlaceholderText(text1: "No Category", text2: 'CREATED'),
+                child: PlaceholderText(text: "No Category!"),
               );
             }
           }

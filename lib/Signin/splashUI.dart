@@ -5,7 +5,7 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
-import 'package:jeweller_stockbook/Home/dashboardUI.dart';
+import 'package:jeweller_stockbook/Home/RootUI.dart';
 import 'package:jeweller_stockbook/Login/loginUI.dart';
 import 'package:jeweller_stockbook/utils/colors.dart';
 import 'package:jeweller_stockbook/utils/components.dart';

@@ -14,35 +14,48 @@ SizedBox get width10 => SizedBox(width: 10);
 SizedBox get width15 => SizedBox(width: 15);
 SizedBox get width20 => SizedBox(width: 20);
 
-kRadius(double radius) => BorderRadius.circular(radius);
+SizedBox kHeight(double height) => SizedBox(
+      height: height,
+    );
 
-defaultSystemColors() => {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
-          overlays: [SystemUiOverlay.top]),
-      SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle.light.copyWith(
-          statusBarBrightness: Brightness.light,
-          statusBarIconBrightness: Brightness.dark,
-          statusBarColor: Colors.transparent,
-          systemNavigationBarColor: Colors.transparent,
-          systemNavigationBarIconBrightness: Brightness.dark,
-        ),
-      ),
-    };
+BorderRadius kRadius(double radius) => BorderRadius.circular(radius);
 
-Future<void> navPush(BuildContext context, Widget screen) {
+Future<T?> navPush<T extends Object?>(BuildContext context, Widget screen) {
   return Navigator.push(
-      context, MaterialPageRoute(builder: (context) => screen));
+      context,
+      MaterialPageRoute(
+        builder: (context) => screen,
+      ));
 }
 
-Future<void> navPushReplacement(BuildContext context, Widget screen) {
+Future<T?> navPushReplacement<T extends Object?, TO extends Object?>(
+    BuildContext context, Widget screen) {
   return Navigator.pushReplacement(
-      context, MaterialPageRoute(builder: (context) => screen));
+      context,
+      MaterialPageRoute(
+        builder: (context) => screen,
+      ));
 }
 
-Future<void> navPopUntilPush(BuildContext context, Widget screen) {
+Future<T?> navPopUntilPush<T extends Object?>(
+    BuildContext context, Widget screen) async {
   Navigator.popUntil(context, (route) => false);
-  return navPush(context, screen);
+  return await navPush(context, screen);
+}
+
+systemColors() {
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
+      overlays: [SystemUiOverlay.top]);
+
+  SystemChrome.setSystemUIOverlayStyle(
+    SystemUiOverlayStyle.light.copyWith(
+      statusBarBrightness: Brightness.light,
+      statusBarIconBrightness: Brightness.dark,
+      statusBarColor: Colors.transparent,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ),
+  );
 }
 
 Widget seeMoreButton(BuildContext context, {void Function()? onTap}) {
@@ -81,12 +94,13 @@ showLoading(BuildContext context) {
     barrierDismissible: false,
     context: context,
     builder: (BuildContext context) {
-      return WillPopScope(child: alert, onWillPop: () async => false);
+      return PopScope(child: alert, canPop: false);
     },
   );
 }
 
-showSnackBar(BuildContext context, String msg) {
+kSnackbar(BuildContext context, String msg) {
+  ScaffoldMessenger.of(context).clearSnackBars();
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
     content: Text(
       msg,
@@ -123,20 +137,12 @@ Widget CustomLoading({final indicatorColor}) {
   );
 }
 
-Center PlaceholderText({final text1, text2}) {
+Center PlaceholderText({required String text}) {
   return Center(
     child: Column(
       children: [
         Text(
-          text1,
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-            color: Colors.grey.shade400,
-          ),
-        ),
-        Text(
-          text2,
+          text,
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w700,

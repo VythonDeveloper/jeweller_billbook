@@ -160,7 +160,7 @@ class _SettingsUIState extends State<SettingsUI> {
                                   isLoading = false;
                                 });
 
-                                showSnackBar(context, "Gold Rate updated!");
+                                kSnackbar(context, "Gold Rate updated!");
                               });
                             }
                           },

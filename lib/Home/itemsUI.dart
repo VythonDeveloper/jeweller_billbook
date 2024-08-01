@@ -22,13 +22,6 @@ class _ItemsUIState extends State<ItemsUI> {
   String _selectedCategory = "All Categories";
 
   QuerySnapshot<Map<String, dynamic>>? initData;
-  bool _isSearching = false;
-  QuerySnapshot<Map<String, dynamic>>? searchedItemList;
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   void dispose() {
@@ -39,11 +32,6 @@ class _ItemsUIState extends State<ItemsUI> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   surfaceTintColor: Colors.white,
-      //   toolbarHeight: sdp(context, 78),
-      //   title: appBarItems(),
-      // ),
       body: SafeArea(
         child: Column(
           children: [
@@ -52,52 +40,38 @@ class _ItemsUIState extends State<ItemsUI> {
               child: appBarItems(),
             ),
             Expanded(
-                child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(left: 10.0),
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          child: IconButton(
-                            onPressed: () {},
-                            icon: Icon(Icons.add),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(left: 10.0),
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            child: IconButton(
+                              onPressed: () {},
+                              icon: Icon(Icons.add),
+                            ),
                           ),
-                        ),
-                        width10,
-                        Expanded(
-                          child: SingleChildScrollView(
-                            padding: EdgeInsets.only(right: 10),
-                            scrollDirection: Axis.horizontal,
-                            child: totalWeightList(),
+                          width10,
+                          Expanded(
+                            child: SingleChildScrollView(
+                              padding: EdgeInsets.only(right: 10),
+                              scrollDirection: Axis.horizontal,
+                              child: totalWeightList(),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  height10,
-                  _isSearching
-                      ? searchedItemList != null
-                          ? searchedList()
-                          : SizedBox()
-                      : itemsList(),
-                  Center(
-                    child: seeMoreButton(
-                      context,
-                      onTap: () {
-                        setState(() {
-                          itemsCounter += 5;
-                        });
-                      },
-                    ),
-                  ),
-                  height50,
-                  height50,
-                ],
+                    height10,
+                    itemsList(),
+                    kHeight(100),
+                  ],
+                ),
               ),
-            ))
+            ),
           ],
         ),
       ),
@@ -107,19 +81,6 @@ class _ItemsUIState extends State<ItemsUI> {
           },
           icon: Icons.add,
           label: 'Add Item'),
-    );
-  }
-
-  Widget searchedList() {
-    return ListView.separated(
-      separatorBuilder: (context, index) => height10,
-      itemCount: searchedItemList!.size,
-      shrinkWrap: true,
-      padding: EdgeInsets.all(10),
-      physics: NeverScrollableScrollPhysics(),
-      itemBuilder: (context, index) {
-        return itemsCard(itemMap: searchedItemList!.docs[index].data());
-      },
     );
   }
 
@@ -141,18 +102,6 @@ class _ItemsUIState extends State<ItemsUI> {
       leading: Icon(Icons.search),
       hintText: 'Search',
       onChanged: (value) async {
-        if (value.length >= 3) {
-          _isSearching = true;
-          searchedItemList = await FirebaseFirestore.instance
-              .collection('users')
-              .doc(UserData.uid)
-              .collection("items")
-              .where('name', isGreaterThanOrEqualTo: value)
-              .where('name', isLessThanOrEqualTo: value + '\uf8ff')
-              .get();
-        } else {
-          _isSearching = false;
-        }
         setState(() {});
       },
     );
@@ -324,75 +273,90 @@ class _ItemsUIState extends State<ItemsUI> {
     );
   }
 
-  int itemsCounter = 5;
+  int itemsCounter = 20;
   Widget itemsList() {
-    return FutureBuilder<dynamic>(
-        future: FirebaseFirestore.instance
-            .collection('users')
-            .doc(UserData.uid)
-            .collection("items")
-            .orderBy('id', descending: true)
-            .limit(itemsCounter)
-            .get(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            if (snapshot.data.docs.length > 0) {
-              int dataCounter = 0;
-              int loopCounter = 0;
-              return ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                padding: EdgeInsets.all(10),
-                itemCount: snapshot.data.docs.length,
-                itemBuilder: (context, index) {
-                  loopCounter += 1;
-                  DocumentSnapshot _txnMap = snapshot.data.docs[index];
-                  if (_selectedCategory == 'All Categories') {
-                    if (_searchKey.text.isEmpty) {
-                      dataCounter++;
-                      return itemsCard(itemMap: _txnMap);
-                    } else if (_txnMap['name']
-                        .toLowerCase()
-                        .contains(_searchKey.text.toLowerCase())) {
-                      dataCounter++;
-                      return itemsCard(itemMap: _txnMap);
+    return Column(
+      children: [
+        FutureBuilder<dynamic>(
+          future: FirebaseFirestore.instance
+              .collection('users')
+              .doc(UserData.uid)
+              .collection("items")
+              .orderBy('id', descending: true)
+              .limit(itemsCounter)
+              .get(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              if (snapshot.data.docs.length > 0) {
+                int dataCounter = 0;
+                int loopCounter = 0;
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  padding: EdgeInsets.all(10),
+                  itemCount: snapshot.data.docs.length,
+                  itemBuilder: (context, index) {
+                    loopCounter += 1;
+                    DocumentSnapshot _txnMap = snapshot.data.docs[index];
+                    if (_selectedCategory == 'All Categories') {
+                      if (_searchKey.text.isEmpty) {
+                        dataCounter++;
+                        return itemsCard(itemMap: _txnMap);
+                      } else if (_txnMap['name']
+                          .toLowerCase()
+                          .contains(_searchKey.text.toLowerCase())) {
+                        dataCounter++;
+                        return itemsCard(itemMap: _txnMap);
+                      }
+                    } else if (_txnMap['category'].toLowerCase() ==
+                        _selectedCategory.toLowerCase()) {
+                      if (_searchKey.text.isEmpty) {
+                        dataCounter++;
+                        return itemsCard(itemMap: _txnMap);
+                      } else if (_txnMap['name']
+                          .toLowerCase()
+                          .contains(_searchKey.text.toLowerCase())) {
+                        dataCounter++;
+                        return itemsCard(itemMap: _txnMap);
+                      }
                     }
-                  } else if (_txnMap['category'].toLowerCase() ==
-                      _selectedCategory.toLowerCase()) {
-                    if (_searchKey.text.isEmpty) {
-                      dataCounter++;
-                      return itemsCard(itemMap: _txnMap);
-                    } else if (_txnMap['name']
-                        .toLowerCase()
-                        .contains(_searchKey.text.toLowerCase())) {
-                      dataCounter++;
-                      return itemsCard(itemMap: _txnMap);
-                    }
-                  }
 
-                  if (dataCounter == 0 &&
-                      loopCounter == snapshot.data.docs.length) {
-                    return Center(
-                      child: Text(
-                        "No item found",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.grey.shade400,
+                    if (dataCounter == 0 &&
+                        loopCounter == snapshot.data.docs.length) {
+                      return Center(
+                        child: Text(
+                          "No item found",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey.shade400,
+                          ),
                         ),
-                      ),
-                    );
-                  }
-                  return SizedBox();
-                },
-              );
+                      );
+                    }
+                    return SizedBox();
+                  },
+                );
+              }
+              return PlaceholderText(text: "No Items!");
             }
-            return PlaceholderText(text1: "No Items", text2: 'CREATED');
-          }
-          return LinearProgressIndicator(
-            minHeight: 3,
-          );
-        });
+            return LinearProgressIndicator(
+              minHeight: 3,
+            );
+          },
+        ),
+        Center(
+          child: seeMoreButton(
+            context,
+            onTap: () {
+              setState(() {
+                itemsCounter += 20;
+              });
+            },
+          ),
+        ),
+      ],
+    );
   }
 
   Widget itemsCard({required var itemMap}) {
@@ -423,9 +387,7 @@ class _ItemsUIState extends State<ItemsUI> {
                 ),
               ),
             ),
-            SizedBox(
-              width: 10,
-            ),
+            width10,
             Expanded(
               flex: 5,
               child: Column(

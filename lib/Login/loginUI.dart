@@ -7,7 +7,7 @@ import 'package:jeweller_stockbook/Helper/sdp.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:jeweller_stockbook/utils/constants.dart';
 import 'package:jeweller_stockbook/utils/kOTPField.dart';
-import '../Home/dashboardUI.dart';
+import '../Home/RootUI.dart';
 import '../utils/components.dart';
 
 import 'package:hive/hive.dart';
@@ -71,7 +71,7 @@ class _LoginUIState extends State<LoginUI> {
         navPushReplacement(context, DashboardUI());
       } else {
         setState(() => isLoading = false);
-        showSnackBar(context, 'Invalid PIN. Try again ...');
+        kSnackbar(context, 'Invalid PIN. Try again ...');
       }
     });
   }
@@ -85,8 +85,8 @@ class _LoginUIState extends State<LoginUI> {
             Padding(
               padding: EdgeInsets.all(20),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Welcome,',
@@ -106,29 +106,13 @@ class _LoginUIState extends State<LoginUI> {
                   SizedBox(
                     height: 100,
                   ),
-                  Center(
-                      child: KOtpField(
+                  KOtpField(
                     length: 5,
                     onCompleted: (val) {
                       setState(() {
                         pin = val;
                       });
                     },
-                  )),
-                  height50,
-                  ElevatedButton(
-                    onPressed: () {
-                      if (!isLoading) {
-                        logIn(pin);
-                      }
-                    },
-                    child: SizedBox(
-                      width: double.maxFinite,
-                      child: Text(
-                        'Proceed',
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
                   ),
                 ],
               ),
@@ -140,16 +124,25 @@ class _LoginUIState extends State<LoginUI> {
           ],
         ),
       ),
-      // floatingActionButton: !isLoading
-      //     ? ElevatedButton(
-      //         onPressed: () {
-      //           if (!isLoading) {
-      //             logIn(pin);
-      //           }
-      //         },
-      //         child: Text('Proceed'),
-      //       )
-      //     : SizedBox(),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.all(20.0),
+          child: ElevatedButton(
+            onPressed: () {
+              if (!isLoading) {
+                logIn(pin);
+              }
+            },
+            child: SizedBox(
+              width: double.maxFinite,
+              child: Text(
+                'Proceed',
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 

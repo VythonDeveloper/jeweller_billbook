@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:jeweller_stockbook/Mortage/createMrtgBook.dart';
-import 'package:jeweller_stockbook/Mortage/mrtgBill.dart';
+import 'package:jeweller_stockbook/Mortage/MortgageBillUI.dart';
 import 'package:jeweller_stockbook/utils/colors.dart';
 import 'package:jeweller_stockbook/utils/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -10,14 +10,14 @@ import 'package:url_launcher/url_launcher.dart';
 import '../Helper/sdp.dart';
 import '../utils/components.dart';
 
-class MortgageUi extends StatefulWidget {
-  const MortgageUi({Key? key}) : super(key: key);
+class MortgageUI extends StatefulWidget {
+  const MortgageUI({Key? key}) : super(key: key);
 
   @override
-  State<MortgageUi> createState() => _MortgageUiState();
+  State<MortgageUI> createState() => _MortgageUIState();
 }
 
-class _MortgageUiState extends State<MortgageUi> {
+class _MortgageUIState extends State<MortgageUI> {
   final _searchKey = TextEditingController();
 
   QuerySnapshot<Map<String, dynamic>>? initData;
@@ -33,24 +33,32 @@ class _MortgageUiState extends State<MortgageUi> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Mortgage'),
-        surfaceTintColor: Colors.transparent,
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.all(10.0),
-          child: Column(
-            children: [
-              mrtgBookList(),
-              height10,
-              seeMoreButton(context, onTap: () {
-                setState(() {
-                  mortgageItemCounter += 5;
-                });
-              }),
-              height50,
-              height50,
-            ],
-          ),
+        child: Column(
+          children: [
+            _searchBar(),
+            height10,
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: 10.0),
+                child: Column(
+                  children: [
+                    mrtgBookList(),
+                    height10,
+                    seeMoreButton(context, onTap: () {
+                      setState(() {
+                        mortgageItemCounter += 5;
+                      });
+                    }),
+                    kHeight(100),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
       floatingActionButton: CustomFABButton(
@@ -69,52 +77,23 @@ class _MortgageUiState extends State<MortgageUi> {
     );
   }
 
-  Widget appBarItems() {
-    return Row(
-      children: [
-        Text(
-          'Mortgage',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: sdp(context, 12),
-          ),
-        ),
-        // width5,
-        // Flexible(
-        //   child: searchBar(),
-        // ),
-      ],
-    );
-  }
-
-  Widget searchBar() {
-    return Container(
-      decoration: BoxDecoration(
-        color: kPrimaryColor,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: TextField(
+  Widget _searchBar() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 10.0),
+      child: SearchBar(
         controller: _searchKey,
-        decoration: InputDecoration(
-          prefixIcon: Icon(
-            Icons.search,
-            color: Colors.black,
-          ),
-          border: InputBorder.none,
-          hintText: 'Search by name',
-          // hintStyle: TextStyle(
-          //   color: Colors.grey.shade700,
-          //   fontSize: sdp(context, 10),
-          // ),
-        ),
-        onChanged: (value) {
-          // setState(() {});
+        elevation: WidgetStatePropertyAll(0),
+        padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 15)),
+        leading: Icon(Icons.search),
+        hintText: 'Search name, phone etc',
+        onChanged: (value) async {
+          setState(() {});
         },
       ),
     );
   }
 
-  int mortgageItemCounter = 5;
+  int mortgageItemCounter = 20;
   Widget mrtgBookList() {
     return FutureBuilder<dynamic>(
       future: FirebaseFirestore.instance
@@ -133,7 +112,10 @@ class _MortgageUiState extends State<MortgageUi> {
               itemCount: snapshot.data.docs.length,
               itemBuilder: (context, index) {
                 DocumentSnapshot _mrtgBookMap = snapshot.data.docs[index];
-                return mrtgBookCard(mrtgBookMap: _mrtgBookMap);
+                if (kCompare(_mrtgBookMap['name'], _searchKey.text) ||
+                    kCompare(_mrtgBookMap['phone'], _searchKey.text))
+                  return mrtgBookCard(mrtgBookMap: _mrtgBookMap);
+                return SizedBox();
               },
             );
           }
@@ -174,7 +156,7 @@ class _MortgageUiState extends State<MortgageUi> {
   Widget mrtgBookCard({required var mrtgBookMap}) {
     return GestureDetector(
       onTap: () {
-        navPush(context, MrtgBillUi(mrtgBook: mrtgBookMap))
+        navPush(context, MortgageBillUI(mrtgBook: mrtgBookMap))
             .then((value) => setState(() {}));
       },
       child: Container(
@@ -206,9 +188,7 @@ class _MortgageUiState extends State<MortgageUi> {
                         fontSize: 13,
                       ),
                     ),
-                    SizedBox(
-                      height: 10,
-                    ),
+                    height10,
                   ],
                 ),
                 CircleAvatar(
@@ -220,7 +200,7 @@ class _MortgageUiState extends State<MortgageUi> {
                       if (await canLaunchUrl(url)) {
                         launchUrl(url);
                       } else {
-                        showSnackBar(context,
+                        kSnackbar(context,
                             'Unable to place call to ${mrtgBookMap['name']}');
                       }
                     },

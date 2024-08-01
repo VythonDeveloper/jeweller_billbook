@@ -3,24 +3,25 @@ import 'package:flutter/material.dart';
 import 'package:jeweller_stockbook/Helper/sdp.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:jeweller_stockbook/Mortage/createMrtgBill.dart';
-import 'package:jeweller_stockbook/Mortage/mrtgBillDetails.dart';
+import 'package:jeweller_stockbook/Mortage/MortgageBillDetailsUI.dart';
 import 'package:jeweller_stockbook/utils/colors.dart';
 import 'package:jeweller_stockbook/utils/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../utils/components.dart';
 
-class MrtgBillUi extends StatefulWidget {
+class MortgageBillUI extends StatefulWidget {
   final mrtgBook;
-  const MrtgBillUi({super.key, this.mrtgBook});
+  const MortgageBillUI({super.key, this.mrtgBook});
 
   @override
-  State<MrtgBillUi> createState() => _MrtgBillUiState(mrtgBook: mrtgBook);
+  State<MortgageBillUI> createState() =>
+      _MortgageBillUIState(mrtgBook: mrtgBook);
 }
 
-class _MrtgBillUiState extends State<MrtgBillUi> {
+class _MortgageBillUIState extends State<MortgageBillUI> {
   final mrtgBook;
-  _MrtgBillUiState({this.mrtgBook});
+  _MortgageBillUIState({this.mrtgBook});
 
   bool isLoading = false;
   final _searchKey = TextEditingController();
@@ -50,7 +51,7 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
           Column(
             children: [
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 15),
+                padding: EdgeInsets.all(12),
                 width: double.infinity,
                 color: kLightPrimaryColor,
                 child: SafeArea(
@@ -58,7 +59,6 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      height10,
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -203,7 +203,8 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                           ),
                         ],
                       ),
-                      height20,
+                      height10,
+                      _searchBar(),
                     ],
                   ),
                 ),
@@ -213,9 +214,7 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                 child: Column(
                   children: [
                     mrtgBillList(),
-                    SizedBox(
-                      height: 100,
-                    ),
+                    kHeight(100),
                   ],
                 ),
               ))
@@ -244,6 +243,20 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
         icon: Icons.receipt_long,
         label: '+ Create Mortgage Bill',
       ),
+    );
+  }
+
+  Widget _searchBar() {
+    return SearchBar(
+      controller: _searchKey,
+      elevation: WidgetStatePropertyAll(0),
+      padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 15)),
+      leading: Icon(Icons.search),
+      backgroundColor: WidgetStatePropertyAll(Colors.white),
+      hintText: 'Search',
+      onChanged: (value) async {
+        setState(() {});
+      },
     );
   }
 
@@ -395,42 +408,6 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
                                   ),
                                   child: child!,
                                 );
-                                // return Theme(
-                                //   data: Theme.of(context).copyWith(
-                                //     indicatorColor: Colors.white,
-                                //     // colorScheme: ColorScheme.light(
-                                //     //   primary: Colors.yellow,
-                                //     //   onPrimary: kPrimaryColor,
-                                //     //   brightness: Brightness.light,
-                                //     //   onSurface: Colors.green,
-                                //     //   background: Colors.blue,
-                                //     // ),
-                                //     scaffoldBackgroundColor: kLightPrimaryColor,
-                                //     // kPrimaryColor: kPrimaryColor,
-                                //     iconTheme: IconThemeData(
-                                //       color: Colors.white,
-                                //     ),
-                                //     primaryIconTheme: IconThemeData(
-                                //       color: Colors.white,
-                                //     ),
-                                //     appBarTheme: AppBarTheme(
-                                //       backgroundColor: kPrimaryColor,
-                                //       foregroundColor: Colors.white,
-                                //       actionsIconTheme: IconThemeData(
-                                //         color: Colors.white,
-                                //       ),
-                                //       iconTheme: IconThemeData(
-                                //         color: Colors.white,
-                                //       ),
-                                //     ),
-                                //     textButtonTheme: TextButtonThemeData(
-                                //         // style: TextButton.styleFrom(
-                                //         //   backgroundColor: kPrimaryColor,
-                                //         // ),
-                                //         ),
-                                //   ),
-                                //   child: child!,
-                                // );
                               }),
                             );
                           },
@@ -502,73 +479,41 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
 
   Widget mrtgBillList() {
     return FutureBuilder<dynamic>(
-        future: FirebaseFirestore.instance
-            .collection('users')
-            .doc(UserData.uid)
-            .collection("mortgageBill")
-            .where('bookId', isEqualTo: mrtgBook['id'])
-            .orderBy('date', descending: true)
-            .get(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            if (snapshot.data.docs.length > 0) {
-              int dataCounter = 0;
-              int loopCounter = 0;
-              return ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                padding: EdgeInsets.only(top: 10),
-                itemCount: snapshot.data.docs.length,
-                itemBuilder: (context, index) {
-                  loopCounter += 1;
-                  DocumentSnapshot _txnMap = snapshot.data.docs[index];
-                  if (_selectedStatus == 'All') {
-                    if (_searchKey.text.isEmpty) {
-                      dataCounter++;
-                      return mrtgBillCard(txnMap: _txnMap);
-                    } else if (_txnMap['description']
-                        .toLowerCase()
-                        .contains(_searchKey.text.toLowerCase())) {
-                      dataCounter++;
-                      return mrtgBillCard(txnMap: _txnMap);
-                    }
-                  } else if (_txnMap['status'].toLowerCase() ==
-                      _selectedStatus.toLowerCase()) {
-                    if (_searchKey.text.isEmpty) {
-                      dataCounter++;
-                      return mrtgBillCard(txnMap: _txnMap);
-                    } else if (_txnMap['description']
-                        .toLowerCase()
-                        .contains(_searchKey.text.toLowerCase())) {
-                      dataCounter++;
-                      return mrtgBillCard(txnMap: _txnMap);
-                    }
-                  }
+      future: FirebaseFirestore.instance
+          .collection('users')
+          .doc(UserData.uid)
+          .collection("mortgageBill")
+          .where('bookId', isEqualTo: mrtgBook['id'])
+          .orderBy('date', descending: true)
+          .get(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          if (snapshot.data.docs.length > 0) {
+            return ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.only(top: 10),
+              itemCount: snapshot.data.docs.length,
+              itemBuilder: (context, index) {
+                DocumentSnapshot _txnMap = snapshot.data.docs[index];
 
-                  if (dataCounter == 0 &&
-                      loopCounter == snapshot.data.docs.length) {
-                    return Center(
-                      child: Text(
-                        "No bill found",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.grey.shade400,
-                        ),
-                      ),
-                    );
-                  }
-                  return SizedBox();
-                },
-              );
-            }
-            return Padding(
-              padding: EdgeInsets.only(top: 100),
-              child: PlaceholderText(text1: 'No Bill', text2: 'CREATED'),
+                if (kCompare(_txnMap['description'], _searchKey.text) ||
+                    kCompare(_txnMap['status'], _searchKey.text)) {
+                  return mrtgBillCard(txnMap: _txnMap);
+                }
+
+                return SizedBox();
+              },
             );
           }
-          return CustomLoading();
-        });
+          return Padding(
+            padding: EdgeInsets.only(top: 100),
+            child: PlaceholderText(text: 'No Bill!'),
+          );
+        }
+        return CustomLoading();
+      },
+    );
   }
 
   Widget mrtgBillCard({required var txnMap}) {
@@ -579,7 +524,7 @@ class _MrtgBillUiState extends State<MrtgBillUi> {
       txnMap['interestPerMonth'],
       txnMap['lastPaymentDate'],
     );
-    // print(txnMap['amount']);
+
     return GestureDetector(
       onTap: () {
         navPush(

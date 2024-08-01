@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    defaultSystemColors();
+    systemColors();
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,

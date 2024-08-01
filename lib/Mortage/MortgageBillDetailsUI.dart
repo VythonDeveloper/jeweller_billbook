@@ -130,66 +130,50 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
         appBar: AppBar(
           backgroundColor: Colors.white,
           actions: [
-            CircleAvatar(
-              radius: 15,
-              backgroundColor: Colors.blue.shade800,
-              child: FittedBox(
-                child: IconButton(
-                  onPressed: () async {
-                    if (!await launchUrl(Uri.parse('tel:$phone'))) {
-                      throw Exception('Could not launch $phone');
-                    }
-                  },
-                  icon: Icon(
-                    Icons.call,
-                    color: Colors.white,
-                  ),
-                ),
+            IconButton(
+              onPressed: () async {
+                if (!await launchUrl(Uri.parse('tel:$phone'))) {
+                  throw Exception('Could not launch $phone');
+                }
+              },
+              icon: Icon(
+                Icons.call,
+                color: Colors.blue.shade700,
               ),
             ),
             width10,
-            CircleAvatar(
-              radius: 15,
-              backgroundColor: Colors.green,
-              child: FittedBox(
-                child: IconButton(
-                  onPressed: () {
-                    navPush(
-                            context,
-                            EditMrtgBillUi(
-                                customerName: customerName,
-                                phone: phone,
-                                mrtgBillMap: mrtgBillMap))
-                        .then((value) {
-                      fetchMrtgBillDetails();
-                    });
-                  },
-                  icon: Icon(
-                    Icons.edit,
-                    color: Colors.white,
-                  ),
-                ),
+            IconButton(
+              onPressed: () {
+                navPush(
+                        context,
+                        EditMrtgBillUi(
+                            customerName: customerName,
+                            phone: phone,
+                            mrtgBillMap: mrtgBillMap))
+                    .then((value) {
+                  fetchMrtgBillDetails();
+                });
+              },
+              icon: Icon(
+                Icons.edit,
               ),
             ),
             width10,
-            CircleAvatar(
-              radius: 15,
-              backgroundColor: Colors.red,
-              child: FittedBox(
-                child: IconButton(
-                  onPressed: () {
-                    showDialog<void>(
-                      context: context,
-                      barrierDismissible: false, // user must tap button!
-                      builder: (BuildContext context) {
-                        return deleteMrtgBillAlert();
-                      },
-                    );
+            TextButton(
+              onPressed: () {
+                showDialog<void>(
+                  context: context,
+                  barrierDismissible: false, // user must tap button!
+                  builder: (BuildContext context) {
+                    return deleteMrtgBillAlert();
                   },
-                  icon: Icon(
-                    Icons.delete,
-                    color: Colors.white,
-                  ),
+                );
+              },
+              child: Text(
+                "Delete",
+                style: TextStyle(
+                  color: Colors.red.shade500,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ),
@@ -367,9 +351,10 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
               borderRadius: BorderRadius.circular(10),
             ),
             child: TabBar(
+              dividerHeight: 0,
               splashBorderRadius: BorderRadius.circular(40),
               labelColor: Colors.black,
-              unselectedLabelColor: Colors.black.withOpacity(0.3),
+              unselectedLabelColor: Colors.black.withOpacity(0.7),
               automaticIndicatorColorAdjustment: true,
               indicatorWeight: 2,
               labelStyle: TextStyle(
@@ -379,7 +364,7 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                 fontFamily: 'Product',
               ),
               unselectedLabelStyle: TextStyle(
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w400,
                 letterSpacing: 0.5,
                 fontSize: 15,
                 fontFamily: 'Product',
@@ -432,6 +417,7 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
               ),
             ],
           ),
+          height10,
           Row(
             children: [
               Expanded(
@@ -600,15 +586,22 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Yor\'re in'),
-                Text(
-                  _calculatedResult['profitLoss'],
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                  decoration: BoxDecoration(
+                    borderRadius: kRadius(5),
                     color: _calculatedResult['profitLoss'] == 'Profit'
                         ? profitColor
                         : lossColor,
-                    letterSpacing: 0.7,
+                  ),
+                  child: Text(
+                    _calculatedResult['profitLoss'],
+                    style: TextStyle(
+                      fontSize: sdp(context, 11),
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
+                      letterSpacing: 0.7,
+                    ),
                   ),
                 ),
               ],
@@ -761,9 +754,7 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                   ],
                 ),
               ),
-              SizedBox(
-                height: 10,
-              ),
+              height10,
               FutureBuilder<dynamic>(
                 future: FirebaseFirestore.instance
                     .collection('users')
@@ -787,8 +778,7 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                       );
                     }
                     return PlaceholderText(
-                      text1: "No Payment",
-                      text2: "CAPTURED",
+                      text: "No Payment!",
                     );
                   }
                   return CustomLoading();
@@ -819,7 +809,7 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: kPrimaryColor,
+                  color: kColor(context).tertiary,
                 ),
               ),
             ),

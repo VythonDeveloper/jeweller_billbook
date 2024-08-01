@@ -288,7 +288,7 @@ class _HomeUIState extends ConsumerState<HomeUI> {
     );
   }
 
-  int timelineHistoryCounter = 10;
+  int timelineHistoryCounter = 20;
   Widget itemTimeline() {
     return FutureBuilder<dynamic>(
       future: FirebaseFirestore.instance

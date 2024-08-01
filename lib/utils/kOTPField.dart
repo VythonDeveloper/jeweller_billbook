@@ -28,10 +28,10 @@ class _KOtpFieldState extends State<KOtpField> {
           color: Color.fromRGBO(30, 60, 87, 1),
           fontWeight: FontWeight.w600),
       decoration: BoxDecoration(
-        color: kColor(context).tertiaryContainer.withOpacity(.5),
+        color: kColor(context).surfaceContainerLow,
         border: Border(
           bottom: BorderSide(
-            width: 3,
+            width: 1,
             color: kColor(context).tertiary,
           ),
         ),
@@ -45,9 +45,9 @@ class _KOtpFieldState extends State<KOtpField> {
 
     final submittedPinTheme = defaultPinTheme.copyWith(
       decoration: defaultPinTheme.decoration!.copyWith(
-        color: Colors.white,
-        // color: kColor(context).tertiaryContainer,
-      ),
+          // color: Colors.white,
+          // color: kColor(context).tertiaryContainer,
+          ),
     );
     return Pinput(
       defaultPinTheme: defaultPinTheme,

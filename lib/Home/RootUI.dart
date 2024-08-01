@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jeweller_stockbook/Home/homeUI.dart';
 import 'package:jeweller_stockbook/Home/itemsUI.dart';
 import 'package:jeweller_stockbook/Home/settingsUI.dart';
-import 'package:jeweller_stockbook/Home/mrtgBook.dart';
+import 'package:jeweller_stockbook/Home/MortgageUI.dart';
 import 'package:jeweller_stockbook/utils/animated_indexed_stack.dart';
 import 'package:jeweller_stockbook/utils/components.dart';
 
@@ -16,22 +16,28 @@ class DashboardUI extends StatefulWidget {
 class _DashboardUIState extends State<DashboardUI> {
   int _selectedbottomNavIndex = 0;
   DateTime? currentBackPressTime;
+  bool canPop = false;
 
-  Future<bool> onWillPop() {
-    DateTime now = DateTime.now();
-    if (currentBackPressTime == null ||
-        now.difference(currentBackPressTime!) > Duration(seconds: 2)) {
-      currentBackPressTime = now;
-      showSnackBar(context, 'Press back again to exit!');
-      return Future.value(false);
-    }
-    return Future.value(true);
+  onWillPop(val) {
+    setState(() {
+      canPop = true;
+    });
+    kSnackbar(context, 'Press back again to exit!');
+    Future.delayed(
+      Duration(seconds: 2),
+      () {
+        setState(() {
+          canPop = false;
+        });
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: onWillPop,
+    return PopScope(
+      canPop: canPop,
+      onPopInvoked: onWillPop,
       child: Scaffold(
         body: Body(),
         bottomNavigationBar: BottomNavNew(),
@@ -45,7 +51,7 @@ class _DashboardUIState extends State<DashboardUI> {
       children: [
         HomeUI(),
         ItemsUI(),
-        MortgageUi(),
+        MortgageUI(),
         SettingsUI(),
       ],
     );
