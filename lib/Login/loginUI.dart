@@ -7,6 +7,7 @@ import 'package:jeweller_stockbook/Helper/sdp.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:jeweller_stockbook/utils/constants.dart';
 import 'package:jeweller_stockbook/utils/kOTPField.dart';
+import 'package:jeweller_stockbook/utils/kScaffold.dart';
 import '../Home/RootUI.dart';
 import '../utils/components.dart';
 
@@ -78,50 +79,43 @@ class _LoginUIState extends State<LoginUI> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return KScaffold(
+      isLoading: isLoading,
       body: SafeArea(
-        child: Stack(
-          children: [
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Welcome,',
-                    style: TextStyle(
-                      fontSize: sdp(context, 15),
-                      color: Colors.black,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  Text(
-                    Constants.shopName,
-                    style: TextStyle(
-                        fontSize: sdp(context, 20),
-                        color: Colors.blue.shade800,
-                        fontWeight: FontWeight.w700),
-                  ),
-                  SizedBox(
-                    height: 100,
-                  ),
-                  KOtpField(
-                    length: 5,
-                    onCompleted: (val) {
-                      setState(() {
-                        pin = val;
-                      });
-                    },
-                  ),
-                ],
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Welcome,',
+                style: TextStyle(
+                  fontSize: sdp(context, 15),
+                  color: Colors.black,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-            ),
-            Visibility(
-              visible: isLoading,
-              child: fullScreenLoading(context),
-            ),
-          ],
+              Text(
+                Constants.shopName,
+                style: TextStyle(
+                    fontSize: sdp(context, 20),
+                    color: Colors.blue.shade800,
+                    fontWeight: FontWeight.w700),
+              ),
+              kHeight(50),
+              Text("Enter the security code"),
+              height20,
+              KOtpField(
+                length: 5,
+                onCompleted: (val) {
+                  setState(() {
+                    pin = val;
+                  });
+                },
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: SafeArea(

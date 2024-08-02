@@ -87,6 +87,6 @@ class Constants {
 
 // ₹
 
-bool kCompare(String text1, String text2) {
-  return text1.trim().toLowerCase().contains(text2.trim().toLowerCase());
+bool kCompare(String text, String searchKey) {
+  return text.trim().toLowerCase().contains(searchKey.trim().toLowerCase());
 }

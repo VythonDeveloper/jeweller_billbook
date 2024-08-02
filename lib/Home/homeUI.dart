@@ -1,3 +1,4 @@
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -5,10 +6,12 @@ import 'package:intl/intl.dart';
 import 'package:jeweller_stockbook/Helper/sdp.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:jeweller_stockbook/Items/itemDetails.dart';
+import 'package:jeweller_stockbook/Repository/timeline_repo.dart';
 import 'package:jeweller_stockbook/Stock/lowStock.dart';
 import 'package:jeweller_stockbook/utils/colors.dart';
 import 'package:jeweller_stockbook/utils/components.dart';
 import 'package:jeweller_stockbook/utils/constants.dart';
+import 'package:jeweller_stockbook/utils/kScaffold.dart';
 
 class HomeUI extends ConsumerStatefulWidget {
   const HomeUI({Key? key}) : super(key: key);
@@ -26,7 +29,10 @@ class _HomeUIState extends ConsumerState<HomeUI> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    final timelineData = ref.watch(timelineFuture(timelineHistoryCounter));
+    return KScaffold(
+      isLoading: timelineData.isLoading,
+      loadingText: "Fetching timeline ...",
       appBar: AppBar(
         backgroundColor: Colors.white,
         automaticallyImplyLeading: false,
@@ -290,29 +296,121 @@ class _HomeUIState extends ConsumerState<HomeUI> {
 
   int timelineHistoryCounter = 20;
   Widget itemTimeline() {
-    return FutureBuilder<dynamic>(
-      future: FirebaseFirestore.instance
-          .collection('users')
-          .doc(UserData.uid)
-          .collection('transactions')
-          .orderBy('id', descending: true)
-          .limit(timelineHistoryCounter)
-          .get(),
-      builder: ((context, snapshot) {
-        if (snapshot.hasData) {
-          if (snapshot.data.docs.length > 0) {
-            timelineDateTitle = '';
+    // return FutureBuilder<dynamic>(
+    // future: FirebaseFirestore.instance
+    //     .collection('users')
+    //     .doc(UserData.uid)
+    //     .collection('transactions')
+    //     .orderBy('id', descending: true)
+    //     .limit(timelineHistoryCounter)
+    //     .get(),
+    //   builder: ((context, snapshot) {
+    //     if (snapshot.hasData) {
+    //       if (snapshot.data.docs.length > 0) {
+    //         timelineDateTitle = '';
+    //         return Column(
+    //           crossAxisAlignment: CrossAxisAlignment.start,
+    //           children: [
+    //             _timelineBar(),
+    //             ListView.separated(
+    //               separatorBuilder: (context, index) => height10,
+    //               shrinkWrap: true,
+    //               physics: NeverScrollableScrollPhysics(),
+    //               itemCount: snapshot.data.docs.length,
+    //               itemBuilder: (context, index) {
+    // var txnMap = snapshot.data.docs[index];
+    // var todayDate = Constants.dateFormat(
+    //     DateTime.now().millisecondsSinceEpoch);
+    // if (timelineDateTitle ==
+    //     Constants.dateFormat(txnMap['date'])) {
+    //   showDateWidget = false;
+    // } else {
+    //   timelineDateTitle = Constants.dateFormat(txnMap['date']);
+    //   showDateWidget = true;
+    // }
+    // return snapshot.data.docs[index]['type'] ==
+    //         "StockTransaction"
+    //     ? Column(
+    //         crossAxisAlignment: CrossAxisAlignment.start,
+    //         children: [
+    //           Visibility(
+    //             visible: showDateWidget,
+    //             child: Padding(
+    //               padding: EdgeInsets.only(
+    //                   bottom: 15, top: 20, left: 10),
+    //               child: Text(
+    //                 timelineDateTitle == todayDate
+    //                     ? "Today"
+    //                     : timelineDateTitle,
+    //                 style: TextStyle(
+    //                   fontWeight: FontWeight.w500,
+    //                   color: Colors.grey.shade700,
+    //                   fontSize: 20,
+    //                 ),
+    //               ),
+    //             ),
+    //           ),
+    //           stockTxnCard(txnMap: txnMap),
+    //         ],
+    //       )
+    //     : Column(
+    //         crossAxisAlignment: CrossAxisAlignment.start,
+    //         children: [
+    //           Visibility(
+    //             visible: showDateWidget,
+    //             child: Padding(
+    //               padding: const EdgeInsets.only(
+    //                   bottom: 15, top: 20, left: 10),
+    //               child: Text(
+    //                 timelineDateTitle == todayDate
+    //                     ? "Today"
+    //                     : timelineDateTitle,
+    //                 style: TextStyle(
+    //                     fontWeight: FontWeight.w500,
+    //                     color: Colors.grey.shade700,
+    //                     fontSize: 20),
+    //               ),
+    //             ),
+    //           ),
+    //           mrtgTxnCard(txnMap: txnMap)
+    //         ],
+    //       );
+    //               },
+    //             ),
+    //           ],
+    //         );
+    //       }
+    //       return Padding(
+    //         padding: EdgeInsets.only(top: 40, left: 15),
+    //         child: Text(
+    //           "No\nTransactions",
+    //           style: TextStyle(
+    //             fontSize: 30,
+    //             fontWeight: FontWeight.bold,
+    //             color: Colors.grey.shade300,
+    //           ),
+    //         ),
+    //       );
+    //     }
+    //     return LinearProgressIndicator();
+    //   }),
+    // );
+
+    return Consumer(
+      builder: (context, ref, child) {
+        final timelineList = ref.watch(timelineFuture(timelineHistoryCounter));
+        return timelineList.when(
+          data: (data) {
             return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _timelineBar(),
                 ListView.separated(
                   separatorBuilder: (context, index) => height10,
+                  itemCount: data.docs.length,
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
-                  itemCount: snapshot.data.docs.length,
                   itemBuilder: (context, index) {
-                    var txnMap = snapshot.data.docs[index];
+                    var txnMap = data.docs[index];
                     var todayDate = Constants.dateFormat(
                         DateTime.now().millisecondsSinceEpoch);
                     if (timelineDateTitle ==
@@ -322,8 +420,7 @@ class _HomeUIState extends ConsumerState<HomeUI> {
                       timelineDateTitle = Constants.dateFormat(txnMap['date']);
                       showDateWidget = true;
                     }
-                    return snapshot.data.docs[index]['type'] ==
-                            "StockTransaction"
+                    return data.docs[index]['type'] == "StockTransaction"
                         ? Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -373,21 +470,11 @@ class _HomeUIState extends ConsumerState<HomeUI> {
                 ),
               ],
             );
-          }
-          return Padding(
-            padding: EdgeInsets.only(top: 40, left: 15),
-            child: Text(
-              "No\nTransactions",
-              style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey.shade300,
-              ),
-            ),
-          );
-        }
-        return LinearProgressIndicator();
-      }),
+          },
+          error: (error, stackTrace) => Text("Something went wrong!"),
+          loading: () => CircularProgressIndicator(),
+        );
+      },
     );
   }
 

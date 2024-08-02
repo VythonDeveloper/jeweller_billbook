@@ -6,17 +6,18 @@ import 'package:jeweller_stockbook/Login/loginUI.dart';
 import 'package:jeweller_stockbook/utils/colors.dart';
 import 'package:jeweller_stockbook/utils/components.dart';
 import 'package:jeweller_stockbook/utils/constants.dart';
+import 'package:jeweller_stockbook/utils/kScaffold.dart';
 
 import '../Helper/user.dart';
 
-class SettingsUI extends StatefulWidget {
-  const SettingsUI({super.key});
+class MoreUI extends StatefulWidget {
+  const MoreUI({super.key});
 
   @override
-  State<SettingsUI> createState() => _SettingsUIState();
+  State<MoreUI> createState() => _MoreUIState();
 }
 
-class _SettingsUIState extends State<SettingsUI> {
+class _MoreUIState extends State<MoreUI> {
   final _formKey = GlobalKey<FormState>();
   final _goldRate = new TextEditingController();
   int _updatedOn = 0;
@@ -29,6 +30,9 @@ class _SettingsUIState extends State<SettingsUI> {
   }
 
   void fetchGoldRate() async {
+    setState(() {
+      isLoading = true;
+    });
     await FirebaseFirestore.instance
         .collection('users')
         .doc(UserData.uid)
@@ -40,6 +44,9 @@ class _SettingsUIState extends State<SettingsUI> {
         _updatedOn = value.data()!['goldDetails']['updatedOn'];
       });
     });
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -50,7 +57,8 @@ class _SettingsUIState extends State<SettingsUI> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return KScaffold(
+      isLoading: isLoading,
       appBar: AppBar(
         title: Text('More'),
       ),

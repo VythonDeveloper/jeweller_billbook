@@ -1,86 +1,146 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jeweller_stockbook/Helper/sdp.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:jeweller_stockbook/Items/createitem.dart';
 import 'package:jeweller_stockbook/Category/itemcategory.dart';
 import 'package:jeweller_stockbook/Items/itemDetails.dart';
+import 'package:jeweller_stockbook/Repository/items_repo.dart';
 import 'package:jeweller_stockbook/Stock/lowStock.dart';
 import 'package:jeweller_stockbook/utils/colors.dart';
 import 'package:jeweller_stockbook/utils/components.dart';
+import 'package:jeweller_stockbook/utils/constants.dart';
+import 'package:jeweller_stockbook/utils/kScaffold.dart';
 
-class ItemsUI extends StatefulWidget {
+class ItemsUI extends ConsumerStatefulWidget {
   const ItemsUI({Key? key}) : super(key: key);
 
   @override
-  State<ItemsUI> createState() => _ItemsUIState();
+  ConsumerState<ItemsUI> createState() => _ItemsUIState();
 }
 
-class _ItemsUIState extends State<ItemsUI> {
+class _ItemsUIState extends ConsumerState<ItemsUI> {
+  bool isLoading = false;
   final _searchKey = TextEditingController();
   List<String> categoryList = ['All Categories'];
   String _selectedCategory = "All Categories";
+  List _allResults = [];
+  List _resultList = [];
 
-  QuerySnapshot<Map<String, dynamic>>? initData;
+  @override
+  void initState() {
+    super.initState();
+    _getItems();
+    _searchKey.addListener(_onSearchChanged);
+  }
+
+  _getItems() async {
+    await ref.read(itemsFuture).whenData(
+      (data) {
+        setState(() {
+          _allResults = data.docs;
+        });
+      },
+    );
+
+    _searchResultList();
+  }
+
+  _onSearchChanged() async {
+    _searchResultList();
+  }
+
+  _searchResultList() {
+    var showResults = [];
+    if (_searchKey.text.isNotEmpty) {
+      for (var snapshot in _allResults) {
+        var name = snapshot['name'];
+        if (kCompare(name, _searchKey.text)) {
+          showResults.add(snapshot);
+        }
+      }
+    } else {
+      showResults = List.from(_allResults);
+    }
+
+    setState(() {
+      _resultList = showResults;
+    });
+  }
 
   @override
   void dispose() {
-    super.dispose();
+    _searchKey.removeListener(_onSearchChanged);
     _searchKey.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    _getItems();
+    super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            Container(
-              padding: EdgeInsets.all(10),
-              child: appBarItems(),
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(left: 10.0),
-                      child: Row(
-                        children: [
-                          CircleAvatar(
-                            child: IconButton(
-                              onPressed: () {},
-                              icon: Icon(Icons.add),
+    final itemsFutureData = ref.watch(itemsFuture);
+    return RefreshIndicator(
+      onRefresh: () => ref.refresh(itemsFuture.future),
+      child: KScaffold(
+        isLoading: itemsFutureData.isLoading,
+        loadingText: "Fetching items ...",
+        body: SafeArea(
+          child: Column(
+            children: [
+              Container(
+                padding: EdgeInsets.all(10),
+                child: appBarItems(),
+              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(left: 10.0),
+                        child: Row(
+                          children: [
+                            CircleAvatar(
+                              child: IconButton(
+                                onPressed: () {},
+                                icon: Icon(Icons.add),
+                              ),
                             ),
-                          ),
-                          width10,
-                          Expanded(
-                            child: SingleChildScrollView(
-                              padding: EdgeInsets.only(right: 10),
-                              scrollDirection: Axis.horizontal,
-                              child: totalWeightList(),
+                            width10,
+                            Expanded(
+                              child: SingleChildScrollView(
+                                padding: EdgeInsets.only(right: 10),
+                                scrollDirection: Axis.horizontal,
+                                child: totalWeightList(),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    height10,
-                    itemsList(),
-                    kHeight(100),
-                  ],
+                      height10,
+                      itemsList(),
+                      kHeight(100),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
+        floatingActionButton: CustomFABButton(
+            onPressed: () {
+              navPush(context, CreateItemUi()).then((value) => setState(() {}));
+            },
+            icon: Icons.add,
+            label: 'Add Item'),
       ),
-      floatingActionButton: CustomFABButton(
-          onPressed: () {
-            navPush(context, CreateItemUi()).then((value) => setState(() {}));
-          },
-          icon: Icons.add,
-          label: 'Add Item'),
     );
   }
 
@@ -95,15 +155,15 @@ class _ItemsUIState extends State<ItemsUI> {
   }
 
   Widget _searchBar() {
-    return SearchBar(
-      controller: _searchKey,
-      elevation: WidgetStatePropertyAll(0),
-      padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 15)),
-      leading: Icon(Icons.search),
-      hintText: 'Search',
-      onChanged: (value) async {
-        setState(() {});
+    return TextFieldTapRegion(
+      onTapOutside: (event) {
+        FocusScope.of(context).unfocus();
       },
+      child: CupertinoSearchTextField(
+        controller: _searchKey,
+        padding: EdgeInsets.all(10),
+        placeholder: 'Search name',
+      ),
     );
   }
 
@@ -143,16 +203,14 @@ class _ItemsUIState extends State<ItemsUI> {
                   ),
                   Icon(
                     Icons.keyboard_arrow_down_rounded,
-                    size: 15,
+                    size: sdp(context, 12),
                   ),
                 ],
               ),
             ),
           ),
         ),
-        SizedBox(
-          width: 10,
-        ),
+        width10,
         Expanded(
           child: GestureDetector(
             onTap: () {
@@ -161,14 +219,14 @@ class _ItemsUIState extends State<ItemsUI> {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
               decoration: BoxDecoration(
-                color: Colors.red.shade800,
+                color: kColor(context).errorContainer,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
                 children: [
                   Icon(
                     Icons.warning,
-                    color: Colors.white,
+                    color: kColor(context).onErrorContainer,
                     size: 15,
                   ),
                   Expanded(
@@ -178,7 +236,7 @@ class _ItemsUIState extends State<ItemsUI> {
                         'Low Stock',
                         style: TextStyle(
                             fontSize: sdp(context, 10),
-                            color: Colors.white,
+                            color: kColor(context).onErrorContainer,
                             fontWeight: FontWeight.w600),
                       ),
                     ),
@@ -193,19 +251,14 @@ class _ItemsUIState extends State<ItemsUI> {
   }
 
   Widget totalWeightList() {
-    return FutureBuilder<dynamic>(
-      future: FirebaseFirestore.instance
-          .collection('users')
-          .doc(UserData.uid)
-          .collection('items')
-          .orderBy('id', descending: true)
-          .get(),
-      builder: ((context, snapshot) {
-        if (snapshot.hasData) {
-          if (snapshot.data.docs.length > 0) {
+    return Consumer(
+      builder: (context, ref, child) {
+        final weightList = ref.watch(weightFuture);
+        return weightList.when(
+          data: (data) {
             Map<String, dynamic> totalWeightMap = {};
-            for (int i = 0; i < snapshot.data.docs.length; i++) {
-              var itemMap = snapshot.data.docs[i];
+            for (int i = 0; i < data.docs.length; i++) {
+              var itemMap = data.docs[i];
               if (totalWeightMap[itemMap['category']] != null) {
                 totalWeightMap[itemMap['category']] +=
                     double.parse(itemMap['leftStockWeight'].toStringAsFixed(3));
@@ -215,8 +268,9 @@ class _ItemsUIState extends State<ItemsUI> {
                     double.parse(itemMap['leftStockWeight'].toStringAsFixed(3));
               }
             }
-            return Padding(
-              padding: EdgeInsets.only(right: 10),
+
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
               child: Row(
                 children: List.generate(
                   totalWeightMap.keys.length,
@@ -230,14 +284,11 @@ class _ItemsUIState extends State<ItemsUI> {
                 ),
               ),
             );
-          }
-          return Text('Create category');
-        }
-        return SizedBox(
-          width: MediaQuery.of(context).size.width * .5,
-          child: LinearProgressIndicator(),
+          },
+          error: (error, stackTrace) => SizedBox(),
+          loading: () => Text("Getting weights ..."),
         );
-      }),
+      },
     );
   }
 
@@ -246,7 +297,7 @@ class _ItemsUIState extends State<ItemsUI> {
       margin: EdgeInsets.only(right: 5),
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: kAccentColor,
+        color: kColor(context).secondaryContainer,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -256,14 +307,14 @@ class _ItemsUIState extends State<ItemsUI> {
             key,
             style: TextStyle(
               fontWeight: FontWeight.w500,
-              fontSize: 17,
+              fontSize: sdp(context, 10),
               color: Colors.black,
             ),
           ),
           Text(
-            "Wt. " + totalWeight.toStringAsFixed(3) + " GMS",
+            "Wt. ${totalWeight.toStringAsFixed(3)} GMS",
             style: TextStyle(
-              fontSize: 12,
+              fontSize: sdp(context, 8),
               fontWeight: FontWeight.w500,
               color: Colors.black,
             ),
@@ -273,93 +324,17 @@ class _ItemsUIState extends State<ItemsUI> {
     );
   }
 
-  int itemsCounter = 20;
   Widget itemsList() {
-    return Column(
-      children: [
-        FutureBuilder<dynamic>(
-          future: FirebaseFirestore.instance
-              .collection('users')
-              .doc(UserData.uid)
-              .collection("items")
-              .orderBy('id', descending: true)
-              .limit(itemsCounter)
-              .get(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              if (snapshot.data.docs.length > 0) {
-                int dataCounter = 0;
-                int loopCounter = 0;
-                return ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  padding: EdgeInsets.all(10),
-                  itemCount: snapshot.data.docs.length,
-                  itemBuilder: (context, index) {
-                    loopCounter += 1;
-                    DocumentSnapshot _txnMap = snapshot.data.docs[index];
-                    if (_selectedCategory == 'All Categories') {
-                      if (_searchKey.text.isEmpty) {
-                        dataCounter++;
-                        return itemsCard(itemMap: _txnMap);
-                      } else if (_txnMap['name']
-                          .toLowerCase()
-                          .contains(_searchKey.text.toLowerCase())) {
-                        dataCounter++;
-                        return itemsCard(itemMap: _txnMap);
-                      }
-                    } else if (_txnMap['category'].toLowerCase() ==
-                        _selectedCategory.toLowerCase()) {
-                      if (_searchKey.text.isEmpty) {
-                        dataCounter++;
-                        return itemsCard(itemMap: _txnMap);
-                      } else if (_txnMap['name']
-                          .toLowerCase()
-                          .contains(_searchKey.text.toLowerCase())) {
-                        dataCounter++;
-                        return itemsCard(itemMap: _txnMap);
-                      }
-                    }
-
-                    if (dataCounter == 0 &&
-                        loopCounter == snapshot.data.docs.length) {
-                      return Center(
-                        child: Text(
-                          "No item found",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.grey.shade400,
-                          ),
-                        ),
-                      );
-                    }
-                    return SizedBox();
-                  },
-                );
-              }
-              return PlaceholderText(text: "No Items!");
-            }
-            return LinearProgressIndicator(
-              minHeight: 3,
-            );
-          },
-        ),
-        Center(
-          child: seeMoreButton(
-            context,
-            onTap: () {
-              setState(() {
-                itemsCounter += 20;
-              });
-            },
-          ),
-        ),
-      ],
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: _resultList.length,
+      padding: EdgeInsets.all(10),
+      itemBuilder: (context, index) => _itemsCard(itemMap: _resultList[index]),
     );
   }
 
-  Widget itemsCard({required var itemMap}) {
+  Widget _itemsCard({required var itemMap}) {
     return InkWell(
       onTap: () {
         FocusScope.of(context).unfocus();

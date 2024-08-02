@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:jeweller_stockbook/Helper/sdp.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
@@ -6,6 +7,7 @@ import 'package:jeweller_stockbook/Mortage/createMrtgBill.dart';
 import 'package:jeweller_stockbook/Mortage/MortgageBillDetailsUI.dart';
 import 'package:jeweller_stockbook/utils/colors.dart';
 import 'package:jeweller_stockbook/utils/constants.dart';
+import 'package:jeweller_stockbook/utils/kScaffold.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../utils/components.dart';
@@ -45,183 +47,150 @@ class _MortgageBillUIState extends State<MortgageBillUI> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          Column(
-            children: [
-              Container(
-                padding: EdgeInsets.all(12),
-                width: double.infinity,
-                color: kLightPrimaryColor,
-                child: SafeArea(
-                  bottom: false,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
+    return KScaffold(
+      isLoading: isLoading,
+      body: SafeArea(
+        child: Column(
+          children: [
+            Container(
+              margin: EdgeInsets.all(10),
+              padding: EdgeInsets.all(12),
+              width: double.maxFinite,
+              decoration: BoxDecoration(
+                borderRadius: kRadius(10),
+                color: kColor(context).surfaceContainer,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            flex: 6,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.person,
-                                      color: Colors.black,
-                                      size: sdp(context, 15),
-                                    ),
-                                    SizedBox(
-                                      width: sdp(context, 5),
-                                    ),
-                                    Text(
-                                      mrtgBook['name'],
-                                      style: TextStyle(
-                                        fontSize: sdp(context, 15),
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
+                      Text(
+                        mrtgBook['name'],
+                        style: TextStyle(
+                          fontSize: sdp(context, 15),
+                          fontWeight: FontWeight.w500,
+                          letterSpacing: .5,
+                        ),
+                      ),
+                      height5,
+                      Text(
+                        "Phone: ${mrtgBook['phone']}",
+                        style: TextStyle(
+                          fontSize: sdp(context, 11),
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
+                  ),
+                  height10,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: IconButton.filledTonal(
+                          visualDensity: VisualDensity.compact,
+                          onPressed: () async {
+                            if (!await launchUrl(
+                                Uri.parse('tel:${mrtgBook['phone']}'))) {
+                              throw Exception(
+                                  'Could not launch ${mrtgBook['phone']}');
+                            }
+                          },
+                          icon: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.call,
+                                size: sdp(context, 10),
+                              ),
+                              width10,
+                              Text("Call"),
+                            ],
+                          ),
+                        ),
+                      ),
+                      width10,
+                      IconButton.filled(
+                        visualDensity: VisualDensity.compact,
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text('Delete this book?'),
+                              content: Text('Warning! this cannot be undone'),
+                              contentTextStyle: TextStyle(
+                                fontSize: 20,
+                                color: Colors.red,
+                                fontFamily: 'Product',
+                              ),
+                              actions: [
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    Navigator.pop(context);
+
+                                    setState(() {
+                                      isLoading = true;
+                                    });
+                                    await FirebaseFirestore.instance
+                                        .collection('users')
+                                        .doc(UserData.uid)
+                                        .collection("mortgageBook")
+                                        .doc(mrtgBook['id'].toString())
+                                        .delete()
+                                        .then(
+                                      (value) {
+                                        setState(() {
+                                          isLoading = false;
+                                        });
+                                        Navigator.pop(context);
+                                      },
+                                    );
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.blue.shade700,
+                                    foregroundColor: Colors.white,
+                                  ),
+                                  child: Text('Yes'),
                                 ),
-                                SizedBox(
-                                  height: sdp(context, 5),
-                                ),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.phone,
-                                      color: Colors.black,
-                                      size: sdp(context, 15),
-                                    ),
-                                    SizedBox(
-                                      width: sdp(context, 5),
-                                    ),
-                                    Text(
-                                      mrtgBook['phone'],
-                                      style: TextStyle(
-                                        fontSize: sdp(context, 11),
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red.shade700,
+                                    foregroundColor: Colors.white,
+                                  ),
+                                  child: Text('No'),
                                 ),
                               ],
                             ),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Column(
-                            children: [
-                              CircleAvatar(
-                                radius: 18,
-                                backgroundColor: Colors.blue.shade700,
-                                child: FittedBox(
-                                  child: IconButton(
-                                    onPressed: () async {
-                                      if (!await launchUrl(Uri.parse(
-                                          'tel:${mrtgBook['phone']}'))) {
-                                        throw Exception(
-                                            'Could not launch ${mrtgBook['phone']}');
-                                      }
-                                    },
-                                    icon: Icon(
-                                      Icons.call,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              height10,
-                              IconButton(
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) => AlertDialog(
-                                      title: Text('Delete this book?'),
-                                      content: Text(
-                                          'Warning! this cannot be undone'),
-                                      contentTextStyle: TextStyle(
-                                        fontSize: 20,
-                                        color: Colors.red,
-                                      ),
-                                      actions: [
-                                        ElevatedButton(
-                                          onPressed: () async {
-                                            Navigator.pop(context);
-
-                                            setState(() {
-                                              isLoading = true;
-                                            });
-                                            await FirebaseFirestore.instance
-                                                .collection('users')
-                                                .doc(UserData.uid)
-                                                .collection("mortgageBook")
-                                                .doc(mrtgBook['id'].toString())
-                                                .delete()
-                                                .then(
-                                              (value) {
-                                                setState(() {
-                                                  isLoading = false;
-                                                });
-                                                Navigator.pop(context);
-                                              },
-                                            );
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor:
-                                                Colors.blue.shade700,
-                                            foregroundColor: Colors.white,
-                                          ),
-                                          child: Text('Yes'),
-                                        ),
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor:
-                                                Colors.red.shade700,
-                                            foregroundColor: Colors.white,
-                                          ),
-                                          child: Text('No'),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                                icon: Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
-                                ),
-                              )
-                            ],
-                          ),
-                        ],
-                      ),
-                      height10,
-                      _searchBar(),
+                          );
+                        },
+                        icon: Icon(
+                          Icons.delete,
+                          size: sdp(context, 10),
+                        ),
+                      )
                     ],
                   ),
-                ),
+                ],
               ),
-              Expanded(
-                  child: SingleChildScrollView(
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: 10),
                 child: Column(
                   children: [
+                    _searchBar(),
                     mrtgBillList(),
                     kHeight(100),
                   ],
                 ),
-              ))
-            ],
-          ),
-          isLoading ? fullScreenLoading(context) : SizedBox()
-        ],
+              ),
+            ),
+          ],
+        ),
       ),
       floatingActionButton: CustomFABButton(
         onPressed: () {
@@ -247,13 +216,13 @@ class _MortgageBillUIState extends State<MortgageBillUI> {
   }
 
   Widget _searchBar() {
-    return SearchBar(
+    return CupertinoSearchTextField(
       controller: _searchKey,
-      elevation: WidgetStatePropertyAll(0),
-      padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 15)),
-      leading: Icon(Icons.search),
-      backgroundColor: WidgetStatePropertyAll(Colors.white),
-      hintText: 'Search',
+      // elevation: WidgetStatePropertyAll(0),
+      // padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 15)),
+      // leading: Icon(Icons.search),
+      // backgroundColor: WidgetStatePropertyAll(Colors.white),
+      placeholder: 'Search',
       onChanged: (value) async {
         setState(() {});
       },

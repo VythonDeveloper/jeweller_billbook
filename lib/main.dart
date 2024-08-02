@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'StockBook',
-      theme: kThemeData(),
+      theme: kTheme(),
       home: SplashUI(),
     );
   }

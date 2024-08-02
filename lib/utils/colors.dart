@@ -12,14 +12,13 @@ Color textColor = Colors.grey.shade700;
 
 ColorScheme kColor(context) => Theme.of(context).colorScheme;
 
-ThemeData kThemeData() => ThemeData(
+ThemeData kTheme() => ThemeData(
       fontFamily: 'Product',
       colorSchemeSeed: kPrimaryColor,
       scaffoldBackgroundColor: Colors.white,
-      bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        backgroundColor: kLightPrimaryColor,
-      ),
       useMaterial3: true,
+      appBarTheme: AppBarTheme(
+          backgroundColor: Colors.white, surfaceTintColor: Colors.white),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           textStyle: TextStyle(
