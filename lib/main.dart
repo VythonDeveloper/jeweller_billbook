@@ -10,10 +10,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: FirebaseOptions(
-        apiKey: 'AIzaSyBSYGVmRthIIUxsNLwAMlehjzuqZwAvyoM',
-        appId: '1:544489735185:android:e88d7488e386e66990ddb0',
-        messagingSenderId: '',
-        projectId: 'jeweller-billbook'),
+      apiKey: 'AIzaSyBSYGVmRthIIUxsNLwAMlehjzuqZwAvyoM',
+      appId: '1:544489735185:android:e88d7488e386e66990ddb0',
+      messagingSenderId: '',
+      projectId: 'jeweller-billbook',
+    ),
   );
   await Hive.initFlutter();
   runApp(ProviderScope(child: MyApp()));

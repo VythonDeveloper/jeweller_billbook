@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:jeweller_stockbook/Items/itemDetails.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
+import 'package:jeweller_stockbook/utils/colors.dart';
+import 'package:jeweller_stockbook/utils/kCard.dart';
 
 import '../utils/components.dart';
 
@@ -18,187 +20,175 @@ class _LowStockUIState extends State<LowStockUI> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Low Stock'),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.ios_share,
-              color: Colors.green.shade600,
-            ),
-          ),
-        ],
       ),
-      body: ListView(
-        children: [
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  // showModalBottomSheet<void>(
-                  //     context: context,
-                  //     builder: (BuildContext context) {
-                  //       return StatefulBuilder(builder: (BuildContext context,
-                  //           StateSetter setModalState /*You can rename this!*/) {
-                  //         return selectCategoryModal(setModalState);
-                  //       });
-                  //     });
-                },
-                child: Container(
-                  margin: EdgeInsets.symmetric(horizontal: 20),
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'All Catagories',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Icon(
-                        Icons.keyboard_arrow_down_rounded,
-                        size: 15,
-                      ),
-                    ],
-                  ),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            GestureDetector(
+              onTap: () {
+                // showModalBottomSheet<void>(
+                //     context: context,
+                //     builder: (BuildContext context) {
+                //       return StatefulBuilder(builder: (BuildContext context,
+                //           StateSetter setModalState /*You can rename this!*/) {
+                //         return selectCategoryModal(setModalState);
+                //       });
+                //     });
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'All Catagories',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      size: 15,
+                    ),
+                  ],
                 ),
               ),
-              SizedBox(
-                width: 30,
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          itemsList(),
-        ],
+            ),
+            height20,
+            itemsList(),
+          ],
+        ),
       ),
     );
   }
 
   Widget itemsList() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 2, left: 10, right: 10, bottom: 12),
-      child: FutureBuilder<dynamic>(
-        future: FirebaseFirestore.instance
-            .collection('users')
-            .doc(UserData.uid)
-            .collection('items')
-            .get(),
-        builder: ((context, snapshot) {
-          if (snapshot.hasData) {
-            if (snapshot.data.docs.length > 0) {
-              return ListView.builder(
-                shrinkWrap: true,
-                itemCount: snapshot.data.docs.length,
-                itemBuilder: (context, index) {
-                  var itemMap = snapshot.data.docs[index];
-                  if (itemMap['leftStockPiece'] < itemMap['lowStockPiece'] ||
-                      itemMap['leftStockWeight'] < itemMap['lowStockWeight']) {
-                    return itemsCard(itemMap: itemMap);
-                  }
-                  return SizedBox();
-                },
-              );
-            }
-            return Center(
-              child: Text(
-                "No Low Stock Items",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-              ),
+    return FutureBuilder(
+      future: FirebaseFirestore.instance
+          .collection('users')
+          .doc(UserData.uid)
+          .collection('items')
+          .get(),
+      builder: ((context, snapshot) {
+        if (snapshot.hasData) {
+          if (snapshot.data!.docs.length > 0) {
+            return ListView.builder(
+              shrinkWrap: true,
+              itemCount: snapshot.data!.docs.length,
+              itemBuilder: (context, index) {
+                var itemMap = snapshot.data!.docs[index].data();
+                if (itemMap['leftStockPiece'] < itemMap['lowStockPiece'] ||
+                    itemMap['leftStockWeight'] < itemMap['lowStockWeight']) {
+                  return itemsCard(itemMap: itemMap);
+                }
+                return SizedBox();
+              },
             );
           }
-          return LinearProgressIndicator(
-            minHeight: 3,
+          return Center(
+            child: Text(
+              "No Low Stock Items",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+            ),
           );
-        }),
-      ),
+        }
+        return LinearProgressIndicator(
+          minHeight: 3,
+        );
+      }),
     );
   }
 
   Widget itemsCard({required var itemMap}) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 10),
-      padding: EdgeInsets.symmetric(horizontal: 15),
+    return KCard(
+      padding: EdgeInsets.all(15),
+      margin: EdgeInsets.only(bottom: 20),
+      color: kColor(context).surface,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CircleAvatar(
-            backgroundColor: Colors.blue.shade100,
-            radius: 18,
-            child: Text(itemMap['name'][0]),
+            backgroundColor: kColor(context).primaryContainer,
+            radius: 22,
+            child: FittedBox(child: Text(itemMap['name'][0])),
           ),
-          SizedBox(
-            width: 10,
-          ),
+          width20,
           Expanded(
-            flex: 5,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  itemMap['name'],
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  height: 5,
-                ),
                 Row(
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Left Weight:",
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Text(
-                          itemMap['leftStockWeight'].toStringAsFixed(3) +
-                              ' ' +
-                              itemMap['unit'],
-                          style: TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                      ],
+                    Expanded(
+                      child: Text(
+                        itemMap['name'],
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 20),
+                      ),
                     ),
-                    SizedBox(
-                      width: 10,
+                    width10,
+                    IconButton(
+                      onPressed: () {
+                        FocusScope.of(context).unfocus();
+                        navPush(context, ItemDetailsUI(itemId: itemMap['id']))
+                            .then((value) => setState(() {}));
+                      },
+                      icon: Icon(
+                        Icons.tune,
+                        size: 17,
+                        color: Colors.black,
+                      ),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Piece:",
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Text(
-                          itemMap['leftStockPiece'].toString() + ' PCS',
-                          style: TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                      ],
+                  ],
+                ),
+                Divider(),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Weight",
+                            style: TextStyle(fontWeight: FontWeight.w400),
+                          ),
+                          Text(
+                            "${double.parse("${itemMap['leftStockWeight']}").toStringAsFixed(3)} ${itemMap['unit']}",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    width20,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Pieces",
+                            style: TextStyle(fontWeight: FontWeight.w400),
+                          ),
+                          Text(
+                            "${itemMap['leftStockPiece']} Pcs",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ],
-            ),
-          ),
-          Spacer(),
-          IconButton(
-            onPressed: () {
-              FocusScope.of(context).unfocus();
-              navPush(context, ItemDetailsUI(itemId: itemMap['id']))
-                  .then((value) => setState(() {}));
-            },
-            icon: Icon(
-              Icons.tune,
-              size: 17,
-              color: Colors.black,
             ),
           ),
         ],

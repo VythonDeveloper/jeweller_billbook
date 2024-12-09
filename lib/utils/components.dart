@@ -65,15 +65,27 @@ Widget seeMoreButton(BuildContext context, {void Function()? onTap}) {
     child: Container(
       padding: EdgeInsets.symmetric(vertical: 7, horizontal: 15),
       decoration: BoxDecoration(
-        color: kColor(context).primaryContainer,
+        color: kColor(context).primary,
         borderRadius: BorderRadius.circular(100),
       ),
-      child: Text(
-        'See More',
-        style: TextStyle(
-          fontSize: sdp(context, 10),
-          color: Colors.black,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'See More',
+            style: TextStyle(
+              fontSize: sdp(context, 10),
+              fontWeight: FontWeight.w500,
+              color: Colors.white,
+            ),
+          ),
+          width5,
+          Icon(
+            Icons.add,
+            size: 20,
+            color: Colors.white,
+          )
+        ],
       ),
     ),
   );

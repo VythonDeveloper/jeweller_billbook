@@ -28,7 +28,7 @@ class _MortgageBillUIState extends State<MortgageBillUI> {
   bool isLoading = false;
   final _searchKey = TextEditingController();
   List<String> statusList = ['All', 'Active', 'Closed'];
-  String _selectedStatus = "All";
+  // String _selectedStatus = "All";
   Map<String, dynamic> _calculatedResult = {
     "daysSince": 0,
     "interestAmount": 0.0,

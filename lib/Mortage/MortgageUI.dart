@@ -1,10 +1,9 @@
-import 'dart:developer';
+import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:jeweller_stockbook/Mortage/createMrtgBook.dart';
 import 'package:jeweller_stockbook/Mortage/MortgageBillUI.dart';
 import 'package:jeweller_stockbook/Repository/mortgage_repo.dart';
@@ -25,11 +24,10 @@ class MortgageUI extends ConsumerStatefulWidget {
 
 class _MortgageUIState extends ConsumerState<MortgageUI> {
   final _searchKey = TextEditingController();
-
   QuerySnapshot<Map<String, dynamic>>? initData;
   List _allResults = [];
   List _resultList = [];
-  bool isLoading = false;
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -39,70 +37,54 @@ class _MortgageUIState extends ConsumerState<MortgageUI> {
   }
 
   _getBookList() async {
-    await ref.read(mortgageBookFuture).whenData(
-      (data) {
-        setState(() {
-          _allResults = data.docs;
-        });
-      },
-    );
-
+    await ref.read(mortgageBookFuture).whenData((data) {
+      setState(() {
+        _allResults = data.docs;
+      });
+    });
     _searchResultList();
   }
 
-  _onSearchChanged() async {
-    _searchResultList();
+  _onSearchChanged() {
+    // Debounce logic
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      _searchResultList();
+    });
   }
 
   _searchResultList() {
-    var showResults = [];
-    if (_searchKey.text.isNotEmpty) {
-      for (var snapshot in _allResults) {
-        var name = snapshot['name'];
-        if (kCompare(name, _searchKey.text)) {
-          showResults.add(snapshot);
-        }
-      }
-    } else {
-      showResults = List.from(_allResults);
-    }
-
+    final query = _searchKey.text.toLowerCase();
     setState(() {
-      _resultList = showResults;
+      if (query.isNotEmpty) {
+        _resultList = _allResults.where((snapshot) {
+          final name = snapshot['name'].toString().toLowerCase();
+          final phone = snapshot['phone'].toString().toLowerCase();
+          return name.contains(query) || phone.contains(query);
+        }).toList();
+      } else {
+        _resultList = List.from(_allResults);
+      }
     });
   }
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _searchKey.removeListener(_onSearchChanged);
     _searchKey.dispose();
     super.dispose();
   }
 
   @override
-  void didChangeDependencies() {
-    _getBookList();
-    super.didChangeDependencies();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final mortgageBookData = ref.watch(mortgageBookFuture);
 
-    if (_allResults.isEmpty) {
-      ref.watch(mortgageBookFuture).whenData(
-        (data) {
-          setState(() {
-            _allResults = data.docs;
-          });
-        },
-      );
-    }
     return RefreshIndicator(
       onRefresh: () => ref.refresh(mortgageBookFuture.future),
       child: KScaffold(
         isLoading: mortgageBookData.isLoading,
-        loadingText: "Fetching Mortgage Books ...",
+        loadingText: "Fetching Mortgage Books...",
         appBar: AppBar(
           title: _searchBar(),
           backgroundColor: Colors.white,
@@ -112,14 +94,13 @@ class _MortgageUIState extends ConsumerState<MortgageUI> {
           child: Column(
             children: [
               Expanded(
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Column(
-                    children: [
-                      mrtgBookList(),
-                      kHeight(100),
-                    ],
-                  ),
+                child: ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0)
+                      .copyWith(bottom: 120),
+                  itemCount: _resultList.length,
+                  itemBuilder: (context, index) {
+                    return mrtgBookCard(mrtgBookMap: _resultList[index]);
+                  },
                 ),
               ),
             ],
@@ -128,12 +109,7 @@ class _MortgageUIState extends ConsumerState<MortgageUI> {
         floatingActionButton: CustomFABButton(
           onPressed: () {
             Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => CreateMrtgBookUi()))
-                .then(((value) {
-              if (mounted) {
-                setState(() {});
-              }
-            }));
+                MaterialPageRoute(builder: (context) => CreateMrtgBookUi()));
           },
           icon: Icons.book,
           label: '+ Mortgage Book',

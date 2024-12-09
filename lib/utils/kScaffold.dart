@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:jeweller_stockbook/utils/components.dart';
 import '../Helper/sdp.dart';
 import 'colors.dart';
 
@@ -88,18 +88,14 @@ Container kFullLoading(BuildContext context, {String? loadingText}) {
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        loadingText != null
-            ? Padding(
-                padding: const EdgeInsets.only(bottom: 10.0),
-                child: Text(
-                  loadingText,
-                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: .7,
-                      ),
-                ),
-              )
-            : SizedBox(),
+        Text(
+          loadingText ?? "Please Wait...",
+          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                fontWeight: FontWeight.w500,
+                letterSpacing: .7,
+              ),
+        ),
+        height10,
         SizedBox(
           width: sdp(context, 60),
           child: LinearProgressIndicator(

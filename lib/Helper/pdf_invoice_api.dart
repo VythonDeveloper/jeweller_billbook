@@ -1,11 +1,11 @@
 import 'dart:io';
-import 'package:flutter_share/flutter_share.dart';
 import 'package:intl/intl.dart';
 import 'package:number_to_words/number_to_words.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
+import 'package:share_plus/share_plus.dart';
 
 class PdfInvoiceApi {
   static var dateFormat = new DateFormat('MMMM d, yyyy HH:mm');
@@ -73,11 +73,10 @@ class PdfInvoiceApi {
   static Future<void> shareFile(File file) async {
     final url = file.path;
     if (url.isNotEmpty) {
-      await FlutterShare.shareFile(
-        title: 'Share',
+      await Share.shareXFiles(
+        [XFile(url)],
+        subject: "Invoice-${file.path.split("/").last}",
         text: 'Sharing from StockBook',
-        chooserTitle: 'Chooser title',
-        filePath: url,
       );
     }
   }

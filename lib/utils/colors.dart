@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-Color kPrimaryColor = Color(0xFFFAF0D7);
+const Color kPrimaryColor = Color(0xFFFAF0D7);
 Color kLightPrimaryColor = Color(0xFFFFD9C0);
 Color kAccentColor = Color.fromARGB(255, 188, 227, 250);
 Color kCardCOlor = Color(0xFFCCEEBC);
@@ -14,9 +14,9 @@ ColorScheme kColor(context) => Theme.of(context).colorScheme;
 
 ThemeData kTheme() => ThemeData(
       fontFamily: 'Product',
+      useMaterial3: true,
       colorSchemeSeed: kPrimaryColor,
       scaffoldBackgroundColor: Colors.white,
-      useMaterial3: true,
       appBarTheme: AppBarTheme(
           backgroundColor: Colors.white, surfaceTintColor: Colors.white),
       elevatedButtonTheme: ElevatedButtonThemeData(

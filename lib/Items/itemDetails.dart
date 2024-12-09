@@ -4,8 +4,8 @@ import 'package:jeweller_stockbook/Items/editItem.dart';
 import 'package:jeweller_stockbook/utils/colors.dart';
 import 'package:jeweller_stockbook/utils/components.dart';
 import 'package:jeweller_stockbook/utils/constants.dart';
-
 import 'package:flutter/services.dart';
+import 'package:jeweller_stockbook/utils/kCard.dart';
 
 import '../Helper/user.dart';
 
@@ -135,7 +135,6 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                   onPressed: () {
                     showDialog<void>(
                       context: context,
-                      barrierDismissible: false, // user must tap button!
                       builder: (BuildContext context) {
                         return AddStockAlertBox();
                       },
@@ -167,7 +166,6 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                   onPressed: () {
                     showDialog<void>(
                       context: context,
-                      barrierDismissible: false, // user must tap button!
                       builder: (BuildContext context) {
                         return ReduceStockAlertBox();
                       },
@@ -269,40 +267,35 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
     return Expanded(
       child: Column(
         children: [
-          SizedBox(
-            height: 50,
-            child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 10),
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              decoration: BoxDecoration(
-                color: kLightPrimaryColor,
-                borderRadius: BorderRadius.circular(10),
+          KCard(
+            color: kColor(context).secondaryContainer,
+            margin: EdgeInsets.symmetric(horizontal: 10),
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            child: TabBar(
+              splashBorderRadius: BorderRadius.circular(40),
+              labelColor: Colors.black,
+              unselectedLabelColor: Colors.black.withOpacity(0.4),
+              automaticIndicatorColorAdjustment: true,
+              dividerColor: Colors.transparent,
+              indicatorWeight: 2,
+              labelStyle: TextStyle(
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.5,
+                fontSize: 15,
+                fontFamily: 'Product',
               ),
-              child: TabBar(
-                splashBorderRadius: BorderRadius.circular(40),
-                labelColor: Colors.black,
-                unselectedLabelColor: Colors.black.withOpacity(0.4),
-                automaticIndicatorColorAdjustment: true,
-                indicatorWeight: 2,
-                labelStyle: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.5,
-                  fontSize: 15,
-                  fontFamily: 'San',
-                ),
-                unselectedLabelStyle: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  letterSpacing: 0.5,
-                  fontSize: 15,
-                  fontFamily: 'San',
-                ),
-                indicatorSize: TabBarIndicatorSize.label,
-                indicatorColor: Colors.black,
-                tabs: [
-                  Tab(text: "Timeline"),
-                  Tab(text: "Details"),
-                ],
+              unselectedLabelStyle: TextStyle(
+                fontWeight: FontWeight.w500,
+                letterSpacing: 0.5,
+                fontSize: 15,
+                fontFamily: 'Product',
               ),
+              indicatorSize: TabBarIndicatorSize.label,
+              indicatorColor: Colors.black,
+              tabs: [
+                Tab(text: "Timeline"),
+                Tab(text: "Details"),
+              ],
             ),
           ),
           Expanded(
@@ -369,10 +362,8 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                 ],
               ),
             ),
-            SizedBox(
-              height: 10,
-            ),
-            FutureBuilder<dynamic>(
+            height10,
+            FutureBuilder(
               future: FirebaseFirestore.instance
                   .collection('users')
                   .doc(UserData.uid)
@@ -384,18 +375,22 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                   .get(),
               builder: ((context, snapshot) {
                 if (snapshot.hasData) {
-                  if (snapshot.data.docs.length > 0) {
+                  if (snapshot.data!.docs.length > 0) {
                     finalStockPiece =
                         double.parse(itemMap['leftStockPiece'].toString());
                     finalStockWeight =
                         double.parse(itemMap['leftStockWeight'].toString());
-                    return ListView.builder(
+                    return ListView.separated(
+                      separatorBuilder: (context, index) => Divider(
+                        height: 30,
+                        color: Colors.grey.shade300,
+                      ),
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
                       padding: EdgeInsets.zero,
-                      itemCount: snapshot.data.docs.length,
+                      itemCount: snapshot.data!.docs.length,
                       itemBuilder: (context, index) {
-                        var stkTxnMap = snapshot.data.docs[index];
+                        var stkTxnMap = snapshot.data!.docs[index].data();
                         return TimelineCard(stkTxnMap: stkTxnMap);
                       },
                     );
@@ -416,7 +411,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
             Align(
               alignment: Alignment.topRight,
               child: Padding(
-                padding: EdgeInsets.only(right: 10.0),
+                padding: EdgeInsets.only(right: 10.0, top: 25),
                 child: seeMoreButton(
                   context,
                   onTap: () {
@@ -459,7 +454,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
         // );
       },
       child: Container(
-        padding: EdgeInsets.all(12),
+        padding: EdgeInsets.symmetric(horizontal: 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -690,35 +685,31 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
     );
   }
 
-  AlertDialog AddStockAlertBox() {
-    return AlertDialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Add Stock for',
-            style: TextStyle(
-              fontSize: 12,
-            ),
-          ),
-          Text(
-            itemMap['name'],
-            style: TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
-      content: SingleChildScrollView(
+  AddStockAlertBox() {
+    return Dialog(
+      insetPadding: EdgeInsets.all(20),
+      child: Padding(
+        padding: const EdgeInsets.all(15.0),
         child: Form(
           key: _formKey1,
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
+            children: [
+              Text(
+                'Add Stock for',
+                style: TextStyle(
+                  fontSize: 20,
+                ),
+              ),
+              Text(
+                itemMap['name'],
+                style: TextStyle(
+                  fontSize: 23,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              height20,
               TextFormField(
                 controller: _addStockRemark,
                 autofocus: true,
@@ -731,7 +722,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                 keyboardType: TextInputType.text,
                 textCapitalization: TextCapitalization.words,
               ),
-              SizedBox(height: 10),
+              height10,
               TextFormField(
                 controller: _addStockWeight,
                 autofocus: true,
@@ -756,7 +747,7 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                   return null;
                 },
               ),
-              SizedBox(height: 10),
+              height10,
               TextFormField(
                 controller: _addStockPiece,
                 autofocus: true,
@@ -779,224 +770,231 @@ class _ItemDetailsUIState extends State<ItemDetailsUI> {
                   return null;
                 },
               ),
+              height20,
+              Row(
+                children: [
+                  TextButton(
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  TextButton(
+                    child: const Text('Approve'),
+                    onPressed: () async {
+                      FocusScope.of(context).unfocus();
+                      if (_formKey1.currentState!.validate()) {
+                        showLoading(context);
+                        int uniqueId = DateTime.now().millisecondsSinceEpoch;
+
+                        Map<String, dynamic> stkTxnMap = {
+                          'id': uniqueId,
+                          'type': 'StockTransaction',
+                          'activity': "Add Stock",
+                          'itemName': itemMap['name'],
+                          'itemCategory': itemMap['category'],
+                          'itemId': itemMap['id'],
+                          'unit': itemMap['unit'],
+                          'remark': _addStockRemark.text,
+                          'changeWeight': double.parse(_addStockWeight.text),
+                          'changePiece': int.parse(_addStockPiece.text),
+                          'date': uniqueId
+                        };
+
+                        itemMap['leftStockWeight'] = double.parse(
+                            (itemMap['leftStockWeight'] +
+                                    double.parse(_addStockWeight.text))
+                                .toStringAsFixed(3));
+                        itemMap['leftStockPiece'] = itemMap['leftStockPiece'] +
+                            int.parse(_addStockPiece.text);
+
+                        await FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(UserData.uid)
+                            .collection('transactions')
+                            .doc(uniqueId.toString())
+                            .set(stkTxnMap)
+                            .then((value) {
+                          FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(UserData.uid)
+                              .collection('items')
+                              .doc(itemMap['id'].toString())
+                              .update({
+                            'leftStockWeight': itemMap['leftStockWeight'],
+                            'leftStockPiece': itemMap['leftStockPiece']
+                          });
+                          _addStockRemark.clear();
+                          _addStockWeight.clear();
+                          _addStockPiece.clear();
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                        });
+                      }
+                    },
+                  ),
+                ],
+              )
             ],
           ),
         ),
       ),
-      actions: <Widget>[
-        TextButton(
-          child: const Text(
-            'Cancel',
-            style: TextStyle(color: Colors.red),
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        TextButton(
-          child: const Text('Approve'),
-          onPressed: () async {
-            FocusScope.of(context).unfocus();
-            if (_formKey1.currentState!.validate()) {
-              showLoading(context);
-              int uniqueId = DateTime.now().millisecondsSinceEpoch;
-
-              Map<String, dynamic> stkTxnMap = {
-                'id': uniqueId,
-                'type': 'StockTransaction',
-                'activity': "Add Stock",
-                'itemName': itemMap['name'],
-                'itemCategory': itemMap['category'],
-                'itemId': itemMap['id'],
-                'unit': itemMap['unit'],
-                'remark': _addStockRemark.text,
-                'changeWeight': double.parse(_addStockWeight.text),
-                'changePiece': int.parse(_addStockPiece.text),
-                'date': uniqueId
-              };
-
-              itemMap['leftStockWeight'] = double.parse(
-                  (itemMap['leftStockWeight'] +
-                          double.parse(_addStockWeight.text))
-                      .toStringAsFixed(3));
-              itemMap['leftStockPiece'] =
-                  itemMap['leftStockPiece'] + int.parse(_addStockPiece.text);
-
-              await FirebaseFirestore.instance
-                  .collection('users')
-                  .doc(UserData.uid)
-                  .collection('transactions')
-                  .doc(uniqueId.toString())
-                  .set(stkTxnMap)
-                  .then((value) {
-                FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(UserData.uid)
-                    .collection('items')
-                    .doc(itemMap['id'].toString())
-                    .update({
-                  'leftStockWeight': itemMap['leftStockWeight'],
-                  'leftStockPiece': itemMap['leftStockPiece']
-                });
-                _addStockRemark.clear();
-                _addStockWeight.clear();
-                _addStockPiece.clear();
-                Navigator.pop(context);
-                Navigator.pop(context);
-              });
-            }
-          },
-        ),
-      ],
     );
   }
 
-  AlertDialog ReduceStockAlertBox() {
-    return AlertDialog(
-      title: Text('Reduce Stock for ' + itemMap['name']),
-      content: SingleChildScrollView(
-        child: Form(
-          key: _formKey2,
+  ReduceStockAlertBox() {
+    return Dialog(
+      insetPadding: EdgeInsets.all(20),
+      child: Form(
+        key: _formKey2,
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 15),
-                child: TextFormField(
-                  controller: _reduceStockRemark,
-                  autofocus: true,
-                  decoration: InputDecoration(
+            children: [
+              Text(
+                'Reduce Stock for',
+                style: TextStyle(fontSize: 20),
+              ),
+              Text(
+                itemMap['name'],
+                style: TextStyle(fontSize: 23, fontWeight: FontWeight.w600),
+              ),
+              height20,
+              TextFormField(
+                controller: _reduceStockRemark,
+                autofocus: true,
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                  border: OutlineInputBorder(),
+                  hintText: 'Add remark',
+                  labelText: 'Remark',
+                ),
+                keyboardType: TextInputType.text,
+                textCapitalization: TextCapitalization.words,
+              ),
+              height10,
+              TextFormField(
+                controller: _reduceStockWeight,
+                decoration: InputDecoration(
                     contentPadding: EdgeInsets.symmetric(horizontal: 10),
                     border: OutlineInputBorder(),
-                    hintText: 'Add remark',
-                    labelText: 'Remark',
-                  ),
-                  keyboardType: TextInputType.text,
-                  textCapitalization: TextCapitalization.words,
-                ),
-              ),
-              SizedBox(height: 10),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 15),
-                child: TextFormField(
-                  controller: _reduceStockWeight,
-                  decoration: InputDecoration(
-                      contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                      border: OutlineInputBorder(),
-                      hintText: '0.0',
-                      labelText: 'Reduce Weight',
-                      prefixText: '- ',
-                      suffixText: itemMap['unit']),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(
-                        RegExp(r'^\d+\.?\d{0,3}')),
-                  ],
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "This is required";
-                    }
-                    if (double.parse(value) < 0.0) {
-                      return 'Keep positive';
-                    }
-                    return null;
-                  },
-                ),
-              ),
-              SizedBox(height: 10),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 15),
-                child: TextFormField(
-                  controller: _reduceStockPiece,
-                  decoration: InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                    border: OutlineInputBorder(),
-                    hintText: '0',
-                    labelText: 'Reduce Piece',
+                    hintText: '0.0',
+                    labelText: 'Reduce Weight',
                     prefixText: '- ',
-                    suffixText: "PCS",
-                  ),
-                  keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "This is required";
-                    }
-                    if (int.parse(value) < 0) {
-                      return 'Keep positive';
-                    }
-                    return null;
-                  },
-                ),
+                    suffixText: itemMap['unit']),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,3}')),
+                ],
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "This is required";
+                  }
+                  if (double.parse(value) < 0.0) {
+                    return 'Keep positive';
+                  }
+                  return null;
+                },
               ),
+              height10,
+              TextFormField(
+                controller: _reduceStockPiece,
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                  border: OutlineInputBorder(),
+                  hintText: '0',
+                  labelText: 'Reduce Piece',
+                  prefixText: '- ',
+                  suffixText: "PCS",
+                ),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "This is required";
+                  }
+                  if (int.parse(value) < 0) {
+                    return 'Keep positive';
+                  }
+                  return null;
+                },
+              ),
+              height20,
+              Row(
+                children: [
+                  TextButton(
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  TextButton(
+                    child: const Text('Approve'),
+                    onPressed: () async {
+                      FocusScope.of(context).unfocus();
+                      if (_formKey2.currentState!.validate()) {
+                        showLoading(context);
+                        int uniqueId = DateTime.now().millisecondsSinceEpoch;
+
+                        Map<String, dynamic> stkTxnMap = {
+                          'id': uniqueId,
+                          'type': 'StockTransaction',
+                          'activity': "Reduce Stock",
+                          'itemName': itemMap['name'],
+                          'itemCategory': itemMap['category'],
+                          'itemId': itemMap['id'],
+                          'unit': itemMap['unit'],
+                          'remark': _reduceStockRemark.text,
+                          'changeWeight': double.parse(_reduceStockWeight.text),
+                          'changePiece': int.parse(_reduceStockPiece.text),
+                          'date': uniqueId
+                        };
+
+                        itemMap['leftStockWeight'] = double.parse(
+                            (itemMap['leftStockWeight'] -
+                                    double.parse(_reduceStockWeight.text))
+                                .toStringAsFixed(3));
+                        itemMap['leftStockPiece'] = itemMap['leftStockPiece'] -
+                            int.parse(_reduceStockPiece.text);
+
+                        await FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(UserData.uid)
+                            .collection('transactions')
+                            .doc(uniqueId.toString())
+                            .set(stkTxnMap)
+                            .then((value) {
+                          FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(UserData.uid)
+                              .collection('items')
+                              .doc(itemMap['id'].toString())
+                              .update({
+                            'leftStockWeight': itemMap['leftStockWeight'],
+                            'leftStockPiece': itemMap['leftStockPiece']
+                          });
+                          _reduceStockRemark.clear();
+                          _reduceStockWeight.clear();
+                          _reduceStockPiece.clear();
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                        });
+                      }
+                    },
+                  ),
+                ],
+              )
             ],
           ),
         ),
       ),
-      actions: <Widget>[
-        TextButton(
-          child: const Text(
-            'Cancel',
-            style: TextStyle(color: Colors.red),
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        TextButton(
-          child: const Text('Approve'),
-          onPressed: () async {
-            FocusScope.of(context).unfocus();
-            if (_formKey2.currentState!.validate()) {
-              showLoading(context);
-              int uniqueId = DateTime.now().millisecondsSinceEpoch;
-
-              Map<String, dynamic> stkTxnMap = {
-                'id': uniqueId,
-                'type': 'StockTransaction',
-                'activity': "Reduce Stock",
-                'itemName': itemMap['name'],
-                'itemCategory': itemMap['category'],
-                'itemId': itemMap['id'],
-                'unit': itemMap['unit'],
-                'remark': _reduceStockRemark.text,
-                'changeWeight': double.parse(_reduceStockWeight.text),
-                'changePiece': int.parse(_reduceStockPiece.text),
-                'date': uniqueId
-              };
-
-              itemMap['leftStockWeight'] = double.parse(
-                  (itemMap['leftStockWeight'] -
-                          double.parse(_reduceStockWeight.text))
-                      .toStringAsFixed(3));
-              itemMap['leftStockPiece'] =
-                  itemMap['leftStockPiece'] - int.parse(_reduceStockPiece.text);
-
-              await FirebaseFirestore.instance
-                  .collection('users')
-                  .doc(UserData.uid)
-                  .collection('transactions')
-                  .doc(uniqueId.toString())
-                  .set(stkTxnMap)
-                  .then((value) {
-                FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(UserData.uid)
-                    .collection('items')
-                    .doc(itemMap['id'].toString())
-                    .update({
-                  'leftStockWeight': itemMap['leftStockWeight'],
-                  'leftStockPiece': itemMap['leftStockPiece']
-                });
-                _reduceStockRemark.clear();
-                _reduceStockWeight.clear();
-                _reduceStockPiece.clear();
-                Navigator.pop(context);
-                Navigator.pop(context);
-              });
-            }
-          },
-        ),
-      ],
     );
   }
 
