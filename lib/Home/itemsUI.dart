@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jeweller_stockbook/Helper/sdp.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:jeweller_stockbook/Items/createitem.dart';
 import 'package:jeweller_stockbook/Category/itemcategory.dart';
@@ -194,16 +193,15 @@ class _ItemsUIState extends ConsumerState<ItemsUI> {
                   Expanded(
                     child: Text(
                       _selectedCategory,
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: sdp(context, 10)),
+                      style:
+                          TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   Icon(
                     Icons.keyboard_arrow_down_rounded,
-                    size: sdp(context, 12),
+                    size: 20,
                   ),
                 ],
               ),
@@ -235,7 +233,7 @@ class _ItemsUIState extends ConsumerState<ItemsUI> {
                       child: Text(
                         'Low Stock',
                         style: TextStyle(
-                            fontSize: sdp(context, 10),
+                            fontSize: 12,
                             color: kColor(context).onErrorContainer,
                             fontWeight: FontWeight.w600),
                       ),
@@ -307,14 +305,14 @@ class _ItemsUIState extends ConsumerState<ItemsUI> {
             key,
             style: TextStyle(
               fontWeight: FontWeight.w500,
-              fontSize: sdp(context, 10),
+              fontSize: 12,
               color: Colors.black,
             ),
           ),
           Text(
             "Wt. ${totalWeight.toStringAsFixed(3)} GMS",
             style: TextStyle(
-              fontSize: sdp(context, 8),
+              fontSize: 10,
               fontWeight: FontWeight.w500,
               color: Colors.black,
             ),

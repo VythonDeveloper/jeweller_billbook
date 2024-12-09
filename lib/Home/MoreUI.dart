@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:jeweller_stockbook/Helper/sdp.dart';
 import 'package:jeweller_stockbook/Login/loginUI.dart';
 import 'package:jeweller_stockbook/utils/colors.dart';
 import 'package:jeweller_stockbook/utils/components.dart';
 import 'package:jeweller_stockbook/utils/constants.dart';
+import 'package:jeweller_stockbook/utils/kCard.dart';
 import 'package:jeweller_stockbook/utils/kScaffold.dart';
 
 import '../Helper/user.dart';
@@ -61,6 +61,13 @@ class _MoreUIState extends State<MoreUI> {
       isLoading: isLoading,
       appBar: AppBar(
         title: Text('More'),
+        actions: [
+          Text(
+            "Version ${Constants.kAppVersion}",
+            style: TextStyle(fontSize: 17),
+          ),
+          width15,
+        ],
       ),
       body: Stack(
         children: [
@@ -71,12 +78,8 @@ class _MoreUIState extends State<MoreUI> {
               children: [
                 Text("For Mortgage Purpose"),
                 height10,
-                Container(
-                  padding: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: kColor(context).secondaryContainer,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+                KCard(
+                  color: kColor(context).surfaceContainer,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -84,12 +87,12 @@ class _MoreUIState extends State<MoreUI> {
                         'Current Gold Rate',
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
-                          fontSize: sdp(context, 15),
-                          color: kColor(context).secondary,
+                          fontSize: 20,
+                          color: kColor(context).primary,
                           letterSpacing: 0.5,
                         ),
                       ),
-                      height10,
+                      height20,
                       Form(
                         key: _formKey,
                         child: TextFormField(
@@ -116,21 +119,35 @@ class _MoreUIState extends State<MoreUI> {
                           },
                         ),
                       ),
-                      SizedBox(
-                        height: 15,
-                      ),
+                      height15,
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
                             Icons.schedule,
-                            size: 17,
+                            size: 20,
                           ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Text(
-                            Constants.timeAgo(_updatedOn),
+                          width5,
+                          Text.rich(
+                            style: TextStyle(fontSize: 15),
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                    text: "Last Updated\n",
+                                    style: TextStyle(height: 1)),
+                                TextSpan(
+                                  text: "${Constants.timeAgo(_updatedOn)} ",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 20,
+                                    height: 2,
+                                    color: kColor(context).primary,
+                                  ),
+                                ),
+                                TextSpan(text: "ago"),
+                              ],
+                            ),
                           ),
                         ],
                       ),
@@ -203,32 +220,6 @@ class _MoreUIState extends State<MoreUI> {
                     ],
                   ),
                 ),
-                height50,
-                ElevatedButton(
-                  onPressed: () async {
-                    if (!isLoading) {
-                      await Hive.deleteBoxFromDisk('userBox');
-                      navPopUntilPush(context, LoginUI());
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: kColor(context).error,
-                    foregroundColor: kColor(context).onError,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.power_settings_new),
-                      width10,
-                      Text(
-                        'Logout',
-                        style: TextStyle(
-                          color: kColor(context).onError,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
               ],
             ),
           ),
@@ -236,6 +227,34 @@ class _MoreUIState extends State<MoreUI> {
               ? fullScreenLoading(context, loadingText: 'Updating Rate ...')
               : SizedBox(),
         ],
+      ),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.all(20),
+        child: ElevatedButton(
+          onPressed: () async {
+            if (!isLoading) {
+              await Hive.deleteBoxFromDisk('userBox');
+              navPopUntilPush(context, LoginUI());
+            }
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: kColor(context).error,
+            foregroundColor: kColor(context).onError,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.power_settings_new),
+              width10,
+              Text(
+                'Logout',
+                style: TextStyle(
+                  color: kColor(context).onError,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

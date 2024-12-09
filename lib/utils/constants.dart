@@ -4,6 +4,7 @@ import 'package:jeweller_stockbook/Helper/user.dart';
 
 class Constants {
   static String shopName = 'Arya Gold & Jewellery';
+  static const String kAppVersion = "2.4.3";
   // static String uid = 'eEa9Z0PupqNulh4k9VxyiaUkZDw2';
 
   static String dateFormat(millisecond) {
@@ -32,16 +33,28 @@ class Constants {
     final timeDiff = DateTime.now()
         .difference(DateTime.fromMillisecondsSinceEpoch(millisec));
 
+    if (timeDiff.inDays >= 365) {
+      final years = (timeDiff.inDays / 365).floor();
+      return '$years ${years == 1 ? 'year' : 'years'}';
+    }
+    if (timeDiff.inDays >= 30) {
+      final months = (timeDiff.inDays / 30).floor();
+      return '$months ${months == 1 ? 'month' : 'months'}';
+    }
+    if (timeDiff.inDays >= 7) {
+      final weeks = (timeDiff.inDays / 7).floor();
+      return '$weeks ${weeks == 1 ? 'week' : 'weeks'}';
+    }
     if (timeDiff.inDays != 0) {
-      return 'Updated ' + timeDiff.inDays.toString() + ' days ago';
+      return '${timeDiff.inDays} ${timeDiff.inDays == 1 ? 'day' : 'days'}';
     }
     if (timeDiff.inHours != 0) {
-      return 'Updated ' + timeDiff.inHours.toString() + ' hours ago';
+      return '${timeDiff.inHours} ${timeDiff.inHours == 1 ? 'hour' : 'hours'}';
     }
     if (timeDiff.inMinutes != 0) {
-      return 'Updated ' + timeDiff.inMinutes.toString() + ' minutes ago';
+      return '${timeDiff.inMinutes} ${timeDiff.inMinutes == 1 ? 'minute' : 'minutes'}';
     }
-    return 'Updated ' + timeDiff.inSeconds.toString() + ' seconds ago';
+    return '${timeDiff.inSeconds} ${timeDiff.inSeconds == 1 ? 'second' : 'seconds'}';
   }
 
   static Map<String, dynamic> calculateMortgage(

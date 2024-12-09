@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:jeweller_stockbook/Helper/sdp.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:jeweller_stockbook/Items/itemDetails.dart';
 import 'package:jeweller_stockbook/Repository/timeline_repo.dart';
@@ -30,7 +29,7 @@ class _HomeUIState extends ConsumerState<HomeUI> {
   Widget build(BuildContext context) {
     final timelineData = ref.watch(timelineFuture(timelineHistoryCounter));
     return KScaffold(
-      isLoading: timelineData.isLoading,
+      isLoading: timelineHistoryCounter == 20 && timelineData.isLoading,
       loadingText: "Fetching timeline ...",
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -39,7 +38,7 @@ class _HomeUIState extends ConsumerState<HomeUI> {
           children: [
             Icon(
               Icons.storefront,
-              size: sdp(context, 12),
+              size: 20,
             ),
             width10,
             Expanded(
@@ -48,7 +47,7 @@ class _HomeUIState extends ConsumerState<HomeUI> {
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                   color: textColor,
-                  fontSize: sdp(context, 12),
+                  fontSize: 20,
                 ),
               ),
             ),
@@ -62,20 +61,23 @@ class _HomeUIState extends ConsumerState<HomeUI> {
               statusBlocks(),
               itemTimeline(),
               height10,
-              Align(
-                alignment: Alignment.topRight,
-                child: Padding(
-                  padding: EdgeInsets.only(right: 10.0),
-                  child: seeMoreButton(
-                    context,
-                    onTap: () {
-                      setState(() {
-                        timelineHistoryCounter += 5;
-                      });
-                    },
+              if (timelineHistoryCounter > 20 && timelineData.isLoading)
+                SizedBox(width: 100, child: LinearProgressIndicator())
+              else
+                Align(
+                  alignment: Alignment.topRight,
+                  child: Padding(
+                    padding: EdgeInsets.only(right: 10.0),
+                    child: seeMoreButton(
+                      context,
+                      onTap: () {
+                        setState(() {
+                          timelineHistoryCounter += 5;
+                        });
+                      },
+                    ),
                   ),
                 ),
-              ),
               height20,
             ],
           ),
@@ -85,6 +87,13 @@ class _HomeUIState extends ConsumerState<HomeUI> {
   }
 
   Widget statusBlocks() {
+    _text(String text) => Text(
+          text,
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+          ),
+        );
     return Container(
       padding: EdgeInsets.all(15),
       child: Column(
@@ -114,26 +123,12 @@ class _HomeUIState extends ConsumerState<HomeUI> {
                           totalPrinciple +=
                               int.parse(dataMap[index]['amount'].toString());
                         }
-                        return Text(
-                          "₹ " + Constants.cFInt.format(totalPrinciple),
-                          style: TextStyle(
-                            fontSize: sdp(context, 13),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        );
+                        return _text(
+                            "₹ " + Constants.cFInt.format(totalPrinciple));
                       }
-                      return Text(
-                        "₹ 0",
-                        style: TextStyle(
-                          fontSize: sdp(context, 13),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      );
+                      return _text("₹ 0");
                     }
-                    return Transform.scale(
-                      scale: 0.5,
-                      child: CircularProgressIndicator(),
-                    );
+                    return _text("₹ ...");
                   }),
                 ),
               ),
@@ -155,12 +150,7 @@ class _HomeUIState extends ConsumerState<HomeUI> {
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         if (snapshot.data.docs.length == 0) {
-                          return Text(
-                            "₹ 0",
-                            style: TextStyle(
-                                fontSize: sdp(context, 12),
-                                fontWeight: FontWeight.bold),
-                          );
+                          return _text("₹ 0");
                         }
                         double totalInterestAmount = 0.0;
                         for (int i = 0; i < snapshot.data.docs.length; i++) {
@@ -175,15 +165,10 @@ class _HomeUIState extends ConsumerState<HomeUI> {
                           totalInterestAmount +=
                               _calculatedResult['interestAmount'];
                         }
-                        return Text(
-                          "₹ " +
-                              Constants.cFDecimal.format(totalInterestAmount),
-                          style: TextStyle(
-                              fontSize: sdp(context, 12),
-                              fontWeight: FontWeight.bold),
-                        );
+                        return _text("₹ " +
+                            Constants.cFDecimal.format(totalInterestAmount));
                       }
-                      return SizedBox();
+                      return _text("₹ ...");
                     }),
               ),
             ],
@@ -200,10 +185,8 @@ class _HomeUIState extends ConsumerState<HomeUI> {
                 icon: null,
                 cardColor: kCardCOlor,
                 label: 'Value of Items',
-                amount: Text(
+                amount: _text(
                   "Low Stocks",
-                  style: TextStyle(
-                      fontSize: sdp(context, 12), fontWeight: FontWeight.bold),
                 ),
               ),
               SizedBox(
@@ -216,13 +199,7 @@ class _HomeUIState extends ConsumerState<HomeUI> {
                 icon: null,
                 cardColor: kLightPrimaryColor,
                 label: 'Mortgage Bills',
-                amount: Text(
-                  "In Loss",
-                  style: TextStyle(
-                    fontSize: sdp(context, 12),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                amount: _text("In Loss"),
               ),
             ],
           ),
@@ -259,26 +236,26 @@ class _HomeUIState extends ConsumerState<HomeUI> {
                         Flexible(child: amount),
                         Icon(
                           Icons.arrow_forward_ios_sharp,
-                          size: sdp(context, 10),
+                          size: 12,
                         ),
                       ],
                     ),
                     SizedBox(
-                      height: sdp(context, 10),
+                      height: 12,
                     ),
                     Row(
                       children: [
                         FittedBox(
                           child: Text(
                             label,
-                            style: TextStyle(fontSize: sdp(context, 10)),
+                            style: TextStyle(fontSize: 15),
                           ),
                         ),
                         Padding(
                           padding: EdgeInsets.only(left: 10),
                           child: Icon(
                             icon,
-                            size: sdp(context, 12),
+                            size: 20,
                           ),
                         )
                       ],
@@ -297,81 +274,76 @@ class _HomeUIState extends ConsumerState<HomeUI> {
   Widget itemTimeline() {
     return Consumer(
       builder: (context, ref, child) {
-        final timelineList = ref.watch(timelineFuture(timelineHistoryCounter));
-        return timelineList.when(
-          data: (data) {
-            return Column(
-              children: [
-                _timelineBar(),
-                ListView.separated(
-                  separatorBuilder: (context, index) => height10,
-                  itemCount: data.docs.length,
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    var txnMap = data.docs[index];
-                    var todayDate = Constants.dateFormat(
-                        DateTime.now().millisecondsSinceEpoch);
-                    if (timelineDateTitle ==
-                        Constants.dateFormat(txnMap['date'])) {
-                      showDateWidget = false;
-                    } else {
-                      timelineDateTitle = Constants.dateFormat(txnMap['date']);
-                      showDateWidget = true;
-                    }
-                    return data.docs[index]['type'] == "StockTransaction"
-                        ? Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Visibility(
-                                visible: showDateWidget,
-                                child: Padding(
-                                  padding: EdgeInsets.only(
-                                      bottom: 15, top: 20, left: 10),
-                                  child: Text(
-                                    timelineDateTitle == todayDate
-                                        ? "Today"
-                                        : timelineDateTitle,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.grey.shade700,
-                                      fontSize: 20,
-                                    ),
-                                  ),
+        final timelineList = ref.watch(timelineListProvider);
+        // ref.watch(timelineFuture(timelineHistoryCounter));
+
+        return Column(
+          children: [
+            _timelineBar(),
+            ListView.separated(
+              separatorBuilder: (context, index) => height10,
+              itemCount: timelineList.length,
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                var txnMap = timelineList[index];
+                var todayDate =
+                    Constants.dateFormat(DateTime.now().millisecondsSinceEpoch);
+                if (timelineDateTitle == Constants.dateFormat(txnMap['date'])) {
+                  showDateWidget = false;
+                } else {
+                  timelineDateTitle = Constants.dateFormat(txnMap['date']);
+                  showDateWidget = true;
+                }
+                return timelineList[index]['type'] == "StockTransaction"
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Visibility(
+                            visible: showDateWidget,
+                            child: Padding(
+                              padding: EdgeInsets.only(
+                                  bottom: 15, top: 20, left: 10),
+                              child: Text(
+                                timelineDateTitle == todayDate
+                                    ? "Today"
+                                    : timelineDateTitle,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.grey.shade700,
+                                  fontSize: 20,
                                 ),
                               ),
-                              stockTxnCard(txnMap: txnMap),
-                            ],
-                          )
-                        : Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Visibility(
-                                visible: showDateWidget,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      bottom: 15, top: 20, left: 10),
-                                  child: Text(
-                                    timelineDateTitle == todayDate
-                                        ? "Today"
-                                        : timelineDateTitle,
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.grey.shade700,
-                                        fontSize: 20),
-                                  ),
-                                ),
+                            ),
+                          ),
+                          stockTxnCard(txnMap: txnMap),
+                        ],
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Visibility(
+                            visible: showDateWidget,
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  bottom: 15, top: 20, left: 10),
+                              child: Text(
+                                timelineDateTitle == todayDate
+                                    ? "Today"
+                                    : timelineDateTitle,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.grey.shade700,
+                                    fontSize: 20),
                               ),
-                              mrtgTxnCard(txnMap: txnMap)
-                            ],
-                          );
-                  },
-                ),
-              ],
-            );
-          },
-          error: (error, stackTrace) => Text("Something went wrong!"),
-          loading: () => CircularProgressIndicator(),
+                            ),
+                          ),
+                          mrtgTxnCard(txnMap: txnMap)
+                        ],
+                      );
+              },
+            ),
+          ],
         );
       },
     );
@@ -461,7 +433,7 @@ class _HomeUIState extends ConsumerState<HomeUI> {
                     child: Text(
                       "${txnMap['itemName']}",
                       style: TextStyle(
-                        fontSize: sdp(context, 10),
+                        fontSize: 12,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -476,7 +448,7 @@ class _HomeUIState extends ConsumerState<HomeUI> {
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
                             color: Colors.black,
-                            fontSize: sdp(context, 10),
+                            fontSize: 12,
                           ),
                         ),
                         Text(
@@ -484,7 +456,7 @@ class _HomeUIState extends ConsumerState<HomeUI> {
                           style: TextStyle(
                             fontWeight: FontWeight.w400,
                             color: Colors.black,
-                            fontSize: sdp(context, 10),
+                            fontSize: 12,
                           ),
                         ),
                       ],
@@ -500,7 +472,7 @@ class _HomeUIState extends ConsumerState<HomeUI> {
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
                             color: Colors.black,
-                            fontSize: sdp(context, 10),
+                            fontSize: 12,
                           ),
                         ),
                         Text(
@@ -510,7 +482,7 @@ class _HomeUIState extends ConsumerState<HomeUI> {
                           style: TextStyle(
                             fontWeight: FontWeight.w400,
                             color: Colors.black,
-                            fontSize: sdp(context, 10),
+                            fontSize: 12,
                           ),
                         ),
                         Text(
@@ -555,8 +527,7 @@ class _HomeUIState extends ConsumerState<HomeUI> {
               padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
               child: Text(
                 'Mortgage',
-                style:
-                    TextStyle(color: Colors.white, fontSize: sdp(context, 10)),
+                style: TextStyle(color: Colors.white, fontSize: 12),
               ),
             ),
           ),

@@ -11,8 +11,6 @@ import 'package:jeweller_stockbook/utils/colors.dart';
 import 'package:jeweller_stockbook/utils/constants.dart';
 import 'package:jeweller_stockbook/utils/kScaffold.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../Helper/sdp.dart';
 import '../utils/components.dart';
 
 class MortgageUI extends ConsumerStatefulWidget {
@@ -165,7 +163,7 @@ class _MortgageUIState extends ConsumerState<MortgageUI> {
                     Text(
                       mrtgBookMap['name'],
                       style: TextStyle(
-                          fontSize: sdp(context, 12),
+                          fontSize: 20,
                           fontWeight: FontWeight.w500,
                           letterSpacing: .5),
                     ),
@@ -174,7 +172,7 @@ class _MortgageUIState extends ConsumerState<MortgageUI> {
                       style: TextStyle(
                           fontWeight: FontWeight.w500,
                           color: Colors.black,
-                          fontSize: sdp(context, 10),
+                          fontSize: 12,
                           letterSpacing: .5),
                     ),
                   ],
@@ -193,7 +191,7 @@ class _MortgageUIState extends ConsumerState<MortgageUI> {
                   },
                   icon: Icon(
                     Icons.call,
-                    size: sdp(context, 10),
+                    size: 12,
                   ),
                 ),
               ],
@@ -246,7 +244,7 @@ class _MortgageUIState extends ConsumerState<MortgageUI> {
                 style: TextStyle(
                   color: kColor(context).onTertiaryContainer,
                   fontWeight: FontWeight.w600,
-                  fontSize: sdp(context, 10),
+                  fontSize: 12,
                 ),
                 maxLines: 1,
               ),
@@ -277,7 +275,7 @@ class _MortgageUIState extends ConsumerState<MortgageUI> {
                       "₹ " + Constants.cFDecimal.format(totalPaid),
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: sdp(context, 10),
+                        fontSize: 12,
                       ),
                     );
                   }
@@ -286,7 +284,7 @@ class _MortgageUIState extends ConsumerState<MortgageUI> {
                     style: TextStyle(
                       color: kColor(context).onTertiaryContainer,
                       fontWeight: FontWeight.w600,
-                      fontSize: sdp(context, 10),
+                      fontSize: 12,
                     ),
                   );
                 },

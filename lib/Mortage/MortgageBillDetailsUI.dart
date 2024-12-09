@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:jeweller_stockbook/Helper/sdp.dart';
 import 'package:jeweller_stockbook/Mortage/editMrtgBill.dart';
 import 'package:jeweller_stockbook/utils/colors.dart';
 import 'package:jeweller_stockbook/utils/components.dart';
@@ -269,7 +268,7 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
                           color: Colors.black,
-                          fontSize: sdp(context, 10),
+                          fontSize: 12,
                         ),
                       ),
                       SizedBox(
@@ -597,7 +596,7 @@ class _MrtgBillDetailsUiState extends State<MrtgBillDetailsUi> {
                   child: Text(
                     _calculatedResult['profitLoss'],
                     style: TextStyle(
-                      fontSize: sdp(context, 11),
+                      fontSize: 12,
                       fontWeight: FontWeight.w500,
                       color: Colors.white,
                       letterSpacing: 0.7,

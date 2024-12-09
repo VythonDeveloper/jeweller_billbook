@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:jeweller_stockbook/Helper/sdp.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:jeweller_stockbook/Mortage/createMrtgBill.dart';
 import 'package:jeweller_stockbook/Mortage/MortgageBillDetailsUI.dart';
@@ -69,7 +68,7 @@ class _MortgageBillUIState extends State<MortgageBillUI> {
                       Text(
                         mrtgBook['name'],
                         style: TextStyle(
-                          fontSize: sdp(context, 15),
+                          fontSize: 20,
                           fontWeight: FontWeight.w500,
                           letterSpacing: .5,
                         ),
@@ -78,7 +77,7 @@ class _MortgageBillUIState extends State<MortgageBillUI> {
                       Text(
                         "Phone: ${mrtgBook['phone']}",
                         style: TextStyle(
-                          fontSize: sdp(context, 11),
+                          fontSize: 12,
                           fontWeight: FontWeight.w400,
                         ),
                       ),
@@ -102,7 +101,7 @@ class _MortgageBillUIState extends State<MortgageBillUI> {
                             children: [
                               Icon(
                                 Icons.call,
-                                size: sdp(context, 10),
+                                size: 12,
                               ),
                               width10,
                               Text("Call"),
@@ -169,7 +168,7 @@ class _MortgageBillUIState extends State<MortgageBillUI> {
                         },
                         icon: Icon(
                           Icons.delete,
-                          size: sdp(context, 10),
+                          size: 12,
                         ),
                       )
                     ],

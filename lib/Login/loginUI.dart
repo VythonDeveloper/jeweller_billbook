@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
-import 'package:jeweller_stockbook/Helper/sdp.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:jeweller_stockbook/utils/constants.dart';
 import 'package:jeweller_stockbook/utils/kOTPField.dart';
@@ -91,7 +90,7 @@ class _LoginUIState extends State<LoginUI> {
               Text(
                 'Welcome,',
                 style: TextStyle(
-                  fontSize: sdp(context, 15),
+                  fontSize: 20,
                   color: Colors.black,
                   fontWeight: FontWeight.w500,
                 ),
@@ -99,7 +98,7 @@ class _LoginUIState extends State<LoginUI> {
               Text(
                 Constants.shopName,
                 style: TextStyle(
-                    fontSize: sdp(context, 20),
+                    fontSize: 25,
                     color: Colors.blue.shade800,
                     fontWeight: FontWeight.w700),
               ),

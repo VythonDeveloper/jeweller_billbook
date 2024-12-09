@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:jeweller_stockbook/utils/components.dart';
-import '../Helper/sdp.dart';
 import 'colors.dart';
 
 class KScaffold extends StatefulWidget {
@@ -60,7 +59,7 @@ AppBar KAppBar(
     automaticallyImplyLeading: showBack ?? false,
     actions: actions,
     titleTextStyle: TextStyle(
-      fontSize: sdp(context, 12),
+      fontSize: 20,
       fontWeight: FontWeight.w500,
       fontFamily: 'Poppins',
       letterSpacing: .5,
@@ -97,7 +96,7 @@ Container kFullLoading(BuildContext context, {String? loadingText}) {
         ),
         height10,
         SizedBox(
-          width: sdp(context, 60),
+          width: 70,
           child: LinearProgressIndicator(
             backgroundColor: kColor(context).primaryContainer,
             color: kColor(context).primary,

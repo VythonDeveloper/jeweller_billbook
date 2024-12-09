@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts/contact.dart';
-import 'package:jeweller_stockbook/Helper/sdp.dart';
 import 'package:jeweller_stockbook/Helper/select_Contacts.dart';
 import 'package:jeweller_stockbook/Helper/user.dart';
 import 'package:jeweller_stockbook/utils/components.dart';
@@ -266,7 +265,7 @@ class _CreateMrtgBookUiState extends State<CreateMrtgBookUi> {
                     Text(
                       'Create Contact',
                       style: TextStyle(
-                        fontSize: sdp(context, 12),
+                        fontSize: 20,
                         color: kPrimaryColor,
                         fontWeight: FontWeight.w500,
                       ),

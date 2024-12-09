@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:jeweller_stockbook/Helper/sdp.dart';
 import 'package:jeweller_stockbook/utils/colors.dart';
 
 SizedBox get height5 => SizedBox(height: 5);
@@ -74,7 +73,7 @@ Widget seeMoreButton(BuildContext context, {void Function()? onTap}) {
           Text(
             'See More',
             style: TextStyle(
-              fontSize: sdp(context, 10),
+              fontSize: 12,
               fontWeight: FontWeight.w500,
               color: Colors.white,
             ),
